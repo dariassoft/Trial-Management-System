@@ -1,0 +1,219 @@
+{
+  "info": {
+    "_postman_id": "tms-2025-11-27",
+    "name": "Trial Management System (TMS)",
+    "description": "API para gestión de ensayos agronómicos - Sistema completo con autenticación JWT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.1"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.environment.set('jwt_token', jsonData.accessToken);",
+                  "  pm.environment.set('user_id', jsonData.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"dariassoft@gmail.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ensayos",
+      "item": [
+        {
+          "name": "Crear Ensayo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreEnsayo\": \"Ensayo de Maíz Tardío 2025\",\n  \"protocoloId\": 2,\n  \"codigoLabor\": \"LAB-2025-003\",\n  \"laboratorioId\": 1,\n  \"tipoEnsayoId\": 4,\n  \"responsableId\": 5,\n  \"provincia\": \"Córdoba\",\n  \"departamento\": \"Río Cuarto\",\n  \"establecimiento\": \"El Progreso\",\n  \"lote\": \"Lote 7A\",\n  \"latitud\": -33.1306,\n  \"longitud\": -64.349,\n  \"cultivoId\": 1,\n  \"variedadId\": 1,\n  \"tipoSiembraId\": 1,\n  \"distSurcosCm\": 52.5,\n  \"fechaInicio\": \"2025-12-10\",\n  \"fechaSiembra\": \"2025-12-15\",\n  \"fechaCosecha\": \"2026-05-20\",\n  \"status\": \"Por Iniciar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ensayos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ensayos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Ensayo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"responsableId\": 7,\n  \"status\": \"En Ejecución\",\n  \"fechaInicio\": \"2025-12-11\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ensayos/{{ensayo_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ensayos",
+                "{{ensayo_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Ensayos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ensayos?limit=10&page=1&sort=nombreEnsayo&order=ASC&laboratorio=Syngenta&variedad=DK-7210",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ensayos"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "sort",
+                  "value": "nombreEnsayo"
+                },
+                {
+                  "key": "order",
+                  "value": "ASC"
+                },
+                {
+                  "key": "laboratorio",
+                  "value": "Syngenta"
+                },
+                {
+                  "key": "variedad",
+                  "value": "DK-7210"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Ensayo por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ensayos/{{ensayo_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ensayos",
+                "{{ensayo_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catálogos",
+      "item": []
+    },
+    {
+      "name": "Usuarios",
+      "item": []
+    },
+    {
+      "name": "Laboratorios",
+      "item": []
+    },
+    {
+      "name": "Productos",
+      "item": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ensayo_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}

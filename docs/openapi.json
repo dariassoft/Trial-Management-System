@@ -1,0 +1,4569 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Endpoint de salud/bienvenida",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/v1/ensayos": {
+      "post": {
+        "operationId": "EnsayosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnsayoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "nombreEnsayo": "Ensayo de Trigo 2025",
+                    "versionProtocolo": "v1",
+                    "responsable": "Ing. Agr. Juan Pérez",
+                    "provincia": "Buenos Aires",
+                    "departamento": "Tres Arroyos",
+                    "establecimiento": "La Estancia",
+                    "lote": "Lote 5",
+                    "latitud": -38.373737,
+                    "longitud": -60.273737,
+                    "cultivoEspecie": "Trigo",
+                    "cultivoVariedad": "Baguette 620",
+                    "tipoSiembra": "A chorrillo",
+                    "distSurcosCm": 17.5,
+                    "fechaSiembra": "2025-06-15"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ensayo creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ensayo"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un ensayo",
+        "tags": [
+          "ensayos"
+        ]
+      },
+      "get": {
+        "operationId": "EnsayosController_findAll",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Búsqueda por nombre/version",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Campo para ordenar (ej: id, nombreEnsayo)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [],
+                    "meta": {
+                      "total": 0,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar todos los ensayos (paginado y filtrado)",
+        "tags": [
+          "ensayos"
+        ]
+      }
+    },
+    "/api/v1/ensayos/{id}": {
+      "get": {
+        "operationId": "EnsayosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ensayo"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener un ensayo por ID",
+        "tags": [
+          "ensayos"
+        ]
+      },
+      "patch": {
+        "operationId": "EnsayosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEnsayoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "responsable": "María López",
+                    "provincia": "Córdoba",
+                    "fechaSiembra": "2025-06-20"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ensayo"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar un ensayo por ID",
+        "tags": [
+          "ensayos"
+        ]
+      },
+      "delete": {
+        "operationId": "EnsayosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar un ensayo por ID",
+        "tags": [
+          "ensayos"
+        ]
+      }
+    },
+    "/api/v1/laboratorios": {
+      "post": {
+        "operationId": "LaboratoriosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLaboratorioDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Laboratorio básico",
+                  "value": {
+                    "nombre": "ACME Agro Labs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Laboratorio creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Laboratorio"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un laboratorio",
+        "tags": [
+          "laboratorios"
+        ]
+      },
+      "get": {
+        "operationId": "LaboratoriosController_findAll",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Buscar por nombre",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [],
+                    "meta": {
+                      "total": 0,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar laboratorios (paginado y filtrado)",
+        "tags": [
+          "laboratorios"
+        ]
+      }
+    },
+    "/api/v1/laboratorios/{id}": {
+      "get": {
+        "operationId": "LaboratoriosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Laboratorio"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener laboratorio por ID",
+        "tags": [
+          "laboratorios"
+        ]
+      },
+      "patch": {
+        "operationId": "LaboratoriosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLaboratorioDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "nombre": "Nuevo nombre de laboratorio"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Laboratorio"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar laboratorio",
+        "tags": [
+          "laboratorios"
+        ]
+      },
+      "delete": {
+        "operationId": "LaboratoriosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar laboratorio",
+        "tags": [
+          "laboratorios"
+        ]
+      }
+    },
+    "/api/v1/productos": {
+      "post": {
+        "operationId": "ProductosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "nombre_comercial": "Herbicida X",
+                    "principio_activo": "Glifosato 48%",
+                    "formulacion": "SL",
+                    "laboratorioId": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Producto creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un producto",
+        "tags": [
+          "productos"
+        ]
+      },
+      "get": {
+        "operationId": "ProductosController_findAll",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Buscar por nombre/principio activo",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "laboratorioId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [],
+                    "meta": {
+                      "total": 0,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar productos (paginado y filtrado)",
+        "tags": [
+          "productos"
+        ]
+      }
+    },
+    "/api/v1/productos/{id}": {
+      "get": {
+        "operationId": "ProductosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener producto por ID",
+        "tags": [
+          "productos"
+        ]
+      },
+      "patch": {
+        "operationId": "ProductosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductoDto"
+              },
+              "examples": {
+                "cambioNombre": {
+                  "summary": "Cambiar nombre y laboratorio",
+                  "value": {
+                    "nombre_comercial": "Herbicida X Plus",
+                    "laboratorioId": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar producto",
+        "tags": [
+          "productos"
+        ]
+      },
+      "delete": {
+        "operationId": "ProductosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar producto",
+        "tags": [
+          "productos"
+        ]
+      }
+    },
+    "/api/v1/tratamientos": {
+      "post": {
+        "operationId": "TratamientosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTratamientoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ensayoId": 1,
+                    "numeroTrat": 1,
+                    "descripcion": "Herbicida pre-emergente",
+                    "esTestigo": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un tratamiento",
+        "tags": [
+          "tratamientos"
+        ]
+      },
+      "get": {
+        "operationId": "TratamientosController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tratamiento"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar tratamientos",
+        "tags": [
+          "tratamientos"
+        ]
+      }
+    },
+    "/api/v1/tratamientos/{id}": {
+      "get": {
+        "operationId": "TratamientosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener tratamiento por ID",
+        "tags": [
+          "tratamientos"
+        ]
+      },
+      "patch": {
+        "operationId": "TratamientosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTratamientoDto"
+              },
+              "examples": {
+                "ejemplo": {
+                  "value": {
+                    "descripcion": "Actualizado",
+                    "esTestigo": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar tratamiento",
+        "tags": [
+          "tratamientos"
+        ]
+      },
+      "delete": {
+        "operationId": "TratamientosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar tratamiento",
+        "tags": [
+          "tratamientos"
+        ]
+      }
+    },
+    "/api/v1/bloques": {
+      "post": {
+        "operationId": "BloquesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBloqueDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ensayoId": 1,
+                    "nombreBloque": "A"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Bloque creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bloque"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un bloque",
+        "tags": [
+          "bloques"
+        ]
+      },
+      "get": {
+        "operationId": "BloquesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Bloque"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar bloques",
+        "tags": [
+          "bloques"
+        ]
+      }
+    },
+    "/api/v1/bloques/{id}": {
+      "get": {
+        "operationId": "BloquesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bloque"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener bloque por ID",
+        "tags": [
+          "bloques"
+        ]
+      },
+      "patch": {
+        "operationId": "BloquesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBloqueDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "nombreBloque": "B"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bloque"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar bloque",
+        "tags": [
+          "bloques"
+        ]
+      },
+      "delete": {
+        "operationId": "BloquesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar bloque",
+        "tags": [
+          "bloques"
+        ]
+      }
+    },
+    "/api/v1/parcelas": {
+      "post": {
+        "operationId": "ParcelasController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateParcelaDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ensayoId": 1,
+                    "bloqueId": 1,
+                    "tratamientoId": 1,
+                    "posXGrid": 2,
+                    "posYGrid": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Parcela creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear una parcela",
+        "tags": [
+          "parcelas"
+        ]
+      },
+      "get": {
+        "operationId": "ParcelasController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Parcela"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar parcelas",
+        "tags": [
+          "parcelas"
+        ]
+      }
+    },
+    "/api/v1/parcelas/{id}": {
+      "get": {
+        "operationId": "ParcelasController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener parcela por ID",
+        "tags": [
+          "parcelas"
+        ]
+      },
+      "patch": {
+        "operationId": "ParcelasController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateParcelaDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "posXGrid": 5,
+                    "posYGrid": 6
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar parcela",
+        "tags": [
+          "parcelas"
+        ]
+      },
+      "delete": {
+        "operationId": "ParcelasController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar parcela",
+        "tags": [
+          "parcelas"
+        ]
+      }
+    },
+    "/api/v1/aplicaciones": {
+      "post": {
+        "operationId": "AplicacionesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAplicacionDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ensayoId": 1,
+                    "nombreAplicacion": "Primera aplicación",
+                    "fechaHora": "2025-03-18T10:30:00.000Z",
+                    "estadioCultivo": "V6",
+                    "tempC": 25.5,
+                    "humedadPct": 60,
+                    "vientoKmh": 12.3,
+                    "equipoInfo": "Pulverizadora Jacto",
+                    "picoInfo": "XR11002",
+                    "presionBar": 2.5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Aplicación creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Aplicacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear una aplicación",
+        "tags": [
+          "aplicaciones"
+        ]
+      },
+      "get": {
+        "operationId": "AplicacionesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Aplicacion"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar aplicaciones",
+        "tags": [
+          "aplicaciones"
+        ]
+      }
+    },
+    "/api/v1/aplicaciones/{id}": {
+      "get": {
+        "operationId": "AplicacionesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Aplicacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener aplicación por ID",
+        "tags": [
+          "aplicaciones"
+        ]
+      },
+      "patch": {
+        "operationId": "AplicacionesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAplicacionDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "estadioCultivo": "V8",
+                    "tempC": 22.1,
+                    "presionBar": 2.8
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Aplicacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar aplicación",
+        "tags": [
+          "aplicaciones"
+        ]
+      },
+      "delete": {
+        "operationId": "AplicacionesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar aplicación",
+        "tags": [
+          "aplicaciones"
+        ]
+      }
+    },
+    "/api/v1/momentos": {
+      "post": {
+        "operationId": "MomentosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMomentoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "aplicacionId": 1,
+                    "nombreMomento": "7DDA",
+                    "diasDespuesAplicacion": 7,
+                    "fechaEvaluacion": "2025-04-01"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Momento creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MomentoEvaluacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un momento de evaluación",
+        "tags": [
+          "momentos"
+        ]
+      },
+      "get": {
+        "operationId": "MomentosController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MomentoEvaluacion"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar momentos de evaluación",
+        "tags": [
+          "momentos"
+        ]
+      }
+    },
+    "/api/v1/momentos/{id}": {
+      "get": {
+        "operationId": "MomentosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MomentoEvaluacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener momento de evaluación por ID",
+        "tags": [
+          "momentos"
+        ]
+      },
+      "patch": {
+        "operationId": "MomentosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMomentoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "nombreMomento": "14DDA",
+                    "diasDespuesAplicacion": 14
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MomentoEvaluacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar momento de evaluación",
+        "tags": [
+          "momentos"
+        ]
+      },
+      "delete": {
+        "operationId": "MomentosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar momento de evaluación",
+        "tags": [
+          "momentos"
+        ]
+      }
+    },
+    "/api/v1/datos-campo": {
+      "post": {
+        "operationId": "DatosCampoController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDatosCampoDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Visita con mediciones dinámicas",
+                  "value": {
+                    "parcela_id_fk": 1,
+                    "momento_id_fk": 1,
+                    "observaciones": "Sin observaciones",
+                    "mediciones": [
+                      {
+                        "variable_id": 1,
+                        "valor": "10.5"
+                      },
+                      {
+                        "variable_id": 2,
+                        "valor": "Alto"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Datos de campo creados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatosCampo"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear registro de datos de campo",
+        "tags": [
+          "datos-campo"
+        ]
+      },
+      "get": {
+        "operationId": "DatosCampoController_findAll",
+        "parameters": [
+          {
+            "name": "momentoId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "parcelaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [],
+                    "meta": {
+                      "total": 0,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar datos de campo (paginado y filtrado)",
+        "tags": [
+          "datos-campo"
+        ]
+      }
+    },
+    "/api/v1/datos-campo/{id}": {
+      "get": {
+        "operationId": "DatosCampoController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatosCampo"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener datos de campo por ID",
+        "tags": [
+          "datos-campo"
+        ]
+      },
+      "patch": {
+        "operationId": "DatosCampoController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDatosCampoDto"
+              },
+              "examples": {
+                "reemplazoMediciones": {
+                  "summary": "Actualizar observaciones y reemplazar mediciones",
+                  "value": {
+                    "observaciones": "Lluvia previa a la medición",
+                    "mediciones": [
+                      {
+                        "variable_id": 1,
+                        "valor": "9.8"
+                      },
+                      {
+                        "variable_id": 3,
+                        "valor": "Bajo"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatosCampo"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar datos de campo",
+        "tags": [
+          "datos-campo"
+        ]
+      },
+      "delete": {
+        "operationId": "DatosCampoController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar datos de campo",
+        "tags": [
+          "datos-campo"
+        ]
+      }
+    },
+    "/api/v1/datos-campo/{idVisita}/upload-foto": {
+      "post": {
+        "operationId": "DatosCampoController_uploadFoto",
+        "parameters": [
+          {
+            "name": "idVisita",
+            "required": true,
+            "in": "path",
+            "description": "ID de la visita (DatosCampo)",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Imagen (jpg, jpeg, png); máx. 10MB"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ejemplo de respuesta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": 1,
+                    "file_name": "foto.jpg",
+                    "file_path": "/uploads/visita_1/foto.jpg",
+                    "mime_type": "image/jpeg",
+                    "fecha_subida": "2025-11-04T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Foto registrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FotoRegistro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sube una foto para una visita (DatosCampo)",
+        "tags": [
+          "datos-campo"
+        ]
+      }
+    },
+    "/api/v1/datos-campo/mediciones/por-variable/{variableId}": {
+      "get": {
+        "operationId": "DatosCampoController_findMedicionesByVariable",
+        "parameters": [
+          {
+            "name": "variableId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Página (1..N)",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Elementos por página",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Campo para ordenar (opcional)",
+            "schema": {
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "description": "Dirección de orden",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de mediciones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [],
+                    "meta": {
+                      "total": 0,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar mediciones por variable (paginado)",
+        "tags": [
+          "datos-campo"
+        ]
+      }
+    },
+    "/api/v1/datos-campo/mediciones/por-visita/{visitaId}": {
+      "get": {
+        "operationId": "DatosCampoController_findMedicionesByVisita",
+        "parameters": [
+          {
+            "name": "visitaId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Página (1..N)",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Elementos por página",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Campo para ordenar (opcional)",
+            "schema": {
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "description": "Dirección de orden",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de mediciones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [],
+                    "meta": {
+                      "total": 0,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar mediciones por visita (paginado)",
+        "tags": [
+          "datos-campo"
+        ]
+      }
+    },
+    "/api/v1/fotos/por-visita/{visitaId}": {
+      "get": {
+        "operationId": "FotosController_findByVisita",
+        "parameters": [
+          {
+            "name": "visitaId",
+            "required": true,
+            "in": "path",
+            "description": "ID de la visita (DatosCampo)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Página (1..N)",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Elementos por página",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Campo para ordenar (opcional)",
+            "schema": {
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "description": "Dirección de orden",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de fotos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [
+                      {
+                        "id": 1,
+                        "file_name": "foto.jpg",
+                        "file_path": "/uploads/visita_1/foto.jpg",
+                        "mime_type": "image/jpeg",
+                        "fecha_subida": "2025-11-04T10:00:00.000Z",
+                        "visita": {
+                          "id": 1
+                        }
+                      }
+                    ],
+                    "meta": {
+                      "total": 1,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar fotos por visita (paginado)",
+        "tags": [
+          "fotos"
+        ]
+      }
+    },
+    "/api/v1/fotos/{id}": {
+      "get": {
+        "operationId": "FotosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FotoRegistro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener foto por ID",
+        "tags": [
+          "fotos"
+        ]
+      },
+      "delete": {
+        "operationId": "FotosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar foto",
+        "tags": [
+          "fotos"
+        ]
+      }
+    },
+    "/api/v1/datos-cosecha": {
+      "post": {
+        "operationId": "DatosCosechaController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDatosCosechaDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "parcelaId": 1,
+                    "fechaCosecha": "2025-05-30",
+                    "humedadPct": 14.2,
+                    "kgHaCorregido": 5200.5,
+                    "gie": 123.45,
+                    "observaciones": "Trilla sin inconvenientes"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Datos de cosecha creados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatosCosecha"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear registro de datos de cosecha",
+        "tags": [
+          "datos-cosecha"
+        ]
+      },
+      "get": {
+        "operationId": "DatosCosechaController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DatosCosecha"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar datos de cosecha",
+        "tags": [
+          "datos-cosecha"
+        ]
+      }
+    },
+    "/api/v1/datos-cosecha/{id}": {
+      "get": {
+        "operationId": "DatosCosechaController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatosCosecha"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener datos de cosecha por ID",
+        "tags": [
+          "datos-cosecha"
+        ]
+      },
+      "patch": {
+        "operationId": "DatosCosechaController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDatosCosechaDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "humedadPct": 13.8,
+                    "observaciones": "Secado adicional realizado"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatosCosecha"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar datos de cosecha",
+        "tags": [
+          "datos-cosecha"
+        ]
+      },
+      "delete": {
+        "operationId": "DatosCosechaController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar datos de cosecha",
+        "tags": [
+          "datos-cosecha"
+        ]
+      }
+    },
+    "/api/v1/tratamientos-producto": {
+      "post": {
+        "operationId": "TratamientosProductoController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTratamientoProductoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "tratamientoId": 1,
+                    "productoId": 2,
+                    "dosis": "800",
+                    "unidadDosis": "cc/ha"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Asociación creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TratamientoProducto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Asociar un producto a un tratamiento (con dosis)",
+        "tags": [
+          "tratamientos-producto"
+        ]
+      },
+      "get": {
+        "operationId": "TratamientosProductoController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TratamientoProducto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar asociaciones Tratamiento-Producto",
+        "tags": [
+          "tratamientos-producto"
+        ]
+      }
+    },
+    "/api/v1/tratamientos-producto/{id}": {
+      "get": {
+        "operationId": "TratamientosProductoController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TratamientoProducto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener asociación por ID",
+        "tags": [
+          "tratamientos-producto"
+        ]
+      },
+      "patch": {
+        "operationId": "TratamientosProductoController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTratamientoProductoDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "dosis": "500",
+                    "unidadDosis": "gr/ha"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TratamientoProducto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar asociación Tratamiento-Producto",
+        "tags": [
+          "tratamientos-producto"
+        ]
+      },
+      "delete": {
+        "operationId": "TratamientosProductoController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar asociación",
+        "tags": [
+          "tratamientos-producto"
+        ]
+      }
+    },
+    "/api/v1/protocolo-variables": {
+      "post": {
+        "operationId": "ProtocoloVariablesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProtocoloVariableDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "nombre_variable": "Altura de planta",
+                    "unidad_medida": "cm",
+                    "descripcion": "Altura promedio por planta"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Variable creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocoloVariable"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear una variable de protocolo",
+        "tags": [
+          "protocolo-variables"
+        ]
+      },
+      "get": {
+        "operationId": "ProtocoloVariablesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProtocoloVariable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar variables de protocolo",
+        "tags": [
+          "protocolo-variables"
+        ]
+      }
+    },
+    "/api/v1/protocolo-variables/{id}": {
+      "get": {
+        "operationId": "ProtocoloVariablesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocoloVariable"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener variable por ID",
+        "tags": [
+          "protocolo-variables"
+        ]
+      },
+      "patch": {
+        "operationId": "ProtocoloVariablesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProtocoloVariableDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "unidad_medida": "porcentaje",
+                    "descripcion": "Medida en % de cobertura"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocoloVariable"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar variable de protocolo",
+        "tags": [
+          "protocolo-variables"
+        ]
+      },
+      "delete": {
+        "operationId": "ProtocoloVariablesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar variable de protocolo",
+        "tags": [
+          "protocolo-variables"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Iniciar sesión y obtener token JWT",
+        "tags": [
+          "autenticacion"
+        ]
+      }
+    },
+    "/api/v1/auth/bootstrap-hash": {
+      "post": {
+        "operationId": "AuthController_bootstrapHash",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Hashea la contraseña del usuario indicado (bootstrap del seed)",
+        "tags": [
+          "autenticacion"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "username": "user@example.com",
+                    "password": "S3gura123",
+                    "rolId": 2,
+                    "nombre": "María",
+                    "apellido": "Pérez",
+                    "telefono": "3875789133",
+                    "fecha_nacimiento": "1990-05-21",
+                    "esta_activo": true,
+                    "laboratorioIds": [
+                      1,
+                      2
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado (sin password en la respuesta)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": 10,
+                    "username": "user@example.com",
+                    "nombre": "María",
+                    "apellido": "Pérez",
+                    "telefono": "3875789133",
+                    "fecha_nacimiento": "1990-05-21",
+                    "esta_activo": true,
+                    "rol": {
+                      "id": 2,
+                      "nombre": "Administrador"
+                    },
+                    "laboratoriosAsignados": [
+                      {
+                        "id": 1,
+                        "laboratorio": {
+                          "id": 1,
+                          "nombre": "ACME Agro Labs"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear usuario",
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_findAll",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Buscar por username/nombre/apellido/teléfono",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "activo",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "rolId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Campos permitidos: id, username, esta_activo",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [],
+                    "meta": {
+                      "total": 0,
+                      "page": 1,
+                      "limit": 10,
+                      "pageCount": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar usuarios (paginado y filtrado)",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": 10,
+                    "username": "user@example.com",
+                    "nombre": "María",
+                    "apellido": "Pérez",
+                    "telefono": "3875789133",
+                    "esta_activo": true,
+                    "rol": {
+                      "id": 2,
+                      "nombre": "Administrador"
+                    },
+                    "laboratoriosAsignados": [
+                      {
+                        "id": 1,
+                        "laboratorio": {
+                          "id": 1,
+                          "nombre": "ACME Agro Labs"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener usuario por ID",
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "password": "NuevaP4ss",
+                    "rolId": 3,
+                    "nombre": "Maria",
+                    "telefono": "3875000000",
+                    "esta_activo": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario actualizado (sin password en la respuesta)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar usuario",
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar usuario",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/laboratorios": {
+      "post": {
+        "operationId": "UsersController_addLabs",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignLabsDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "laboratorioIds": [
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario con laboratorios actualizados"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Asignar laboratorios a un usuario",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/laboratorios/{labId}": {
+      "delete": {
+        "operationId": "UsersController_removeLab",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "labId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quitar un laboratorio del usuario",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API de Ensayos Agronómicos",
+    "description": "Documentación de la API para el sistema de gestión de ensayos",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateEnsayoDto": {
+        "type": "object",
+        "properties": {
+          "nombreEnsayo": {
+            "type": "string",
+            "description": "Nombre del ensayo",
+            "example": "Ensayo de Trigo 2025",
+            "maxLength": 255
+          },
+          "versionProtocolo": {
+            "type": "object",
+            "description": "Versión del protocolo",
+            "example": "v1",
+            "maxLength": 20
+          },
+          "responsable": {
+            "type": "object",
+            "description": "Responsable del ensayo",
+            "example": "Ing. Agr. Juan Pérez",
+            "maxLength": 100
+          },
+          "provincia": {
+            "type": "object",
+            "description": "Provincia",
+            "example": "Buenos Aires",
+            "maxLength": 100
+          },
+          "departamento": {
+            "type": "object",
+            "description": "Departamento",
+            "example": "Tres Arroyos",
+            "maxLength": 100
+          },
+          "establecimiento": {
+            "type": "object",
+            "description": "Establecimiento",
+            "example": "La Estancia",
+            "maxLength": 100
+          },
+          "lote": {
+            "type": "object",
+            "description": "Lote",
+            "example": "Lote 5",
+            "maxLength": 50
+          },
+          "latitud": {
+            "type": "object",
+            "description": "Latitud en grados decimales",
+            "example": -38.373737
+          },
+          "longitud": {
+            "type": "object",
+            "description": "Longitud en grados decimales",
+            "example": -60.273737
+          },
+          "cultivoEspecie": {
+            "type": "object",
+            "description": "Especie del cultivo",
+            "example": "Trigo",
+            "maxLength": 100
+          },
+          "cultivoVariedad": {
+            "type": "object",
+            "description": "Variedad del cultivo",
+            "example": "Baguette 620",
+            "maxLength": 100
+          },
+          "tipoSiembra": {
+            "type": "object",
+            "description": "Tipo de siembra",
+            "example": "A chorrillo",
+            "maxLength": 50
+          },
+          "distSurcosCm": {
+            "type": "object",
+            "description": "Distancia entre surcos (cm)",
+            "example": 17.5
+          },
+          "fechaSiembra": {
+            "type": "object",
+            "description": "Fecha de siembra (YYYY-MM-DD)",
+            "example": "2025-06-15"
+          }
+        },
+        "required": [
+          "nombreEnsayo"
+        ]
+      },
+      "Ensayo": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEnsayoDto": {
+        "type": "object",
+        "properties": {
+          "nombreEnsayo": {
+            "type": "string",
+            "description": "Nombre del ensayo",
+            "example": "Ensayo de Trigo 2025",
+            "maxLength": 255
+          },
+          "versionProtocolo": {
+            "type": "object",
+            "description": "Versión del protocolo",
+            "example": "v1",
+            "maxLength": 20
+          },
+          "responsable": {
+            "type": "object",
+            "description": "Responsable del ensayo",
+            "example": "Ing. Agr. Juan Pérez",
+            "maxLength": 100
+          },
+          "provincia": {
+            "type": "object",
+            "description": "Provincia",
+            "example": "Buenos Aires",
+            "maxLength": 100
+          },
+          "departamento": {
+            "type": "object",
+            "description": "Departamento",
+            "example": "Tres Arroyos",
+            "maxLength": 100
+          },
+          "establecimiento": {
+            "type": "object",
+            "description": "Establecimiento",
+            "example": "La Estancia",
+            "maxLength": 100
+          },
+          "lote": {
+            "type": "object",
+            "description": "Lote",
+            "example": "Lote 5",
+            "maxLength": 50
+          },
+          "latitud": {
+            "type": "object",
+            "description": "Latitud en grados decimales",
+            "example": -38.373737
+          },
+          "longitud": {
+            "type": "object",
+            "description": "Longitud en grados decimales",
+            "example": -60.273737
+          },
+          "cultivoEspecie": {
+            "type": "object",
+            "description": "Especie del cultivo",
+            "example": "Trigo",
+            "maxLength": 100
+          },
+          "cultivoVariedad": {
+            "type": "object",
+            "description": "Variedad del cultivo",
+            "example": "Baguette 620",
+            "maxLength": 100
+          },
+          "tipoSiembra": {
+            "type": "object",
+            "description": "Tipo de siembra",
+            "example": "A chorrillo",
+            "maxLength": 50
+          },
+          "distSurcosCm": {
+            "type": "object",
+            "description": "Distancia entre surcos (cm)",
+            "example": 17.5
+          },
+          "fechaSiembra": {
+            "type": "object",
+            "description": "Fecha de siembra (YYYY-MM-DD)",
+            "example": "2025-06-15"
+          }
+        }
+      },
+      "CreateLaboratorioDto": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "example": "ACME Agro Labs",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "nombre"
+        ]
+      },
+      "Laboratorio": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateLaboratorioDto": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "example": "ACME Agro Labs",
+            "maxLength": 100
+          }
+        }
+      },
+      "CreateProductoDto": {
+        "type": "object",
+        "properties": {
+          "nombre_comercial": {
+            "type": "string",
+            "example": "Herbicida X",
+            "maxLength": 100
+          },
+          "principio_activo": {
+            "type": "object",
+            "example": "Glifosato 48%",
+            "maxLength": 255
+          },
+          "formulacion": {
+            "type": "object",
+            "example": "SL",
+            "maxLength": 50
+          },
+          "laboratorioId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del Laboratorio propietario"
+          }
+        },
+        "required": [
+          "nombre_comercial"
+        ]
+      },
+      "Producto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateProductoDto": {
+        "type": "object",
+        "properties": {
+          "nombre_comercial": {
+            "type": "string",
+            "example": "Herbicida X",
+            "maxLength": 100
+          },
+          "principio_activo": {
+            "type": "object",
+            "example": "Glifosato 48%",
+            "maxLength": 255
+          },
+          "formulacion": {
+            "type": "object",
+            "example": "SL",
+            "maxLength": 50
+          },
+          "laboratorioId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del Laboratorio propietario"
+          }
+        }
+      },
+      "CreateTratamientoDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo al que pertenece"
+          },
+          "numeroTrat": {
+            "type": "number",
+            "example": 1,
+            "description": "Número de tratamiento dentro del ensayo"
+          },
+          "descripcion": {
+            "type": "object",
+            "example": "Descripción del tratamiento"
+          },
+          "esTestigo": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "ensayoId",
+          "numeroTrat"
+        ]
+      },
+      "Tratamiento": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateTratamientoDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo al que pertenece"
+          },
+          "numeroTrat": {
+            "type": "number",
+            "example": 1,
+            "description": "Número de tratamiento dentro del ensayo"
+          },
+          "descripcion": {
+            "type": "object",
+            "example": "Descripción del tratamiento"
+          },
+          "esTestigo": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "CreateBloqueDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo"
+          },
+          "nombreBloque": {
+            "type": "string",
+            "example": "A",
+            "maxLength": 10,
+            "description": "Nombre del bloque"
+          }
+        },
+        "required": [
+          "ensayoId",
+          "nombreBloque"
+        ]
+      },
+      "Bloque": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateBloqueDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo"
+          },
+          "nombreBloque": {
+            "type": "string",
+            "example": "A",
+            "maxLength": 10,
+            "description": "Nombre del bloque"
+          }
+        }
+      },
+      "CreateParcelaDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo"
+          },
+          "bloqueId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del bloque"
+          },
+          "tratamientoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del tratamiento"
+          },
+          "posXGrid": {
+            "type": "object",
+            "example": 1
+          },
+          "posYGrid": {
+            "type": "object",
+            "example": 2
+          }
+        },
+        "required": [
+          "ensayoId",
+          "bloqueId",
+          "tratamientoId"
+        ]
+      },
+      "Parcela": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateParcelaDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo"
+          },
+          "bloqueId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del bloque"
+          },
+          "tratamientoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del tratamiento"
+          },
+          "posXGrid": {
+            "type": "object",
+            "example": 1
+          },
+          "posYGrid": {
+            "type": "object",
+            "example": 2
+          }
+        }
+      },
+      "CreateAplicacionDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo al que pertenece la aplicación"
+          },
+          "nombreAplicacion": {
+            "type": "string",
+            "example": "Primera aplicación",
+            "maxLength": 100
+          },
+          "fechaHora": {
+            "type": "string",
+            "example": "2025-03-18T10:30:00.000Z"
+          },
+          "estadioCultivo": {
+            "type": "object",
+            "example": "V6",
+            "maxLength": 50
+          },
+          "tempC": {
+            "type": "object",
+            "example": 25.5,
+            "description": "Temperatura (°C)"
+          },
+          "humedadPct": {
+            "type": "object",
+            "example": 60,
+            "description": "Humedad relativa (%)"
+          },
+          "vientoKmh": {
+            "type": "object",
+            "example": 12.3,
+            "description": "Viento (km/h)"
+          },
+          "equipoInfo": {
+            "type": "object",
+            "example": "Pulverizadora Jacto",
+            "maxLength": 255
+          },
+          "picoInfo": {
+            "type": "object",
+            "example": "Pico XR11002",
+            "maxLength": 100
+          },
+          "presionBar": {
+            "type": "object",
+            "example": 2.5,
+            "description": "Presión (bar)"
+          }
+        },
+        "required": [
+          "ensayoId"
+        ]
+      },
+      "Aplicacion": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateAplicacionDto": {
+        "type": "object",
+        "properties": {
+          "ensayoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del ensayo al que pertenece la aplicación"
+          },
+          "nombreAplicacion": {
+            "type": "string",
+            "example": "Primera aplicación",
+            "maxLength": 100
+          },
+          "fechaHora": {
+            "type": "string",
+            "example": "2025-03-18T10:30:00.000Z"
+          },
+          "estadioCultivo": {
+            "type": "object",
+            "example": "V6",
+            "maxLength": 50
+          },
+          "tempC": {
+            "type": "object",
+            "example": 25.5,
+            "description": "Temperatura (°C)"
+          },
+          "humedadPct": {
+            "type": "object",
+            "example": 60,
+            "description": "Humedad relativa (%)"
+          },
+          "vientoKmh": {
+            "type": "object",
+            "example": 12.3,
+            "description": "Viento (km/h)"
+          },
+          "equipoInfo": {
+            "type": "object",
+            "example": "Pulverizadora Jacto",
+            "maxLength": 255
+          },
+          "picoInfo": {
+            "type": "object",
+            "example": "Pico XR11002",
+            "maxLength": 100
+          },
+          "presionBar": {
+            "type": "object",
+            "example": 2.5,
+            "description": "Presión (bar)"
+          }
+        }
+      },
+      "CreateMomentoDto": {
+        "type": "object",
+        "properties": {
+          "aplicacionId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID de la aplicación a la que pertenece"
+          },
+          "nombreMomento": {
+            "type": "string",
+            "example": "7DDA",
+            "maxLength": 50
+          },
+          "diasDespuesAplicacion": {
+            "type": "object",
+            "example": 7
+          },
+          "fechaEvaluacion": {
+            "type": "object",
+            "example": "2025-04-01"
+          }
+        },
+        "required": [
+          "aplicacionId",
+          "nombreMomento"
+        ]
+      },
+      "MomentoEvaluacion": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateMomentoDto": {
+        "type": "object",
+        "properties": {
+          "aplicacionId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID de la aplicación a la que pertenece"
+          },
+          "nombreMomento": {
+            "type": "string",
+            "example": "7DDA",
+            "maxLength": 50
+          },
+          "diasDespuesAplicacion": {
+            "type": "object",
+            "example": 7
+          },
+          "fechaEvaluacion": {
+            "type": "object",
+            "example": "2025-04-01"
+          }
+        }
+      },
+      "MedicionDto": {
+        "type": "object",
+        "properties": {
+          "variable_id": {
+            "type": "number",
+            "description": "ID de la variable a medir",
+            "example": 1
+          },
+          "valor": {
+            "type": "string",
+            "description": "Valor registrado",
+            "example": "10.5"
+          }
+        },
+        "required": [
+          "variable_id",
+          "valor"
+        ]
+      },
+      "CreateDatosCampoDto": {
+        "type": "object",
+        "properties": {
+          "parcela_id_fk": {
+            "type": "number",
+            "description": "ID de la Parcela",
+            "example": 12
+          },
+          "momento_id_fk": {
+            "type": "number",
+            "description": "ID del Momento de Evaluación",
+            "example": 3
+          },
+          "observaciones": {
+            "type": "string",
+            "description": "Observaciones generales de la visita"
+          },
+          "mediciones": {
+            "description": "Lista de mediciones tomadas",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MedicionDto"
+            }
+          }
+        },
+        "required": [
+          "parcela_id_fk",
+          "momento_id_fk",
+          "mediciones"
+        ]
+      },
+      "DatosCampo": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateDatosCampoDto": {
+        "type": "object",
+        "properties": {
+          "observaciones": {
+            "type": "string",
+            "description": "Observaciones generales de la visita"
+          },
+          "mediciones": {
+            "description": "Lista COMPLETA de mediciones. Reemplazará las existentes si se envía.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MedicionDto"
+            }
+          }
+        }
+      },
+      "FotoRegistro": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateDatosCosechaDto": {
+        "type": "object",
+        "properties": {
+          "parcelaId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID de la parcela"
+          },
+          "fechaCosecha": {
+            "type": "object",
+            "example": "2025-05-30"
+          },
+          "humedadPct": {
+            "type": "object",
+            "example": 14.2,
+            "description": "Humedad (%)"
+          },
+          "kgHaCorregido": {
+            "type": "object",
+            "example": 5200.5,
+            "description": "kg/ha corregido"
+          },
+          "gie": {
+            "type": "object",
+            "example": 123.45
+          },
+          "observaciones": {
+            "type": "object",
+            "example": "Observaciones de la trilla",
+            "maxLength": 65535
+          }
+        },
+        "required": [
+          "parcelaId"
+        ]
+      },
+      "DatosCosecha": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateDatosCosechaDto": {
+        "type": "object",
+        "properties": {
+          "parcelaId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID de la parcela"
+          },
+          "fechaCosecha": {
+            "type": "object",
+            "example": "2025-05-30"
+          },
+          "humedadPct": {
+            "type": "object",
+            "example": 14.2,
+            "description": "Humedad (%)"
+          },
+          "kgHaCorregido": {
+            "type": "object",
+            "example": 5200.5,
+            "description": "kg/ha corregido"
+          },
+          "gie": {
+            "type": "object",
+            "example": 123.45
+          },
+          "observaciones": {
+            "type": "object",
+            "example": "Observaciones de la trilla",
+            "maxLength": 65535
+          }
+        }
+      },
+      "CreateTratamientoProductoDto": {
+        "type": "object",
+        "properties": {
+          "tratamientoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del tratamiento"
+          },
+          "productoId": {
+            "type": "number",
+            "example": 2,
+            "description": "ID del producto"
+          },
+          "dosis": {
+            "type": "object",
+            "example": "800",
+            "description": "Dosis aplicada"
+          },
+          "unidadDosis": {
+            "type": "object",
+            "example": "cc/ha",
+            "description": "Unidad de dosis"
+          }
+        },
+        "required": [
+          "tratamientoId",
+          "productoId"
+        ]
+      },
+      "TratamientoProducto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateTratamientoProductoDto": {
+        "type": "object",
+        "properties": {
+          "tratamientoId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID del tratamiento"
+          },
+          "productoId": {
+            "type": "number",
+            "example": 2,
+            "description": "ID del producto"
+          },
+          "dosis": {
+            "type": "object",
+            "example": "800",
+            "description": "Dosis aplicada"
+          },
+          "unidadDosis": {
+            "type": "object",
+            "example": "cc/ha",
+            "description": "Unidad de dosis"
+          }
+        }
+      },
+      "CreateProtocoloVariableDto": {
+        "type": "object",
+        "properties": {
+          "nombre_variable": {
+            "type": "string",
+            "description": "Nombre único de la variable",
+            "example": "Altura de planta"
+          },
+          "unidad_medida": {
+            "type": "object",
+            "description": "Unidad de medida",
+            "example": "cm"
+          },
+          "descripcion": {
+            "type": "object",
+            "description": "Descripción de la variable",
+            "example": "Altura promedio por planta"
+          }
+        },
+        "required": [
+          "nombre_variable"
+        ]
+      },
+      "ProtocoloVariable": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateProtocoloVariableDto": {
+        "type": "object",
+        "properties": {
+          "nombre_variable": {
+            "type": "string",
+            "description": "Nombre único de la variable",
+            "example": "Altura de planta"
+          },
+          "unidad_medida": {
+            "type": "object",
+            "description": "Unidad de medida",
+            "example": "cm"
+          },
+          "descripcion": {
+            "type": "object",
+            "description": "Descripción de la variable",
+            "example": "Altura promedio por planta"
+          }
+        }
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Email del usuario",
+            "example": "dariassoft@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Email del usuario (único)",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña en texto plano (será hasheada)",
+            "example": "S3gura123",
+            "minLength": 6
+          },
+          "rolId": {
+            "type": "number",
+            "description": "ID del rol a asignar",
+            "example": 2
+          },
+          "nombre": {
+            "type": "object",
+            "description": "Nombre",
+            "example": "María",
+            "maxLength": 100
+          },
+          "apellido": {
+            "type": "object",
+            "description": "Apellido",
+            "example": "Pérez",
+            "maxLength": 100
+          },
+          "telefono": {
+            "type": "string",
+            "description": "Teléfono",
+            "example": "3875789133",
+            "maxLength": 50
+          },
+          "fecha_nacimiento": {
+            "type": "object",
+            "description": "Fecha de nacimiento (YYYY-MM-DD)",
+            "example": "1990-05-21"
+          },
+          "esta_activo": {
+            "type": "boolean",
+            "description": "Usuario activo",
+            "example": true,
+            "default": true
+          },
+          "laboratorioIds": {
+            "description": "IDs de laboratorios asignados",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "rolId",
+          "telefono"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Email del usuario (único)",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Nueva contraseña (opcional). Si se envía, se vuelve a hashear.",
+            "example": "S3gura123",
+            "minLength": 6
+          },
+          "rolId": {
+            "type": "number",
+            "description": "ID del rol (opcional)",
+            "example": 3
+          },
+          "nombre": {
+            "type": "object",
+            "description": "Nombre",
+            "example": "Juan",
+            "maxLength": 100
+          },
+          "apellido": {
+            "type": "object",
+            "description": "Apellido",
+            "example": "García",
+            "maxLength": 100
+          },
+          "telefono": {
+            "type": "string",
+            "description": "Teléfono",
+            "example": "3875000000",
+            "maxLength": 50
+          },
+          "fecha_nacimiento": {
+            "type": "object",
+            "description": "Fecha de nacimiento (YYYY-MM-DD)",
+            "example": "1992-01-31"
+          },
+          "esta_activo": {
+            "type": "boolean",
+            "description": "Usuario activo",
+            "example": true,
+            "default": true
+          },
+          "laboratorioIds": {
+            "description": "IDs de laboratorios asignados",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "AssignLabsDto": {
+        "type": "object",
+        "properties": {
+          "laboratorioIds": {
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "description": "IDs de laboratorios a asignar",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "laboratorioIds"
+        ]
+      }
+    }
+  }
+}
