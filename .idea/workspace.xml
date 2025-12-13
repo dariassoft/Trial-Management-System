@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoTable.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/locations/data/locations.data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/locations/data/locations.data.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,31 +30,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.docker-compose.yml.client-vue: Compose Deployment.executor": "Run",
-    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "database.data.extractors.current.export.id": "Comma-separated (CSV)_id",
-    "disable.download.node.interpreter.editor.notification": "true",
-    "git-widget-placeholder": "master",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/docs/20_create_status_ensayo.sql",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.android.studio.ml.bot.mainConfigurable",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.docker-compose.yml.client-vue: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;database.data.extractors.current.export.id&quot;: &quot;Comma-separated (CSV)_id&quot;,
+    &quot;disable.download.node.interpreter.editor.notification&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/docs/20_create_status_ensayo.sql&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.android.studio.ml.bot.mainConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="ReactDesignerToolWindowState">
     <option name="myId2Visible">
       <map>
@@ -146,7 +141,7 @@
       <workItem from="1765457728584" duration="14340000" />
       <workItem from="1765476503276" duration="20106000" />
       <workItem from="1765509781127" duration="6224000" />
-      <workItem from="1765641112776" duration="10556000" />
+      <workItem from="1765641112776" duration="11126000" />
     </task>
     <servers />
   </component>
