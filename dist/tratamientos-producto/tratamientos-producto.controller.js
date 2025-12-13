@@ -49,26 +49,7 @@ __decorate([
     (0, swagger_1.ApiCreatedResponse)({ type: tratamiento_producto_entity_1.TratamientoProducto, description: 'Asociación creada' }),
     (0, swagger_1.ApiBody)({
         type: create_tratamiento_producto_dto_1.CreateTratamientoProductoDto,
-        examples: {
-            default: {
-                value: {
-                    tratamientoId: 1,
-                    productoId: 2,
-                    dosis: '800',
-                    unidadDosis: 'cc/ha',
-                    estadio: 'V4',
-                },
-            },
-            testigo: {
-                value: {
-                    tratamientoId: 1,
-                    productoId: null,
-                    dosis: null,
-                    unidadDosis: null,
-                    estadio: null,
-                },
-            },
-        },
+        description: 'Crear asociación Tratamiento-Producto. Campos: tratamientoId (requerido), productoId (requerido), dosis (string, ej: "800"), unidadDosis (string, ej: "cc/ha"), estadio (string, ej: "V4")',
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -101,15 +82,7 @@ __decorate([
     (0, swagger_1.ApiOkResponse)({ type: tratamiento_producto_entity_1.TratamientoProducto }),
     (0, swagger_1.ApiBody)({
         type: update_tratamiento_producto_dto_1.UpdateTratamientoProductoDto,
-        examples: {
-            default: {
-                value: {
-                    dosis: '500',
-                    unidadDosis: 'gr/ha',
-                    estadio: 'V3',
-                },
-            },
-        },
+        description: 'Actualizar asociación Tratamiento-Producto. Todos los campos son opcionales: dosis (string, ej: "500"), unidadDosis (string, ej: "gr/ha"), estadio (string, ej: "V3")',
     }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),

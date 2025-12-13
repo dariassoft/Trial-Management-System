@@ -12,6 +12,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const tiposSiembra = ref([]);
   const tratamientos = ref([]);
   const protocolos = ref([]);
+  const productos = ref([]);
 
   const fetchUsuarios = async () => { // Renombrado de 'fetchResponsables' a 'fetchUsuarios'
     try {
@@ -123,6 +124,21 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     }
   };
 
+  const fetchProductos = async () => {
+    try {
+      const response = await api.get('/productos');
+      if (response && response.data) {
+        productos.value = response.data;
+      } else if (Array.isArray(response)) {
+        productos.value = response;
+      }
+      return productos.value;
+    } catch (error) {
+      console.error('Error fetching productos:', error);
+      return [];
+    }
+  };
+
   const init = () => {
     fetchUsuarios(); // Actualizado
     fetchProvincias();
@@ -143,9 +159,11 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     tiposSiembra,
     tratamientos,
     protocolos,
+    productos,
     fetchDepartamentos,
     fetchVariedades,
     fetchVariablesPorTipo,
+    fetchProductos,
     init,
   };
 });

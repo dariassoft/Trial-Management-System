@@ -50,27 +50,39 @@ let ProtocolosService = class ProtocolosService {
             const validPage = Math.max(1, page);
             const validLimit = Math.max(1, Math.min(100, limit));
             const validSort = ['id', 'nombre', 'descripcion', 'createdAt'].includes(sort) ? sort : 'nombre';
-            // Construir query
-            const qb = this.protocoloRepo.createQueryBuilder('p');
-            // Búsqueda general
+            console.log('🔍 findAll() Búsqueda de protocolos:', { searchQuery, sort: validSort, order, page: validPage, limit: validLimit });
+            // ============================================
+            // QUERY 1: Contar total con filtros
+            // ============================================
+            const countQb = this.protocoloRepo.createQueryBuilder('p');
             if (searchQuery) {
-                qb.where('LOWER(p.nombre) LIKE LOWER(:q)', { q: `%${searchQuery}%` })
+                console.log('🔎 Aplicando filtro WHERE para búsqueda:', searchQuery);
+                countQb.where('LOWER(p.nombre) LIKE LOWER(:q)', { q: `%${searchQuery}%` })
                     .orWhere('LOWER(p.descripcion) LIKE LOWER(:q)', { q: `%${searchQuery}%` });
             }
-            // Contar total antes de paginar
-            const total = yield qb.getCount();
+            const total = yield countQb.getCount();
             const pageCount = Math.ceil(total / validLimit);
-            // Aplicar ordenamiento y paginación
-            qb.orderBy(`p.${validSort}`, order)
-                .skip((validPage - 1) * validLimit)
-                .take(validLimit);
-            // Cargar protocolos con sus tratamientos
-            const data = yield qb
-                .leftJoinAndSelect('p.tratamientos', 'tratamientos')
-                .orderBy(`p.${validSort}`, order)
-                .skip((validPage - 1) * validLimit)
-                .take(validLimit)
-                .getMany();
+            console.log('📊 Total registros después de filtrar:', total);
+            // ============================================
+            // QUERY 2: Obtener datos con filtros + relaciones + orden + paginación
+            // ============================================
+            const dataQb = this.protocoloRepo.createQueryBuilder('p');
+            // Aplicar los MISMOS filtros de búsqueda
+            if (searchQuery) {
+                dataQb.where('LOWER(p.nombre) LIKE LOWER(:q)', { q: `%${searchQuery}%` })
+                    .orWhere('LOWER(p.descripcion) LIKE LOWER(:q)', { q: `%${searchQuery}%` });
+            }
+            // Cargar relaciones
+            dataQb.leftJoinAndSelect('p.tratamientos', 'tratamientos');
+            // Aplicar ordenamiento
+            console.log(`📊 Aplicando orden: p.${validSort} ${order}`);
+            dataQb.orderBy(`p.${validSort}`, order);
+            // Aplicar paginación
+            const offset = (validPage - 1) * validLimit;
+            console.log(`📄 Paginación: offset=${offset}, limit=${validLimit}`);
+            dataQb.skip(offset).take(validLimit);
+            const data = yield dataQb.getMany();
+            console.log('✅ Protocolos devueltos:', data.length);
             return {
                 data,
                 meta: {

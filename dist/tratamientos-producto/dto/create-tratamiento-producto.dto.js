@@ -26,21 +26,37 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateTratamientoProductoDto.prototype, "productoId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: '800', description: 'Dosis aplicada' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: '800',
+        description: 'Dosis aplicada (ej: 800, 500+300, 1500)',
+        maxLength: 50,
+        type: String
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(50),
     __metadata("design:type", Object)
 ], CreateTratamientoProductoDto.prototype, "dosis", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'cc/ha', description: 'Unidad de dosis' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'cc/ha',
+        description: 'Unidad de dosis (ej: cc/ha, ml, l, g, kg, gr/ha)',
+        maxLength: 20,
+        type: String,
+        default: 'cc/ha'
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(20),
     __metadata("design:type", Object)
 ], CreateTratamientoProductoDto.prototype, "unidadDosis", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'V4', description: 'Estadio de aplicación (V2, V3, V4, etc.)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'V4',
+        description: 'Estadio de aplicación - Válores: V2, V3, V4, V5, V6, V7, V8, R1, R2, R3, etc. (ej: V4, V3, sin especificar)',
+        maxLength: 20,
+        type: String
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(20),

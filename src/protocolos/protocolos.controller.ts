@@ -1,7 +1,7 @@
 // typescript
 // Archivo: `src/protocolos/protocolos.controller.ts`
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { ProtocolosService } from './protocolos.service';
 import { CreateProtocoloDto } from './dto/create-protocolo.dto';
 import { UpdateProtocoloDto } from './dto/update-protocolo.dto';
@@ -24,10 +24,22 @@ export class ProtocolosController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Obtener lista de todos los protocolos' })
-  @ApiResponse({ status: 200, description: 'Lista de protocolos', type: [Protocolo] })
-  findAll() {
-    return this.service.findAll();
+  @ApiOperation({ summary: 'Obtener lista de protocolos con búsqueda, filtros y paginación' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página', example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Límite de resultados por página', example: 10 })
+  @ApiQuery({ name: 'q', required: false, type: String, description: 'Búsqueda por nombre o descripción', example: 'trigo' })
+  @ApiQuery({ name: 'sort', required: false, type: String, description: 'Campo para ordenar (id, nombre, descripcion, createdAt)', example: 'nombre' })
+  @ApiQuery({ name: 'order', required: false, type: String, description: 'Orden ASC o DESC', example: 'ASC' })
+  @ApiResponse({ status: 200, description: 'Lista de protocolos' })
+  findAll(
+    @Query('page') page?: number | string,
+    @Query('limit') limit?: number | string,
+    @Query('q') q?: string,
+    @Query('sort') sort?: string,
+    @Query('order') order?: 'ASC' | 'DESC',
+  ) {
+    console.log('🎯 Controlador findAll() recibió query params:', { page, limit, q, sort, order });
+    return this.service.findAll({ page, limit, q, sort, order });
   }
 
   @Get(':id')

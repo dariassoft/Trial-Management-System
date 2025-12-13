@@ -3,9 +3,15 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <!-- Header -->
       <div class="sticky top-0 bg-white dark:bg-gray-800 p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-          {{ tratamiento?.id ? 'Editar' : 'Nuevo' }} Tratamiento
-        </h2>
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ modoEdicion ? 'Editar' : 'Nuevo' }} Tratamiento
+          </h2>
+          <!-- DEBUG: Mostrar estado actual -->
+          <p class="text-xs text-gray-500 mt-1">
+            [DEBUG] modoEdicion={{ modoEdicion }} | tratamiento.id={{ props.tratamiento?.id }}
+          </p>
+        </div>
         <button @click="$emit('close')" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl">×</button>
       </div>
 
@@ -46,45 +52,46 @@
           ></textarea>
         </div>
 
-        <!-- Productos (si no es testigo) -->
-        <template v-if="!form.esTestigo">
-          <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-            <div class="flex justify-between items-center mb-3">
-              <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Productos ({{ form.productos?.length || 0 }})</h3>
-              <button
-                type="button"
-                @click="showProductoForm = true"
-                class="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition"
-              >
-                + Agregar Producto
-              </button>
-            </div>
+        <!-- Productos -->
+        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Productos ({{ form.productos?.length || 0 }})</h3>
+            <button
+              v-if="!form.esTestigo"
+              type="button"
+              @click="showProductoForm = true"
+              class="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition"
+            >
+              + Agregar Producto
+            </button>
+            <span v-else class="text-xs text-gray-500 italic">Testigo (sin productos)</span>
+          </div>
 
-            <!-- Lista de productos -->
-            <div v-if="form.productos?.length" class="space-y-2">
-              <div v-for="(prod, idx) in form.productos" :key="idx" class="bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-                <div class="flex justify-between items-start gap-2">
-                  <div class="flex-1 min-w-0">
-                    <p class="font-medium text-sm text-gray-900 dark:text-white">{{ getProductoNombre(prod.productoId) }}</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      {{ prod.dosis || '—' }} {{ prod.unidadDosis }}
-                      <span v-if="prod.estadio" class="ml-2">• {{ prod.estadio }}</span>
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    @click="form.productos?.splice(idx, 1)"
-                    class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-medium transition"
-                  >
-                    Quitar
-                  </button>
+          <!-- Lista de productos -->
+          <div v-if="form.productos?.length" class="space-y-2">
+            <div v-for="(prod, idx) in form.productos" :key="idx" class="bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
+              <div class="flex justify-between items-start gap-2">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-sm text-gray-900 dark:text-white">{{ getProductoNombre(prod.productoId) }}</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    {{ prod.dosis || '—' }} {{ prod.unidadDosis }}
+                    <span v-if="prod.estadio" class="ml-2">• {{ prod.estadio }}</span>
+                  </p>
                 </div>
+                <button
+                  v-if="!form.esTestigo"
+                  type="button"
+                  @click="form.productos?.splice(idx, 1)"
+                  class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-medium transition"
+                >
+                  Quitar
+                </button>
               </div>
             </div>
-
-            <p v-else class="text-xs text-gray-500 dark:text-gray-400 italic">Sin productos agregados.</p>
           </div>
-        </template>
+
+          <p v-else class="text-xs text-gray-500 dark:text-gray-400 italic">Sin productos agregados.</p>
+        </div>
 
         <!-- Botones -->
         <div class="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -123,7 +130,7 @@
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="" disabled>Selecciona un producto...</option>
-                <option v-for="p in productos" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+                <option v-for="p in productos" :key="p.id" :value="p.id">{{ p.nombre_comercial || p.nombre }}</option>
               </select>
             </div>
 
@@ -139,36 +146,22 @@
 
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unidad</label>
-              <select
+              <input
                 v-model="productoTemp.unidadDosis"
+                type="text"
+                placeholder="Ej: cc/ha, ml, l, g, kg"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option>cc/ha</option>
-                <option>ml</option>
-                <option>l</option>
-                <option>g</option>
-                <option>kg</option>
-              </select>
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estadio</label>
-              <select
+              <input
                 v-model="productoTemp.estadio"
+                type="text"
+                placeholder="Ej: V2, V3, V4, V5, R1, R2, etc."
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sin especificar</option>
-                <option>V2</option>
-                <option>V3</option>
-                <option>V4</option>
-                <option>V5</option>
-                <option>V6</option>
-                <option>V7</option>
-                <option>V8</option>
-                <option>R1</option>
-                <option>R2</option>
-                <option>R3</option>
-              </select>
+              />
             </div>
 
             <div class="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -196,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, computed, watchEffect } from 'vue'
 import { useCatalogosStore } from '~/stores/catalogos'
 
 interface Props {
@@ -214,11 +207,19 @@ const emit = defineEmits<Emits>()
 
 const catalogosStore = useCatalogosStore()
 
+// Computed para detectar modo edición - Forzar reactividad
+const modoEdicion = computed(() => {
+  const resultado = !!(props.tratamiento && props.tratamiento.id)
+  console.log('🔍 modoEdicion computed:', { tratamiento: props.tratamiento, resultado })
+  return resultado
+})
+
 const form = reactive({
   numeroTrat: 1,
   descripcion: '',
   esTestigo: false,
   productos: [] as any[],
+
 })
 
 const showProductoForm = ref(false)
@@ -230,6 +231,7 @@ const productoTemp = reactive({
 })
 
 const productos = ref<any[]>([])
+const formularioLlenado = ref(false) // Flag para evitar sobrescribir cambios del usuario
 
 onMounted(async () => {
   await cargarProductos()
@@ -244,32 +246,65 @@ async function cargarProductos() {
   }
 }
 
-watch(
-  () => props.tratamiento,
-  (newVal) => {
-    if (newVal) {
-      form.numeroTrat = newVal.numeroTrat
-      form.descripcion = newVal.descripcion || ''
-      form.esTestigo = newVal.esTestigo
-      form.productos = newVal.productos ? JSON.parse(JSON.stringify(newVal.productos)) : []
+// Usar watchEffect en lugar de watch para reactividad más inmediata
+// IMPORTANTE: Solo llenar formulario la PRIMERA VEZ que llega el prop
+watchEffect(async () => {
+  const newVal = props.tratamiento
+  console.log('🔄 watchEffect disparado - props.tratamiento:', newVal, 'formularioLlenado:', formularioLlenado.value)
+
+  // Solo llenar el formulario si es la primera vez (no ha sido llenado aún)
+  if (newVal && newVal.id && !formularioLlenado.value) {
+    console.log('📝 PRIMERA CARGA - Rellenando formulario con datos del tratamiento:', newVal)
+    form.numeroTrat = newVal.numeroTrat
+    form.descripcion = newVal.descripcion || ''
+    form.esTestigo = newVal.esTestigo
+    console.log('✅ form.esTestigo actualizado a:', form.esTestigo)
+
+    // Mapear productos SOLO en la carga inicial
+    if (newVal.productos && Array.isArray(newVal.productos)) {
+      form.productos = newVal.productos.map((p: any) => ({
+        id: p.id,
+        productoId: p.producto?.id ?? p.productoId,
+        dosis: p.dosis ?? null,
+        unidadDosis: p.unidadDosis ?? 'cc/ha',
+        estadio: p.estadio ?? null,
+      }))
     } else {
-      form.numeroTrat = 1
-      form.descripcion = ''
-      form.esTestigo = false
       form.productos = []
     }
-  },
-  { immediate: true },
-)
+    console.log('✅ Formulario rellenado:', { numeroTrat: form.numeroTrat, esTestigo: form.esTestigo, productos: form.productos.length })
 
-function getProductoNombre(id: number | null) {
-  if (!id) return 'Producto'
-  const prod = productos.value.find(p => p.id === id)
-  return prod?.nombre || `Producto ${id}`
+    // Marcar que el formulario ya fue llenado
+    formularioLlenado.value = true
+    console.log('🔐 Formulario marcado como llenado - cambios del usuario NO serán sobrescritos')
+  } else if (!newVal && formularioLlenado.value) {
+    console.log('🔄 Prop tratamiento se limpió - RESETEANDO formulario para nuevo tratamiento')
+    form.numeroTrat = 1
+    form.descripcion = ''
+    form.esTestigo = false
+    form.productos = []
+    formularioLlenado.value = false
+  }
+})
+
+// Watch para detectar cuando el usuario cambia manualmente form.esTestigo
+watchEffect(() => {
+  console.log('👁️ form.esTestigo cambió a:', form.esTestigo)
+})
+
+function getProductoNombre(productoId: number | null) {
+  if (!productoId) return 'Producto'
+  const prod = productos.value.find(p => p.id === productoId)
+  return prod?.nombre_comercial || prod?.nombre || `Producto ${productoId}`
 }
 
 function agregarProductoTemp() {
-  if (!productoTemp.productoId) return
+  console.log('🔵 agregarProductoTemp llamado, productoTemp:', productoTemp)
+
+  if (!productoTemp.productoId) {
+    console.warn('⚠️ No hay producto seleccionado')
+    return
+  }
 
   const nuevoProducto = {
     productoId: productoTemp.productoId,
@@ -278,23 +313,36 @@ function agregarProductoTemp() {
     estadio: productoTemp.estadio || null,
   }
 
+  console.log('✅ Agregando producto:', nuevoProducto)
+
   if (!form.productos) form.productos = []
   form.productos.push(nuevoProducto)
 
+  console.log('📦 Productos después de agregar:', form.productos)
+
+  // Resetear los valores del formulario de producto
   productoTemp.productoId = null
   productoTemp.dosis = ''
   productoTemp.unidadDosis = 'cc/ha'
   productoTemp.estadio = ''
+
+  console.log('✔️ productoTemp reseteado:', productoTemp)
+
+  // Cerrar el modal
   showProductoForm.value = false
+  console.log('🔒 Modal cerrado')
 }
 
 function enviar() {
   emit('save', {
-    numeroTrat: form.numeroTrat,
-    descripcion: form.descripcion.trim() || null,
-    esTestigo: form.esTestigo,
+    tratamiento: {
+      numeroTrat: form.numeroTrat,
+      descripcion: form.descripcion.trim() || null,
+      esTestigo: form.esTestigo,
+    },
     productos: form.esTestigo ? [] : form.productos,
   })
 }
+
 </script>
 

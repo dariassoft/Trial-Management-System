@@ -21,26 +21,7 @@ export class TratamientosProductoController {
   @ApiCreatedResponse({ type: TratamientoProducto, description: 'Asociación creada' })
   @ApiBody({
     type: CreateTratamientoProductoDto,
-    examples: {
-      default: {
-        value: {
-          tratamientoId: 1,
-          productoId: 2,
-          dosis: '800',
-          unidadDosis: 'cc/ha',
-          estadio: 'V4',
-        },
-      },
-      testigo: {
-        value: {
-          tratamientoId: 1,
-          productoId: null,
-          dosis: null,
-          unidadDosis: null,
-          estadio: null,
-        },
-      },
-    },
+    description: 'Crear asociación Tratamiento-Producto. Campos: tratamientoId (requerido), productoId (requerido), dosis (string, ej: "800"), unidadDosis (string, ej: "cc/ha"), estadio (string, ej: "V4")',
   })
   create(@Body() dto: CreateTratamientoProductoDto) {
     return this.service.create(dto);
@@ -68,15 +49,7 @@ export class TratamientosProductoController {
   @ApiOkResponse({ type: TratamientoProducto })
   @ApiBody({
     type: UpdateTratamientoProductoDto,
-    examples: {
-      default: {
-        value: {
-          dosis: '500',
-          unidadDosis: 'gr/ha',
-          estadio: 'V3',
-        },
-      },
-    },
+    description: 'Actualizar asociación Tratamiento-Producto. Todos los campos son opcionales: dosis (string, ej: "500"), unidadDosis (string, ej: "gr/ha"), estadio (string, ej: "V3")',
   })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateTratamientoProductoDto) {
     return this.service.update(id, dto);

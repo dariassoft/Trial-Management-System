@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useProtocolosStore } from '~/stores/protocolos'
 import { useTratamientosStore } from '~/stores/tratamientos'
 
@@ -30,10 +30,7 @@ export function useTratamientos() {
       esTestigo: datos.esTestigo || false,
     }
 
-    const resultado = await tratamientosStore.createTratamiento(payload)
-    showFormTratamiento.value = false
-    editingTratamiento.value = null
-    return resultado
+    return await tratamientosStore.createTratamiento(payload)
   }
 
   async function actualizarTratamiento(id: number, datos: any) {
@@ -43,10 +40,7 @@ export function useTratamientos() {
       esTestigo: datos.esTestigo || false,
     }
 
-    const resultado = await tratamientosStore.updateTratamiento(id, payload)
-    showFormTratamiento.value = false
-    editingTratamiento.value = null
-    return resultado
+    return await tratamientosStore.updateTratamiento(id, payload)
   }
 
   async function eliminarTratamiento(id: number) {
@@ -122,17 +116,11 @@ export function useTratamientos() {
     tratamientosStore,
 
     // Métodos
-    cargarTratamientos,
     crearTratamiento,
     actualizarTratamiento,
     eliminarTratamiento,
-    agregarProducto,
-    eliminarProducto,
-    actualizarProducto,
     abrirFormTratamiento,
     cerrarFormTratamiento,
-    abrirFormProducto,
-    cerrarFormProducto,
   }
 }
 

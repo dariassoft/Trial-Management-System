@@ -29,7 +29,7 @@
               v-model="busqueda"
               type="text"
               placeholder="Por nombre o descripción..."
-              @keyup.enter="aplicarBusqueda"
+              @keyup.enter="aplicarFiltros"
               class="w-full px-3 md:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base h-10"
             />
           </div>
@@ -41,7 +41,6 @@
             </label>
             <select
               v-model="protocolosStore.filtros.sort"
-              @change="aplicarBusqueda"
               class="w-full px-3 md:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base h-10"
             >
               <option value="nombre">Nombre</option>
@@ -56,12 +55,25 @@
             </label>
             <select
               v-model="protocolosStore.filtros.order"
-              @change="aplicarBusqueda"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-10"
             >
               <option value="ASC">▲ ASC</option>
               <option value="DESC">▼ DESC</option>
             </select>
+          </div>
+
+          <!-- Botón Aplicar (1 columna) -->
+          <div class="md:col-span-1">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              &nbsp;
+            </label>
+            <button
+              @click="aplicarFiltros"
+              class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition text-sm h-10"
+              title="Aplicar filtros"
+            >
+              ✓ Aplicar
+            </button>
           </div>
 
           <!-- Botón Limpiar (1 columna) -->
@@ -70,7 +82,7 @@
               &nbsp;
             </label>
             <button
-              @click="limpiarBusqueda"
+              @click="limpiarFiltros"
               class="w-full px-3 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-medium transition text-sm h-10"
               title="Limpiar filtros"
             >
@@ -285,7 +297,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useProtocolos } from '~/composables/useProtocolos'
 import { useTratamientos } from '~/composables/useTratamientos'
 import ProtocoloForm from './ProtocoloForm.vue'
@@ -307,20 +319,21 @@ const {
   abrirDetalleProtocolo,
   abrirFormProtocolo,
   cerrarFormProtocolo,
-  aplicarBusqueda,
 } = useProtocolos()
 
 const {
   showFormTratamiento,
-  editingTratamiento,
   protocoloSeleccionado,
+  tratamientosStore,
   crearTratamiento,
   actualizarTratamiento,
   eliminarTratamiento: eliminarTratamientoFn,
   abrirFormTratamiento,
   cerrarFormTratamiento,
-  cargarTratamientos,
 } = useTratamientos()
+
+// Variable local INDEPENDIENTE para reactividad correcta
+const editingTratamiento = ref<any | null>(null)
 
 const busqueda = ref('')
 
@@ -362,23 +375,117 @@ function abrirNuevoTratamiento(protocoloId: number) {
   abrirFormTratamiento()
 }
 
-function editarTratamiento(protocoloId: number, tratamiento: any) {
+async function editarTratamiento(protocoloId: number, tratamiento: any) {
   protocoloSeleccionado.value = protocoloId
-  editingTratamiento.value = tratamiento
-  abrirFormTratamiento()
+  try {
+    console.log('📝 Editando tratamiento con ID:', tratamiento.id)
+    const datosCompletos = await tratamientosStore.fetchTratamientoById(tratamiento.id)
+    console.log('✅ Datos completos cargados:', datosCompletos)
+
+    // Actualizar editingTratamiento
+    editingTratamiento.value = datosCompletos
+    console.log('📱 editingTratamiento.value = ', editingTratamiento.value)
+
+    // Esperar a que Vue actualice la reactividad ANTES de abrir el modal
+    await nextTick()
+    console.log('⏳ nextTick completado, abriendo modal')
+
+    // AHORA abrir el modal con el valor correcto
+    abrirFormTratamiento()
+    console.log('🔓 Modal abierto')
+  } catch (err) {
+    console.error('❌ Error al cargar tratamiento para edición:', err)
+    editingTratamiento.value = tratamiento
+    await nextTick()
+    abrirFormTratamiento()
+  }
 }
 
 async function guardarTratamiento(datos: any) {
   try {
+    // Extraer datos del tratamiento y productos del payload
+    const { tratamiento: datosTrat, productos: productosNuevos } = datos
+
     if (editingTratamiento.value?.id) {
-      await actualizarTratamiento(editingTratamiento.value.id, datos)
+      // MODO EDICIÓN: Actualizar datos del tratamiento
+      await actualizarTratamiento(editingTratamiento.value.id, datosTrat)
+
+      // Gestionar productos en modo edición
+      const tratamientoId = editingTratamiento.value.id
+      const productosActuales = editingTratamiento.value.productos || []
+
+      // Productos a eliminar: los que no están en productosNuevos
+      for (const prodActual of productosActuales) {
+        const existeEnNuevos = productosNuevos.some((p: any) => p.id === prodActual.id)
+        if (!existeEnNuevos) {
+          try {
+            await tratamientosStore.deleteTratamientoProducto(prodActual.id)
+          } catch (err) {
+            console.error('Error al eliminar producto:', err)
+          }
+        }
+      }
+
+      // Productos a crear o actualizar
+      for (const prodNuevo of productosNuevos) {
+        if (!prodNuevo.id) {
+          // Nuevo producto: crear
+          try {
+            await tratamientosStore.createTratamientoProducto({
+              tratamientoId,
+              productoId: prodNuevo.productoId,
+              dosis: prodNuevo.dosis,
+              unidadDosis: prodNuevo.unidadDosis,
+              estadio: prodNuevo.estadio,
+            })
+          } catch (err) {
+            console.error('Error al agregar producto:', err)
+          }
+        } else {
+          // Producto existente: actualizar si cambió
+          const prodActual = productosActuales.find((p: any) => p.id === prodNuevo.id)
+          if (prodActual) {
+            try {
+              await tratamientosStore.updateTratamientoProducto(prodNuevo.id, {
+                dosis: prodNuevo.dosis,
+                unidadDosis: prodNuevo.unidadDosis,
+                estadio: prodNuevo.estadio,
+              })
+            } catch (err) {
+              console.error('Error al actualizar producto:', err)
+            }
+          }
+        }
+      }
     } else {
-      await crearTratamiento(datos)
+      // MODO CREACIÓN: Crear nuevo tratamiento
+      const resultado = await crearTratamiento(datosTrat)
+
+      // Si se creó exitosamente, agregar productos
+      if (resultado?.id && productosNuevos.length > 0) {
+        for (const prod of productosNuevos) {
+          try {
+            await tratamientosStore.createTratamientoProducto({
+              tratamientoId: resultado.id,
+              productoId: prod.productoId,
+              dosis: prod.dosis,
+              unidadDosis: prod.unidadDosis,
+              estadio: prod.estadio,
+            })
+          } catch (err) {
+            console.error('Error al agregar producto al tratamiento creado:', err)
+          }
+        }
+      }
     }
+
     // Recargar protocolo actual
     if (expandedProtocoloId.value) {
       await abrirDetalleProtocolo(expandedProtocoloId.value)
     }
+
+    // Cerrar el modal
+    cerrarFormTratamiento()
   } catch (err) {
     console.error('Error al guardar tratamiento:', err)
   }
@@ -399,17 +506,64 @@ async function eliminarTratamiento(id: number) {
 }
 
 
-function limpiarBusqueda() {
+// Aplicar filtros de búsqueda, ordenamiento y orden
+async function aplicarFiltros() {
+  console.log('🔍 Aplicando filtros:', {
+    q: busqueda.value,
+    sort: protocolosStore.filtros.sort,
+    order: protocolosStore.filtros.order,
+  })
+
+  // Actualizar el filtro de búsqueda en el store
+  protocolosStore.setFiltro('q', busqueda.value)
+
+  // Resetear a página 1 cuando se aplican nuevos filtros
+  protocolosStore.resetPaginacion()
+
+  // Hacer la solicitud con todos los filtros
+  try {
+    await cargarProtocolos({
+      q: busqueda.value,
+      sort: protocolosStore.filtros.sort,
+      order: protocolosStore.filtros.order,
+      page: 1,
+    })
+    console.log('✅ Filtros aplicados exitosamente')
+  } catch (err) {
+    console.error('❌ Error al aplicar filtros:', err)
+  }
+}
+
+// Limpiar todos los filtros
+async function limpiarFiltros() {
+  console.log('🧹 Limpiando filtros')
+
   busqueda.value = ''
   protocolosStore.setFiltro('q', '')
   protocolosStore.setFiltro('sort', 'nombre')
   protocolosStore.setFiltro('order', 'ASC')
   protocolosStore.resetPaginacion()
-  cargarProtocolos()
+
+  try {
+    await cargarProtocolos({
+      q: '',
+      sort: 'nombre',
+      order: 'ASC',
+      page: 1,
+    })
+    console.log('✅ Filtros limpiados exitosamente')
+  } catch (err) {
+    console.error('❌ Error al limpiar filtros:', err)
+  }
 }
 
 async function irAPagina(page: number) {
-  await cargarProtocolos({ page })
+  await cargarProtocolos({
+    page,
+    q: busqueda.value,
+    sort: protocolosStore.filtros.sort,
+    order: protocolosStore.filtros.order,
+  })
 }
 </script>
 

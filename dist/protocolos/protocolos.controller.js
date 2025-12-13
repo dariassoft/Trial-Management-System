@@ -30,8 +30,9 @@ let ProtocolosController = class ProtocolosController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
-        return this.service.findAll();
+    findAll(page, limit, q, sort, order) {
+        console.log('🎯 Controlador findAll() recibió query params:', { page, limit, q, sort, order });
+        return this.service.findAll({ page, limit, q, sort, order });
     }
     findOne(id) {
         return this.service.findOne(id);
@@ -56,10 +57,20 @@ __decorate([
 ], ProtocolosController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Obtener lista de todos los protocolos' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de protocolos', type: [protocolo_entity_1.Protocolo] }),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener lista de protocolos con búsqueda, filtros y paginación' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Número de página', example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Límite de resultados por página', example: 10 }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String, description: 'Búsqueda por nombre o descripción', example: 'trigo' }),
+    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String, description: 'Campo para ordenar (id, nombre, descripcion, createdAt)', example: 'nombre' }),
+    (0, swagger_1.ApiQuery)({ name: 'order', required: false, type: String, description: 'Orden ASC o DESC', example: 'ASC' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de protocolos' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('q')),
+    __param(3, (0, common_1.Query)('sort')),
+    __param(4, (0, common_1.Query)('order')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object, Object, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ProtocolosController.prototype, "findAll", null);
 __decorate([
