@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, ValidateNested, ValidateIf } from 'class-validator';
 import { Type } from 'class-transformer';
 
 // Helper DTOs to validate nested objects with an 'id' property
@@ -144,6 +144,7 @@ export class UpdateEnsayoDto {
 
   @ApiPropertyOptional({ description: 'Fecha de Inicio (YYYY-MM-DD)', example: '2025-10-15' })
   @IsOptional()
+  @ValidateIf(o => o.fechaInicio !== null && o.fechaInicio !== '')
   @IsDateString()
   fechaInicio?: string | null;
 
@@ -152,8 +153,9 @@ export class UpdateEnsayoDto {
   @IsDateString()
   fechaSiembra?: string | null;
 
-  @ApiPropertyOptional({ description: 'Fecha de Cosecha (YYYY-MM-DD)', example: '2026-04-25' })
+  @ApiPropertyOptional({ description: 'Fecha de Cosecha (YYYY-MM-DD)', example: '2025-12-15' })
   @IsOptional()
+  @ValidateIf(o => o.fechaCosecha !== null && o.fechaCosecha !== '')
   @IsDateString()
   fechaCosecha?: string | null;
 

@@ -3,12 +3,21 @@
     <!-- Use a combined loading state for the form -->
     <template v-if="!loading && !isLoadingDependentData">
       <form @submit.prevent="handleSubmit" class="grid gap-6">
+        <!-- Leyenda de Campos Obligatorios -->
+        <div class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+          <p class="text-sm text-blue-800 dark:text-blue-200">
+            <span class="font-semibold">Campos obligatorios:</span> Marcados con <span class="text-red-600 font-bold">*</span>
+          </p>
+        </div>
+
         <!-- Información Básica -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 class="text-lg font-semibold mb-4">Información Básica</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block font-medium mb-1">Nombre Ensayo *</label>
+              <label class="block font-medium mb-1">
+                Nombre Ensayo <span class="text-red-600 font-bold">*</span>
+              </label>
               <input v-model="form.nombreEnsayo" type="text" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" required />
             </div>
             <div>
@@ -167,16 +176,25 @@
           <h3 class="text-lg font-semibold mb-4">Fechas</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block font-medium mb-1">Fecha de Inicio</label>
+              <label class="block font-medium mb-1">
+                Fecha de Inicio <span class="text-gray-500 text-sm">(Opcional)</span>
+              </label>
               <input v-model="form.fechaInicio" type="date" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" />
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Deixar en blanco si no aplica</p>
             </div>
             <div>
-              <label class="block font-medium mb-1">Fecha de Siembra</label>
+              <label class="block font-medium mb-1">
+                Fecha de Siembra <span class="text-gray-500 text-sm">(Opcional)</span>
+              </label>
               <input v-model="form.fechaSiembra" type="date" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" />
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Deixar en blanco si no aplica</p>
             </div>
             <div>
-              <label class="block font-medium mb-1">Fecha de Cosecha</label>
+              <label class="block font-medium mb-1">
+                Fecha de Cosecha <span class="text-gray-500 text-sm">(Opcional)</span>
+              </label>
               <input v-model="form.fechaCosecha" type="date" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" />
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Deixar en blanco si no aplica</p>
             </div>
           </div>
         </div>
@@ -371,6 +389,11 @@ const handleSubmit = () => {
   const lon = form.value.longitud ? parseFloat(String(form.value.longitud)) : null;
   const dist = form.value.distSurcosCm ? parseFloat(String(form.value.distSurcosCm)) : null;
 
+  // Convertir fechas vacías a null
+  const fechaInicio = form.value.fechaInicio && form.value.fechaInicio.trim() !== '' ? form.value.fechaInicio : null;
+  const fechaSiembra = form.value.fechaSiembra && form.value.fechaSiembra.trim() !== '' ? form.value.fechaSiembra : null;
+  const fechaCosecha = form.value.fechaCosecha && form.value.fechaCosecha.trim() !== '' ? form.value.fechaCosecha : null;
+
   const payload: Partial<Ensayo> = {
     id: form.value.id,
     nombreEnsayo: form.value.nombreEnsayo,
@@ -386,9 +409,9 @@ const handleSubmit = () => {
     variedadId: form.value.variedadId,
     tipoSiembraId: form.value.tipoSiembraId,
     distSurcosCm: isNaN(dist) ? null : dist,
-    fechaInicio: form.value.fechaInicio,
-    fechaSiembra: form.value.fechaSiembra,
-    fechaCosecha: form.value.fechaCosecha,
+    fechaInicio,
+    fechaSiembra,
+    fechaCosecha,
     statusId: form.value.statusId,
     laboratorioId: form.value.laboratorioId,
     tipoEnsayoId: form.value.tipoEnsayoId,

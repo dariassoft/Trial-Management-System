@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, ValidateIf } from 'class-validator';
 
 export class CreateEnsayoDto {
   @ApiProperty({ description: 'Nombre del ensayo', example: 'Ensayo de Maíz Tardío 2025', type: String, maxLength: 255 })
@@ -89,6 +89,7 @@ export class CreateEnsayoDto {
 
   @ApiPropertyOptional({ description: 'Fecha de Inicio (YYYY-MM-DD)', example: '2025-12-10', type: String, format: 'date' })
   @IsOptional()
+  @ValidateIf(o => o.fechaInicio !== null && o.fechaInicio !== '')
   @IsDateString()
   fechaInicio?: string | null;
 
@@ -99,6 +100,7 @@ export class CreateEnsayoDto {
 
   @ApiPropertyOptional({ description: 'Fecha de Cosecha (YYYY-MM-DD)', example: '2026-05-20', type: String, format: 'date' })
   @IsOptional()
+  @ValidateIf(o => o.fechaCosecha !== null && o.fechaCosecha !== '')
   @IsDateString()
   fechaCosecha?: string | null;
 

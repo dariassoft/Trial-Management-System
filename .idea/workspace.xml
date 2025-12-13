@@ -6,10 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/DiasForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/DiasForm.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/TiposEnsayoList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/TiposEnsayoList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useApi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/tiposEnsayo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/tiposEnsayo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoTable.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,7 +146,7 @@
       <workItem from="1765457728584" duration="14340000" />
       <workItem from="1765476503276" duration="20106000" />
       <workItem from="1765509781127" duration="6224000" />
-      <workItem from="1765641112776" duration="9043000" />
+      <workItem from="1765641112776" duration="10556000" />
     </task>
     <servers />
   </component>

@@ -183,6 +183,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: 'Fecha de Inicio (YYYY-MM-DD)', example: '2025-10-15' }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateIf)(o => o.fechaInicio !== null && o.fechaInicio !== ''),
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", Object)
 ], UpdateEnsayoDto.prototype, "fechaInicio", void 0);
@@ -193,8 +194,9 @@ __decorate([
     __metadata("design:type", Object)
 ], UpdateEnsayoDto.prototype, "fechaSiembra", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Fecha de Cosecha (YYYY-MM-DD)', example: '2026-04-25' }),
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Fecha de Cosecha (YYYY-MM-DD)', example: '2025-12-15' }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateIf)(o => o.fechaCosecha !== null && o.fechaCosecha !== ''),
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", Object)
 ], UpdateEnsayoDto.prototype, "fechaCosecha", void 0);

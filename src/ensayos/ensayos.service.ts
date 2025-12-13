@@ -71,8 +71,9 @@ export class EnsayosService {
       .leftJoinAndSelect('e.responsable', 'responsable')
       .leftJoinAndSelect('e.laboratorio', 'laboratorio')
       .leftJoinAndSelect('e.variedad', 'variedad')
-      .leftJoinAndSelect('e.cultivo', 'cultivo') // Ensure cultivo is joined for filtering
-      .leftJoinAndSelect('e.tipoSiembra', 'tipoSiembra'); // Ensure tipoSiembra is joined for filtering
+      .leftJoinAndSelect('e.cultivo', 'cultivo')
+      .leftJoinAndSelect('e.tipoSiembra', 'tipoSiembra')
+      .leftJoinAndSelect('e.status', 'status');
 
     if (query.q) {
       const searchTerm = `%${query.q}%`;
@@ -84,7 +85,7 @@ export class EnsayosService {
         LOWER(variedad.nombre) LIKE LOWER(:q) OR
         LOWER(tipoSiembra.nombre) LIKE LOWER(:q) OR
         LOWER(laboratorio.nombre) LIKE LOWER(:q) OR
-        LOWER(e.status) LIKE LOWER(:q)
+        LOWER(status.nombre) LIKE LOWER(:q)
       )`, { q: searchTerm });
     }
     if (query.laboratorio) {
@@ -138,7 +139,7 @@ export class EnsayosService {
   }
 
   async findOne(id: number) {
-    const relations = ['laboratorio', 'tipoEnsayo', 'protocolo', 'responsable', 'cultivo', 'variedad', 'tipoSiembra'];
+    const relations = ['laboratorio', 'tipoEnsayo', 'protocolo', 'responsable', 'cultivo', 'variedad', 'tipoSiembra', 'status'];
     const entity = await this.ensayoRepo.findOne({ where: { id }, relations });
     if (!entity) throw new NotFoundException(`Ensayo ${id} no encontrado`);
     return entity;

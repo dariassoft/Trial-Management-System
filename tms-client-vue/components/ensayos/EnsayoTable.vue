@@ -29,13 +29,14 @@
             <th class="px-6 py-3 text-left font-semibold text-gray-700">Cultivo</th>
             <th class="px-6 py-3 text-left font-semibold text-gray-700">Variedad</th>
             <th class="px-6 py-3 text-left font-semibold text-gray-700">Fecha Siembra</th>
+            <th class="px-6 py-3 text-left font-semibold text-gray-700">Estado</th>
             <th class="px-6 py-3 text-left font-semibold text-gray-700">Ubicación</th>
             <th class="px-6 py-3 text-center font-semibold text-gray-700">Acciones</th>
           </tr>
         </thead>
         <tbody class="divide-y">
           <tr v-if="loading" class="border-b">
-            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+            <td colspan="8" class="px-6 py-8 text-center text-gray-500">
               <div class="flex items-center justify-center">
                 <div class="h-6 w-6 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
                 <span class="ml-2">Cargando ensayos...</span>
@@ -44,7 +45,7 @@
           </tr>
 
           <tr v-else-if="filteredEnsayos.length === 0" class="border-b">
-            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+            <td colspan="8" class="px-6 py-8 text-center text-gray-500">
               <p>{{ searchQuery ? 'No se encontraron ensayos con los criterios de búsqueda' : 'No hay ensayos registrados' }}</p>
             </td>
           </tr>
@@ -64,6 +65,11 @@
             </td>
             <td class="px-6 py-4 text-gray-700">
               {{ formatDateForDisplay(ensayo.fechaSiembra) }}
+            </td>
+            <td class="px-6 py-4">
+              <span :class="getStatusClass(ensayo.status?.nombre || '')">
+                {{ ensayo.status?.nombre || '-' }}
+              </span>
             </td>
             <td class="px-6 py-4 text-gray-700">
               <div class="text-xs">
@@ -125,7 +131,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Ensayo } from '~/stores/ensayos'
 import { useEnsayos } from '~/composables/useEnsayos'
 
@@ -148,21 +153,20 @@ const emit = defineEmits<{
 
 const { searchQuery, filteredEnsayos, formatDateForDisplay } = useEnsayos()
 
-// Filtrar ensayos según búsqueda
-const filteredList = computed(() => {
-  let result = props.ensayos
-
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase()
-    result = result.filter(
-      e =>
-        e.nombreEnsayo?.toLowerCase().includes(q) ||
-        e.responsable?.toLowerCase().includes(q) ||
-        e.cultivoEspecie?.toLowerCase().includes(q)
-    )
+const getStatusClass = (status: string) => {
+  const base = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium'
+  switch (status?.toLowerCase()) {
+    case 'en ejecución':
+      return `${base} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`
+    case 'completado':
+      return `${base} bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200`
+    case 'pendiente':
+      return `${base} bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200`
+    case 'cancelado':
+      return `${base} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200`
+    default:
+      return `${base} bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200`
   }
-
-  return result
-})
+}
 </script>
 
