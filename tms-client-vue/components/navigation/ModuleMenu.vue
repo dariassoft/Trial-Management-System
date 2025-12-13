@@ -54,6 +54,13 @@ const allModules = [
     roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
   },
   {
+    id: 'tipos-ensayo',
+    name: 'Tipos de Ensayo',
+    icon: '🔬',
+    href: '/tipos-ensayo',
+    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
+  },
+  {
     id: 'parcelas',
     name: 'Parcelas',
     icon: '📍',

@@ -5,6 +5,7 @@ import { TipoEnsayo } from '../../entities/tipo-ensayo.entity';
 import { CreateTipoEnsayoDto } from './dto/create-tipo-ensayo.dto';
 import { UpdateTipoEnsayoDto } from './dto/update-tipo-ensayo.dto';
 import { ProtocoloVariable } from '../../entities/protocolo-variable.entity';
+import { TipoEnsayoVariable } from '../../entities/tipo-ensayo-variable.entity';
 import { AddVariableDto } from './dto/add-variable.dto';
 import { TipoEnsayoEvaluacionDia } from '../../entities/tipo-ensayo-evaluacion-dia.entity';
 import { SetEvaluacionDto } from './dto/set-evaluacion.dto';
@@ -14,6 +15,8 @@ export class TiposEnsayoService {
   constructor(
     @InjectRepository(TipoEnsayo)
     private readonly repository: Repository<TipoEnsayo>,
+    @InjectRepository(TipoEnsayoVariable)
+    private readonly tipoVarRepository: Repository<TipoEnsayoVariable>,
     @InjectRepository(ProtocoloVariable)
     private readonly varRepository: Repository<ProtocoloVariable>,
     @InjectRepository(TipoEnsayoEvaluacionDia)
@@ -61,20 +64,42 @@ export class TiposEnsayoService {
 
   async addVariable(tipoEnsayoId: number, dto: AddVariableDto): Promise<ProtocoloVariable> {
     const tipoEnsayo = await this.findOne(tipoEnsayoId);
+
     const newVar = this.varRepository.create({
-      ...dto,
       tipoEnsayo,
+      nombre_variable: dto.nombre_variable,
+      unidad_medida: dto.unidad_medida || null,
+      descripcion: dto.descripcion || null,
     });
+
     return this.varRepository.save(newVar);
   }
 
-  async removeVariable(variableId: number): Promise<{ deleted: true }> {
-    // Se busca la variable para asegurar que existe antes de borrar
+  async updateVariable(variableId: number, dto: Partial<AddVariableDto>): Promise<ProtocoloVariable> {
     const variable = await this.varRepository.findOne({ where: { id: variableId } });
     if (!variable) {
       throw new NotFoundException(`Variable con ID ${variableId} no encontrada.`);
     }
-    await this.varRepository.delete(variableId);
+
+    if (dto.nombre_variable) {
+      variable.nombre_variable = dto.nombre_variable;
+    }
+    if (dto.unidad_medida !== undefined) {
+      variable.unidad_medida = dto.unidad_medida;
+    }
+    if (dto.descripcion !== undefined) {
+      variable.descripcion = dto.descripcion;
+    }
+
+    return this.varRepository.save(variable);
+  }
+
+  async removeVariable(tipoVarId: number): Promise<{ deleted: true }> {
+    const variable = await this.varRepository.findOne({ where: { id: tipoVarId } });
+    if (!variable) {
+      throw new NotFoundException(`Variable con ID ${tipoVarId} no encontrada.`);
+    }
+    await this.varRepository.delete(tipoVarId);
     return { deleted: true };
   }
 

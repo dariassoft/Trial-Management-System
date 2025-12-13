@@ -16,47 +16,22 @@ class AddVariableDto {
 }
 exports.AddVariableDto = AddVariableDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'ID de la variable del diccionario (Protocolo_Variable)', example: 12 }),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], AddVariableDto.prototype, "variableId", void 0);
+    (0, swagger_1.ApiProperty)({ description: 'Nombre de la variable', example: 'PORCENTAJE DE CONTROL GENERAL (BARBECHO)' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MaxLength)(100),
+    __metadata("design:type", String)
+], AddVariableDto.prototype, "nombre_variable", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Orden de visualización', example: 1 }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    __metadata("design:type", Number)
-], AddVariableDto.prototype, "orden", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Si la variable es requerida', default: false }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsBoolean)(),
-    __metadata("design:type", Boolean)
-], AddVariableDto.prototype, "requerido", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Unidad a mostrar (override)', example: 'N°/METRO', maxLength: 30 }),
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Unidad de medida de la variable', example: '%' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(30),
     __metadata("design:type", Object)
-], AddVariableDto.prototype, "unidadOverride", void 0);
+], AddVariableDto.prototype, "unidad_medida", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Escala (ej. 1-9, 0-100)', example: '1-9', maxLength: 50 }),
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Descripción de la variable', example: 'Medición del control en barbecho' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(50),
     __metadata("design:type", Object)
-], AddVariableDto.prototype, "escala", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Rango mínimo permitido (numérico)' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Object)
-], AddVariableDto.prototype, "rangoMin", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Rango máximo permitido (numérico)' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Object)
-], AddVariableDto.prototype, "rangoMax", void 0);
+], AddVariableDto.prototype, "descripcion", void 0);

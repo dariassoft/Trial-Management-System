@@ -5,30 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/ensayos/dto/create-ensayo.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/dto/create-ensayo.dto.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/ensayos/dto/update-ensayo.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/dto/update-ensayo.dto.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/entities/ensayo.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/ensayo.entity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/ensayo.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/ensayo.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/protocolos/TratamientoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/protocolos/TratamientoForm.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/catalogos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/catalogos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/dto/add-variable.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/dto/add-variable.dto.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/tipos-ensayo.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/tipos-ensayo.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/tipos-ensayo.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/tipos-ensayo.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/dto/add-variable.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/dto/add-variable.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/tipos-ensayo.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/tipos-ensayo.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/tipos-ensayo.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/tipos-ensayo.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +46,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "database.data.extractors.current.export.id": "Comma-separated (CSV)_id",
     "disable.download.node.interpreter.editor.notification": "true",
     "git-widget-placeholder": "master",
     "junie.onboarding.icon.badge.shown": "true",
@@ -162,7 +147,7 @@
       <workItem from="1765457728584" duration="14340000" />
       <workItem from="1765476503276" duration="20106000" />
       <workItem from="1765509781127" duration="6224000" />
-      <workItem from="1765641112776" duration="1359000" />
+      <workItem from="1765641112776" duration="7081000" />
     </task>
     <servers />
   </component>

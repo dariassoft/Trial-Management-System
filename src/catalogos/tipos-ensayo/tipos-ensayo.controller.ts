@@ -63,7 +63,14 @@ export class TiposEnsayoController {
     return this.service.addVariable(id, dto);
   }
 
-  @Delete('variables/:tevId')
+  @Patch(':id/variables/:variableId')
+  @Roles(Role.ADMIN, Role.SUPERADMIN, Role.MANAGER)
+  @ApiOperation({ summary: 'Actualizar una variable del tipo de ensayo' })
+  updateVar(@Param('variableId', ParseIntPipe) variableId: number, @Body() dto: Partial<AddVariableDto>) {
+    return this.service.updateVariable(variableId, dto);
+  }
+
+  @Delete(':id/variables/:tevId')
   @Roles(Role.ADMIN, Role.SUPERADMIN, Role.MANAGER)
   @ApiOperation({ summary: 'Quitar una variable del tipo de ensayo' })
   removeVar(@Param('tevId', ParseIntPipe) tevId: number) {

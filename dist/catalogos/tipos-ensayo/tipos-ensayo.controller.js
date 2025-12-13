@@ -49,6 +49,9 @@ let TiposEnsayoController = class TiposEnsayoController {
     addVar(id, dto) {
         return this.service.addVariable(id, dto);
     }
+    updateVar(variableId, dto) {
+        return this.service.updateVariable(variableId, dto);
+    }
     removeVar(tevId) {
         return this.service.removeVariable(tevId);
     }
@@ -124,7 +127,17 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TiposEnsayoController.prototype, "addVar", null);
 __decorate([
-    (0, common_1.Delete)('variables/:tevId'),
+    (0, common_1.Patch)(':id/variables/:variableId'),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
+    (0, swagger_1.ApiOperation)({ summary: 'Actualizar una variable del tipo de ensayo' }),
+    __param(0, (0, common_1.Param)('variableId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], TiposEnsayoController.prototype, "updateVar", null);
+__decorate([
+    (0, common_1.Delete)(':id/variables/:tevId'),
     (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
     (0, swagger_1.ApiOperation)({ summary: 'Quitar una variable del tipo de ensayo' }),
     __param(0, (0, common_1.Param)('tevId', common_1.ParseIntPipe)),

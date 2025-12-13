@@ -27,10 +27,12 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const tipo_ensayo_entity_1 = require("../../entities/tipo-ensayo.entity");
 const protocolo_variable_entity_1 = require("../../entities/protocolo-variable.entity");
+const tipo_ensayo_variable_entity_1 = require("../../entities/tipo-ensayo-variable.entity");
 const tipo_ensayo_evaluacion_dia_entity_1 = require("../../entities/tipo-ensayo-evaluacion-dia.entity");
 let TiposEnsayoService = class TiposEnsayoService {
-    constructor(repository, varRepository, diaRepository) {
+    constructor(repository, tipoVarRepository, varRepository, diaRepository) {
         this.repository = repository;
+        this.tipoVarRepository = tipoVarRepository;
         this.varRepository = varRepository;
         this.diaRepository = diaRepository;
     }
@@ -81,18 +83,40 @@ let TiposEnsayoService = class TiposEnsayoService {
     addVariable(tipoEnsayoId, dto) {
         return __awaiter(this, void 0, void 0, function* () {
             const tipoEnsayo = yield this.findOne(tipoEnsayoId);
-            const newVar = this.varRepository.create(Object.assign(Object.assign({}, dto), { tipoEnsayo }));
+            const newVar = this.varRepository.create({
+                tipoEnsayo,
+                nombre_variable: dto.nombre_variable,
+                unidad_medida: dto.unidad_medida || null,
+                descripcion: dto.descripcion || null,
+            });
             return this.varRepository.save(newVar);
         });
     }
-    removeVariable(variableId) {
+    updateVariable(variableId, dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Se busca la variable para asegurar que existe antes de borrar
             const variable = yield this.varRepository.findOne({ where: { id: variableId } });
             if (!variable) {
                 throw new common_1.NotFoundException(`Variable con ID ${variableId} no encontrada.`);
             }
-            yield this.varRepository.delete(variableId);
+            if (dto.nombre_variable) {
+                variable.nombre_variable = dto.nombre_variable;
+            }
+            if (dto.unidad_medida !== undefined) {
+                variable.unidad_medida = dto.unidad_medida;
+            }
+            if (dto.descripcion !== undefined) {
+                variable.descripcion = dto.descripcion;
+            }
+            return this.varRepository.save(variable);
+        });
+    }
+    removeVariable(tipoVarId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const variable = yield this.varRepository.findOne({ where: { id: tipoVarId } });
+            if (!variable) {
+                throw new common_1.NotFoundException(`Variable con ID ${tipoVarId} no encontrada.`);
+            }
+            yield this.varRepository.delete(tipoVarId);
             return { deleted: true };
         });
     }
@@ -124,9 +148,11 @@ exports.TiposEnsayoService = TiposEnsayoService;
 exports.TiposEnsayoService = TiposEnsayoService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(tipo_ensayo_entity_1.TipoEnsayo)),
-    __param(1, (0, typeorm_1.InjectRepository)(protocolo_variable_entity_1.ProtocoloVariable)),
-    __param(2, (0, typeorm_1.InjectRepository)(tipo_ensayo_evaluacion_dia_entity_1.TipoEnsayoEvaluacionDia)),
+    __param(1, (0, typeorm_1.InjectRepository)(tipo_ensayo_variable_entity_1.TipoEnsayoVariable)),
+    __param(2, (0, typeorm_1.InjectRepository)(protocolo_variable_entity_1.ProtocoloVariable)),
+    __param(3, (0, typeorm_1.InjectRepository)(tipo_ensayo_evaluacion_dia_entity_1.TipoEnsayoEvaluacionDia)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])
 ], TiposEnsayoService);
