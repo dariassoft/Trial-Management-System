@@ -6,7 +6,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
 
   const usuarios = ref([]); // Renombrado de 'responsables' a 'usuarios'
   const provincias = ref([]);
-  const especies = ref([]);
+  const cultivos = ref([]); // Renombrado de 'especies' a 'cultivos' para consistencia
   const laboratorios = ref([]);
   const tiposEnsayo = ref([]);
   const tiposSiembra = ref([]);
@@ -29,19 +29,19 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const fetchProvincias = async () => {
     try {
       const response = await api.get('/locations/provincias');
-      provincias.value = response || [];
+      // Manejar array directo o dentro de response
+      if (Array.isArray(response)) {
+        provincias.value = response;
+      } else if (response && Array.isArray(response.data)) {
+        provincias.value = response.data;
+      } else {
+        provincias.value = [];
+      }
+      console.log('✅ Provincias cargadas:', provincias.value.length);
+      return provincias.value;
     } catch (error) {
       console.error('Error fetching provincias:', error);
-    }
-  };
-  
-  const fetchDepartamentos = async (provincia: string) => {
-    if (!provincia) return [];
-    try {
-      const response = await api.get(`/locations/provincias/${provincia}/departamentos`);
-      return response || [];
-    } catch (error) {
-      console.error('Error fetching departamentos:', error);
+      provincias.value = [];
       return [];
     }
   };
@@ -49,19 +49,38 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const fetchEspecies = async () => {
     try {
       const response = await api.get('/catalogos/cultivos');
-      especies.value = response || [];
+      // Manejar array directo o dentro de response
+      if (Array.isArray(response)) {
+        cultivos.value = response;
+      } else if (response && Array.isArray(response.data)) {
+        cultivos.value = response.data;
+      } else {
+        cultivos.value = [];
+      }
+      console.log('✅ Cultivos cargados:', cultivos.value.length);
+      return cultivos.value;
     } catch (error) {
-      console.error('Error fetching especies:', error);
+      console.error('Error fetching cultivos:', error);
+      cultivos.value = [];
+      return [];
     }
   };
 
-  const fetchVariedades = async (especieId: number) => {
-    if (!especieId) return [];
+  const fetchDepartamentos = async (provincia: string) => {
+    if (!provincia) return [];
     try {
-      const response = await api.get(`/catalogos/cultivos/${especieId}/variedades`);
-      return response || [];
+      const response = await api.get(`/locations/provincias/${provincia}/departamentos`);
+      // Manejar array directo o dentro de response
+      if (Array.isArray(response)) {
+        console.log('✅ Departamentos cargados:', response.length);
+        return response;
+      } else if (response && Array.isArray(response.data)) {
+        console.log('✅ Departamentos cargados:', response.data.length);
+        return response.data;
+      }
+      return [];
     } catch (error) {
-      console.error('Error fetching variedades:', error);
+      console.error('Error fetching departamentos:', error);
       return [];
     }
   };
@@ -80,7 +99,14 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const fetchTiposEnsayo = async () => {
     try {
       const response = await api.get('/catalogos/tipos-ensayo');
-      tiposEnsayo.value = response || [];
+      if (Array.isArray(response)) {
+        tiposEnsayo.value = response;
+      } else if (response && Array.isArray(response.data)) {
+        tiposEnsayo.value = response.data;
+      } else {
+        tiposEnsayo.value = [];
+      }
+      console.log('✅ Tipos de ensayo cargados:', tiposEnsayo.value.length);
     } catch (error) {
       console.error('Error fetching tipos de ensayo:', error);
     }
@@ -89,7 +115,14 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const fetchTiposSiembra = async () => {
     try {
       const response = await api.get('/catalogos/tipos-siembra');
-      tiposSiembra.value = response || [];
+      if (Array.isArray(response)) {
+        tiposSiembra.value = response;
+      } else if (response && Array.isArray(response.data)) {
+        tiposSiembra.value = response.data;
+      } else {
+        tiposSiembra.value = [];
+      }
+      console.log('✅ Tipos de siembra cargados:', tiposSiembra.value.length);
     } catch (error) {
       console.error('Error fetching tipos de siembra:', error);
     }
@@ -118,9 +151,19 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const fetchProtocolos = async () => {
     try {
       const response = await api.get('/protocolos');
-      protocolos.value = response || [];
+      // El endpoint ahora devuelve { data: [...], meta: {...} }
+      if (response && response.data && Array.isArray(response.data)) {
+        protocolos.value = response.data;
+      } else if (Array.isArray(response)) {
+        // Fallback si devuelve un array directo
+        protocolos.value = response;
+      } else {
+        protocolos.value = [];
+      }
+      console.log('✅ Protocolos cargados:', protocolos.value.length);
     } catch (error) {
       console.error('Error fetching protocolos:', error);
+      protocolos.value = [];
     }
   };
 
@@ -139,6 +182,24 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     }
   };
 
+  const fetchVariedades = async (especieId: number) => {
+    if (!especieId) return [];
+    try {
+      const response = await api.get(`/catalogos/cultivos/${especieId}/variedades`);
+      if (Array.isArray(response)) {
+        console.log('✅ Variedades cargadas:', response.length);
+        return response;
+      } else if (response && Array.isArray(response.data)) {
+        console.log('✅ Variedades cargadas:', response.data.length);
+        return response.data;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching variedades:', error);
+      return [];
+    }
+  };
+
   const init = () => {
     fetchUsuarios(); // Actualizado
     fetchProvincias();
@@ -151,15 +212,23 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   }
 
   return {
-    usuarios, // Actualizado
+    usuarios,
     provincias,
-    especies,
+    cultivos,
     laboratorios,
     tiposEnsayo,
     tiposSiembra,
     tratamientos,
     protocolos,
     productos,
+    fetchUsuarios,
+    fetchProvincias,
+    fetchEspecies,
+    fetchLaboratorios,
+    fetchTiposEnsayo,
+    fetchTiposSiembra,
+    fetchTratamientos,
+    fetchProtocolos,
     fetchDepartamentos,
     fetchVariedades,
     fetchVariablesPorTipo,

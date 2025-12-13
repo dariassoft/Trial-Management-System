@@ -6,17 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/protocolos/protocolos.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/protocolos/protocolos.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/protocolos/protocolos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/protocolos/protocolos.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/tratamientos-producto/dto/create-tratamiento-producto.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/tratamientos-producto/dto/create-tratamiento-producto.dto.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/tratamientos-producto/tratamientos-producto.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/tratamientos-producto/tratamientos-producto.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocolos/protocolos.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocolos/protocolos.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocolos/protocolos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocolos/protocolos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tratamientos-producto/dto/create-tratamiento-producto.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/tratamientos-producto/dto/create-tratamiento-producto.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tratamientos-producto/tratamientos-producto.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/tratamientos-producto/tratamientos-producto.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/protocolos/ProtocoloList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/protocolos/ProtocoloList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/protocolos/TratamientoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/protocolos/TratamientoForm.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useTratamientos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useTratamientos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/catalogos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/catalogos.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -111,11 +111,11 @@
             </div>
             <div>
               <label class="block font-medium mb-1">Latitud</label>
-              <input v-model.number="form.latitud" type="number" step="0.0001" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" />
+              <input v-model.number="form.latitud" type="number" step="0.00000001" placeholder="-65.5113883" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" />
             </div>
             <div>
               <label class="block font-medium mb-1">Longitud</label>
-              <input v-model.number="form.longitud" type="number" step="0.0001" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" />
+              <input v-model.number="form.longitud" type="number" step="0.00000001" placeholder="-65.5113883" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200" />
             </div>
             <div class="md:col-span-2">
               <button
@@ -189,7 +189,11 @@
             <select v-model="form.status" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200">
               <option value="Por Iniciar">Por Iniciar</option>
               <option value="En Ejecución">En Ejecución</option>
+              <option value="En Análisis">En Análisis</option>
               <option value="Completado">Completado</option>
+              <option value="Cancelado">Cancelado</option>
+              <option value="Suspendido">Suspendido</option>
+              <option value="Archivado">Archivado</option>
             </select>
           </div>
         </div>
@@ -402,8 +406,18 @@ const loadDependentData = async (data: Ensayo | null) => {
   isLoadingDependentData.value = true;
   console.log('EnsayoForm: Starting loadDependentData. isLoadingDependentData = true');
   try {
-    await catalogosStore.init(); // Ensure base catalogs are loaded
-    console.log('EnsayoForm: Catalogs initialized.');
+    // Cargar explícitamente los catálogos principales necesarios
+    console.log('EnsayoForm: Loading catalogs...');
+    await Promise.all([
+      catalogosStore.fetchProvincias(),
+      catalogosStore.fetchProtocolos(),
+      catalogosStore.fetchEspecies(),
+      catalogosStore.fetchUsuarios(),
+      catalogosStore.fetchLaboratorios(),
+      catalogosStore.fetchTiposEnsayo(),
+      catalogosStore.fetchTiposSiembra(),
+    ]);
+    console.log('EnsayoForm: Catalogs loaded successfully');
 
     if (data) {
       console.log('EnsayoForm: Populating form with initialData:', data);
