@@ -46,8 +46,9 @@ const usuario_entity_1 = require("../entities/usuario.entity");
 const cultivo_entity_1 = require("../entities/cultivo.entity");
 const cultivo_variedad_entity_1 = require("../entities/cultivo-variedad.entity");
 const tipo_siembra_entity_1 = require("../entities/tipo-siembra.entity");
+const status_ensayo_entity_1 = require("../entities/status-ensayo.entity");
 let EnsayosService = class EnsayosService {
-    constructor(req, ensayoRepo, labRepo, tipoRepo, protocoloRepo, usuarioRepo, cultivoRepo, variedadRepo, tipoSiembraRepo) {
+    constructor(req, ensayoRepo, labRepo, tipoRepo, protocoloRepo, usuarioRepo, cultivoRepo, variedadRepo, tipoSiembraRepo, statusRepo) {
         this.req = req;
         this.ensayoRepo = ensayoRepo;
         this.labRepo = labRepo;
@@ -57,6 +58,7 @@ let EnsayosService = class EnsayosService {
         this.cultivoRepo = cultivoRepo;
         this.variedadRepo = variedadRepo;
         this.tipoSiembraRepo = tipoSiembraRepo;
+        this.statusRepo = statusRepo;
     }
     get auth() {
         var _a;
@@ -67,8 +69,8 @@ let EnsayosService = class EnsayosService {
     }
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { laboratorioId, tipoEnsayoId, protocoloId, responsableId, cultivoId, variedadId, tipoSiembraId, fechaInicio, fechaSiembra, fechaCosecha } = dto, restDto = __rest(dto, ["laboratorioId", "tipoEnsayoId", "protocoloId", "responsableId", "cultivoId", "variedadId", "tipoSiembraId", "fechaInicio", "fechaSiembra", "fechaCosecha"]);
-            const entity = this.ensayoRepo.create(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, restDto), (fechaInicio && { fechaInicio: new Date(fechaInicio) })), (fechaSiembra && { fechaSiembra: new Date(fechaSiembra) })), (fechaCosecha && { fechaCosecha: new Date(fechaCosecha) })), (laboratorioId && { laboratorio: { id: laboratorioId } })), (tipoEnsayoId && { tipoEnsayo: { id: tipoEnsayoId } })), (protocoloId && { protocolo: { id: protocoloId } })), (responsableId && { responsable: { id: responsableId } })), (cultivoId && { cultivo: { id: cultivoId } })), (variedadId && { variedad: { id: variedadId } })), (tipoSiembraId && { tipoSiembra: { id: tipoSiembraId } })));
+            const { laboratorioId, tipoEnsayoId, protocoloId, responsableId, cultivoId, variedadId, tipoSiembraId, statusId, fechaInicio, fechaSiembra, fechaCosecha } = dto, restDto = __rest(dto, ["laboratorioId", "tipoEnsayoId", "protocoloId", "responsableId", "cultivoId", "variedadId", "tipoSiembraId", "statusId", "fechaInicio", "fechaSiembra", "fechaCosecha"]);
+            const entity = this.ensayoRepo.create(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, restDto), (fechaInicio && { fechaInicio: new Date(fechaInicio) })), (fechaSiembra && { fechaSiembra: new Date(fechaSiembra) })), (fechaCosecha && { fechaCosecha: new Date(fechaCosecha) })), (laboratorioId && { laboratorio: { id: laboratorioId } })), (tipoEnsayoId && { tipoEnsayo: { id: tipoEnsayoId } })), (protocoloId && { protocolo: { id: protocoloId } })), (responsableId && { responsable: { id: responsableId } })), (cultivoId && { cultivo: { id: cultivoId } })), (variedadId && { variedad: { id: variedadId } })), (tipoSiembraId && { tipoSiembra: { id: tipoSiembraId } })), (statusId && { status: { id: statusId } })));
             return this.ensayoRepo.save(entity);
         });
     }
@@ -157,7 +159,7 @@ let EnsayosService = class EnsayosService {
     }
     update(id, dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id: dtoId, laboratorioId, laboratorio, tipoEnsayoId, tipoEnsayo, protocoloId, protocolo, responsableId, responsable, cultivoId, cultivo, variedadId, variedad, tipoSiembraId, tipoSiembra, fechaInicio, fechaSiembra, fechaCosecha } = dto, restUpdateData = __rest(dto, ["id", "laboratorioId", "laboratorio", "tipoEnsayoId", "tipoEnsayo", "protocoloId", "protocolo", "responsableId", "responsable", "cultivoId", "cultivo", "variedadId", "variedad", "tipoSiembraId", "tipoSiembra", "fechaInicio", "fechaSiembra", "fechaCosecha"]);
+            const { id: dtoId, laboratorioId, laboratorio, tipoEnsayoId, tipoEnsayo, protocoloId, protocolo, responsableId, responsable, cultivoId, cultivo, variedadId, variedad, tipoSiembraId, tipoSiembra, statusId, fechaInicio, fechaSiembra, fechaCosecha } = dto, restUpdateData = __rest(dto, ["id", "laboratorioId", "laboratorio", "tipoEnsayoId", "tipoEnsayo", "protocoloId", "protocolo", "responsableId", "responsable", "cultivoId", "cultivo", "variedadId", "variedad", "tipoSiembraId", "tipoSiembra", "statusId", "fechaInicio", "fechaSiembra", "fechaCosecha"]);
             const partial = Object.assign({}, restUpdateData);
             if (fechaInicio !== undefined)
                 partial.fechaInicio = fechaInicio ? new Date(fechaInicio) : null;
@@ -201,6 +203,10 @@ let EnsayosService = class EnsayosService {
             if (resolvedTipoSiembraId !== undefined) {
                 partial.tipoSiembra = resolvedTipoSiembraId === null ? null : { id: resolvedTipoSiembraId };
             }
+            const resolvedStatusId = statusId;
+            if (resolvedStatusId !== undefined) {
+                partial.status = resolvedStatusId === null ? null : { id: resolvedStatusId };
+            }
             yield this.ensayoRepo.update({ id }, partial);
             return this.findOne(id);
         });
@@ -226,7 +232,9 @@ exports.EnsayosService = EnsayosService = __decorate([
     __param(6, (0, typeorm_1.InjectRepository)(cultivo_entity_1.Cultivo)),
     __param(7, (0, typeorm_1.InjectRepository)(cultivo_variedad_entity_1.CultivoVariedad)),
     __param(8, (0, typeorm_1.InjectRepository)(tipo_siembra_entity_1.TipoSiembra)),
+    __param(9, (0, typeorm_1.InjectRepository)(status_ensayo_entity_1.StatusEnsayo)),
     __metadata("design:paramtypes", [Object, typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

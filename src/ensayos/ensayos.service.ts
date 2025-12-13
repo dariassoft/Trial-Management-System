@@ -15,6 +15,7 @@ import { Usuario } from '../entities/usuario.entity';
 import { Cultivo } from '../entities/cultivo.entity';
 import { CultivoVariedad } from '../entities/cultivo-variedad.entity';
 import { TipoSiembra } from '../entities/tipo-siembra.entity';
+import { StatusEnsayo } from '../entities/status-ensayo.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class EnsayosService {
@@ -28,6 +29,7 @@ export class EnsayosService {
     @InjectRepository(Cultivo) private readonly cultivoRepo: Repository<Cultivo>,
     @InjectRepository(CultivoVariedad) private readonly variedadRepo: Repository<CultivoVariedad>,
     @InjectRepository(TipoSiembra) private readonly tipoSiembraRepo: Repository<TipoSiembra>,
+    @InjectRepository(StatusEnsayo) private readonly statusRepo: Repository<StatusEnsayo>,
   ) {}
 
   private get auth() {
@@ -38,7 +40,7 @@ export class EnsayosService {
   }
 
   async create(dto: CreateEnsayoDto) {
-    const { laboratorioId, tipoEnsayoId, protocoloId, responsableId, cultivoId, variedadId, tipoSiembraId, fechaInicio, fechaSiembra, fechaCosecha, ...restDto } = dto;
+    const { laboratorioId, tipoEnsayoId, protocoloId, responsableId, cultivoId, variedadId, tipoSiembraId, statusId, fechaInicio, fechaSiembra, fechaCosecha, ...restDto } = dto;
 
     const entity = this.ensayoRepo.create({
       ...restDto,
@@ -52,6 +54,7 @@ export class EnsayosService {
       ...(cultivoId && { cultivo: { id: cultivoId } as Cultivo }),
       ...(variedadId && { variedad: { id: variedadId } as CultivoVariedad }),
       ...(tipoSiembraId && { tipoSiembra: { id: tipoSiembraId } as TipoSiembra }),
+      ...(statusId && { status: { id: statusId } as StatusEnsayo }),
     });
 
     return this.ensayoRepo.save(entity);
@@ -151,6 +154,7 @@ export class EnsayosService {
         cultivoId, cultivo,
         variedadId, variedad,
         tipoSiembraId, tipoSiembra,
+        statusId,
         fechaInicio, fechaSiembra, fechaCosecha,
         ...restUpdateData
     } = dto;
@@ -200,6 +204,11 @@ export class EnsayosService {
     const resolvedTipoSiembraId = resolveRelationId(tipoSiembra, tipoSiembraId);
     if (resolvedTipoSiembraId !== undefined) {
         partial.tipoSiembra = resolvedTipoSiembraId === null ? null : { id: resolvedTipoSiembraId } as TipoSiembra;
+    }
+
+    const resolvedStatusId = statusId;
+    if (resolvedStatusId !== undefined) {
+        partial.status = resolvedStatusId === null ? null : { id: resolvedStatusId } as StatusEnsayo;
     }
 
     await this.ensayoRepo.update({ id }, partial);

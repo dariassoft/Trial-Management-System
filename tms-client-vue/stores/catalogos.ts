@@ -13,6 +13,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const tratamientos = ref([]);
   const protocolos = ref([]);
   const productos = ref([]);
+  const statusEnsayos = ref([]);
 
   const fetchUsuarios = async () => { // Renombrado de 'fetchResponsables' a 'fetchUsuarios'
     try {
@@ -200,6 +201,25 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     }
   };
 
+  const fetchStatusEnsayos = async () => {
+    try {
+      const response = await api.get('/status-ensayos');
+      if (Array.isArray(response)) {
+        statusEnsayos.value = response;
+      } else if (response && Array.isArray(response.data)) {
+        statusEnsayos.value = response.data;
+      } else {
+        statusEnsayos.value = [];
+      }
+      console.log('✅ Status Ensayos cargados:', statusEnsayos.value.length);
+      return statusEnsayos.value;
+    } catch (error) {
+      console.error('Error fetching status ensayos:', error);
+      statusEnsayos.value = [];
+      return [];
+    }
+  };
+
   const init = () => {
     fetchUsuarios(); // Actualizado
     fetchProvincias();
@@ -209,6 +229,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     fetchTiposSiembra();
     fetchTratamientos();
     fetchProtocolos();
+    fetchStatusEnsayos();
   }
 
   return {
@@ -221,6 +242,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     tratamientos,
     protocolos,
     productos,
+    statusEnsayos,
     fetchUsuarios,
     fetchProvincias,
     fetchEspecies,
@@ -229,6 +251,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     fetchTiposSiembra,
     fetchTratamientos,
     fetchProtocolos,
+    fetchStatusEnsayos,
     fetchDepartamentos,
     fetchVariedades,
     fetchVariablesPorTipo,

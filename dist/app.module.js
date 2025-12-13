@@ -35,6 +35,7 @@ const tipos_ensayo_module_1 = require("./catalogos/tipos-ensayo/tipos-ensayo.mod
 const locations_module_1 = require("./locations/locations.module");
 const tipos_siembra_module_1 = require("./catalogos/tipos-siembra/tipos-siembra.module");
 const protocolos_module_1 = require("./protocolos/protocolos.module"); // Importar ProtocolosModule
+const status_ensayo_module_1 = require("./status-ensayo/status-ensayo.module");
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     ? []
     : [typeorm_1.TypeOrmModule.forRootAsync({
@@ -92,6 +93,7 @@ exports.AppModule = AppModule = __decorate([
             locations_module_1.LocationsModule,
             tipos_siembra_module_1.TiposSiembraModule,
             protocolos_module_1.ProtocolosModule, // Añadido
+            status_ensayo_module_1.StatusEnsayoModule, // Nuevo
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

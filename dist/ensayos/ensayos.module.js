@@ -19,6 +19,7 @@ const usuario_entity_1 = require("../entities/usuario.entity");
 const cultivo_entity_1 = require("../entities/cultivo.entity");
 const cultivo_variedad_entity_1 = require("../entities/cultivo-variedad.entity");
 const tipo_siembra_entity_1 = require("../entities/tipo-siembra.entity");
+const status_ensayo_entity_1 = require("../entities/status-ensayo.entity");
 const protocolos_module_1 = require("../protocolos/protocolos.module");
 let EnsayosModule = class EnsayosModule {
 };
@@ -35,6 +36,7 @@ exports.EnsayosModule = EnsayosModule = __decorate([
                 cultivo_entity_1.Cultivo,
                 cultivo_variedad_entity_1.CultivoVariedad,
                 tipo_siembra_entity_1.TipoSiembra,
+                status_ensayo_entity_1.StatusEnsayo,
             ]),
             protocolos_module_1.ProtocolosModule,
         ],

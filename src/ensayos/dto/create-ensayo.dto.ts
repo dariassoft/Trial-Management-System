@@ -102,9 +102,8 @@ export class CreateEnsayoDto {
   @IsDateString()
   fechaCosecha?: string | null;
 
-  @ApiPropertyOptional({ description: 'Estado del ensayo', example: 'Por Iniciar', type: String, enum: ['Activo', 'En Ejecución', 'Completado', 'Por Iniciar', 'Pausado', 'Cancelado'] })
+  @ApiPropertyOptional({ description: 'ID del Estado del ensayo', example: 1, type: Number })
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  status?: string | null;
+  @IsInt()
+  statusId?: number | null;
 }

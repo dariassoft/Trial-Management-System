@@ -36,7 +36,8 @@ export interface Ensayo {
   protocolo?: { id: number; nombre: string } | null
   protocoloId?: number | null
   codigoLabor?: string
-  status?: string
+  status?: { id: number; nombre: string } | null
+  statusId?: number | null
   createdAt?: string
   updatedAt?: string
 }

@@ -141,7 +141,7 @@ __decorate([
                     fechaInicio: '2025-10-15',
                     fechaSiembra: '2025-10-20',
                     fechaCosecha: '2026-04-25',
-                    status: 'Activo',
+                    statusId: 2,
                 },
             },
         },

@@ -9,6 +9,7 @@ import { Usuario } from './usuario.entity';
 import { Cultivo } from './cultivo.entity';
 import { CultivoVariedad } from './cultivo-variedad.entity';
 import { TipoSiembra } from './tipo-siembra.entity';
+import { StatusEnsayo } from './status-ensayo.entity';
 
 @Entity('Ensayo')
 @Unique(['nombreEnsayo', 'protocolo'])
@@ -84,8 +85,10 @@ export class Ensayo {
   @Column({ name: 'fecha_cosecha', type: 'date', nullable: true })
   fechaCosecha?: Date | null;
 
-  @Column({ name: 'status', type: 'varchar', length: 50, default: 'Activo', nullable: true })
-  status?: string | null;
+  // Status - Relación con tabla StatusEnsayo
+  @ManyToOne(() => StatusEnsayo, (status) => status.ensayos, { nullable: true, eager: true })
+  @JoinColumn({ name: 'status_id_fk' })
+  status?: StatusEnsayo | null;
 
   // Relaciones
   @OneToMany(() => Aplicacion, (aplicacion) => aplicacion.ensayo)

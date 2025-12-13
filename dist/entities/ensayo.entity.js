@@ -21,6 +21,7 @@ const usuario_entity_1 = require("./usuario.entity");
 const cultivo_entity_1 = require("./cultivo.entity");
 const cultivo_variedad_entity_1 = require("./cultivo-variedad.entity");
 const tipo_siembra_entity_1 = require("./tipo-siembra.entity");
+const status_ensayo_entity_1 = require("./status-ensayo.entity");
 let Ensayo = class Ensayo {
 };
 exports.Ensayo = Ensayo;
@@ -112,7 +113,8 @@ __decorate([
     __metadata("design:type", Object)
 ], Ensayo.prototype, "fechaCosecha", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'status', type: 'varchar', length: 50, default: 'Activo', nullable: true }),
+    (0, typeorm_1.ManyToOne)(() => status_ensayo_entity_1.StatusEnsayo, (status) => status.ensayos, { nullable: true, eager: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'status_id_fk' }),
     __metadata("design:type", Object)
 ], Ensayo.prototype, "status", void 0);
 __decorate([

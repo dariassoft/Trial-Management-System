@@ -79,7 +79,7 @@
               <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ ensayo.variedad?.nombre || '-' }}</td>
               <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ formatDate(ensayo.fechaSiembra) }}</td>
               <td class="px-6 py-4">
-                <span :class="getStatusClass(ensayo.status)">{{ ensayo.status }}</span>
+                <span :class="getStatusClass(ensayo.status?.nombre || '')">{{ ensayo.status?.nombre || '-' }}</span>
               </td>
               <td class="px-6 py-4 text-center whitespace-nowrap">
                 <NuxtLink

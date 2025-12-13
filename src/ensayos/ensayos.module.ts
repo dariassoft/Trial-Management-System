@@ -10,6 +10,7 @@ import { Usuario } from '../entities/usuario.entity';
 import { Cultivo } from '../entities/cultivo.entity';
 import { CultivoVariedad } from '../entities/cultivo-variedad.entity';
 import { TipoSiembra } from '../entities/tipo-siembra.entity';
+import { StatusEnsayo } from '../entities/status-ensayo.entity';
 import { ProtocolosModule } from '../protocolos/protocolos.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { ProtocolosModule } from '../protocolos/protocolos.module';
       Cultivo,
       CultivoVariedad,
       TipoSiembra,
+      StatusEnsayo,
     ]),
     ProtocolosModule,
   ],

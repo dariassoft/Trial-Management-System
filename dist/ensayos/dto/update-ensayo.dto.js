@@ -199,9 +199,8 @@ __decorate([
     __metadata("design:type", Object)
 ], UpdateEnsayoDto.prototype, "fechaCosecha", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Estado del ensayo', example: 'Activo' }),
+    (0, swagger_1.ApiPropertyOptional)({ description: 'ID del Estado del ensayo', example: 2 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(50),
+    (0, class_validator_1.IsInt)(),
     __metadata("design:type", Object)
-], UpdateEnsayoDto.prototype, "status", void 0);
+], UpdateEnsayoDto.prototype, "statusId", void 0);

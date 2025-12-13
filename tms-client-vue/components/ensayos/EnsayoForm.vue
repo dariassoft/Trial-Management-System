@@ -186,14 +186,9 @@
           <h3 class="text-lg font-semibold mb-4">Estado</h3>
           <div>
             <label class="block font-medium mb-1">Status</label>
-            <select v-model="form.status" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200">
-              <option value="Por Iniciar">Por Iniciar</option>
-              <option value="En Ejecución">En Ejecución</option>
-              <option value="En Análisis">En Análisis</option>
-              <option value="Completado">Completado</option>
-              <option value="Cancelado">Cancelado</option>
-              <option value="Suspendido">Suspendido</option>
-              <option value="Archivado">Archivado</option>
+            <select v-model.number="form.statusId" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200">
+              <option :value="null">Seleccionar Estado</option>
+              <option v-for="s in catalogosStore.statusEnsayos" :key="s.id" :value="s.id">{{ s.nombre }}</option>
             </select>
           </div>
         </div>
@@ -250,7 +245,7 @@ const form = ref<Partial<Ensayo>>({
   fechaInicio: '',
   fechaSiembra: '',
   fechaCosecha: '',
-  status: 'Por Iniciar',
+  statusId: null,
   laboratorioId: null,
   tipoEnsayoId: null,
   codigoLabor: '',
@@ -394,7 +389,7 @@ const handleSubmit = () => {
     fechaInicio: form.value.fechaInicio,
     fechaSiembra: form.value.fechaSiembra,
     fechaCosecha: form.value.fechaCosecha,
-    status: form.value.status,
+    statusId: form.value.statusId,
     laboratorioId: form.value.laboratorioId,
     tipoEnsayoId: form.value.tipoEnsayoId,
     codigoLabor: form.value.codigoLabor,
@@ -416,6 +411,7 @@ const loadDependentData = async (data: Ensayo | null) => {
       catalogosStore.fetchLaboratorios(),
       catalogosStore.fetchTiposEnsayo(),
       catalogosStore.fetchTiposSiembra(),
+      catalogosStore.fetchStatusEnsayos(),
     ]);
     console.log('EnsayoForm: Catalogs loaded successfully');
 
@@ -433,6 +429,7 @@ const loadDependentData = async (data: Ensayo | null) => {
         cultivoId: data.cultivo?.id || null,
         variedadId: data.variedad?.id || null,
         tipoSiembraId: data.tipoSiembra?.id || null,
+        statusId: data.status?.id || null,
       };
 
       // Fetch dependent data based on initialData
@@ -446,7 +443,7 @@ const loadDependentData = async (data: Ensayo | null) => {
       }
     } else {
       console.log('EnsayoForm: Initializing form for new ensayo.');
-      form.value.status = 'Por Iniciar';
+      form.value.statusId = null;
     }
   } catch (e) {
     console.error("EnsayoForm: Error loading dependent data for form:", e);

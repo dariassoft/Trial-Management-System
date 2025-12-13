@@ -38,8 +38,8 @@
             <p class="text-lg font-medium text-gray-900 dark:text-white">{{ ensayo.codigoLabor || '-' }}</p>
           </div>
           <div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
-            <span :class="getStatusClass(ensayo.status)">{{ ensayo.status }}</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Estado</p>
+            <span :class="getStatusClass(ensayo.status?.nombre || '')">{{ ensayo.status?.nombre || '-' }}</span>
           </div>
         </div>
       </div>

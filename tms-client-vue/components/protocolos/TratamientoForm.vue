@@ -125,11 +125,11 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Producto *</label>
               <select
-                v-model.number="productoTemp.productoId"
-                required
+                :value="productoTemp.productoId"
+                @change="(e) => productoTemp.productoId = e.target.value ? Number(e.target.value) : null"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="" disabled>Selecciona un producto...</option>
+                <option value="">Seleccione un producto...</option>
                 <option v-for="p in productos" :key="p.id" :value="p.id">{{ p.nombre_comercial || p.nombre }}</option>
               </select>
             </div>

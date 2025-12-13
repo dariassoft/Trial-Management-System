@@ -157,9 +157,8 @@ export class UpdateEnsayoDto {
   @IsDateString()
   fechaCosecha?: string | null;
 
-  @ApiPropertyOptional({ description: 'Estado del ensayo', example: 'Activo' })
+  @ApiPropertyOptional({ description: 'ID del Estado del ensayo', example: 2 })
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  status?: string | null;
+  @IsInt()
+  statusId?: number | null;
 }

@@ -27,6 +27,7 @@ import { TiposEnsayoModule } from './catalogos/tipos-ensayo/tipos-ensayo.module'
 import { LocationsModule } from './locations/locations.module';
 import { TiposSiembraModule } from './catalogos/tipos-siembra/tipos-siembra.module';
 import { ProtocolosModule } from './protocolos/protocolos.module'; // Importar ProtocolosModule
+import { StatusEnsayoModule } from './status-ensayo/status-ensayo.module';
 
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
   ? []
@@ -85,6 +86,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     LocationsModule,
     TiposSiembraModule,
     ProtocolosModule, // Añadido
+    StatusEnsayoModule, // Nuevo
   ],
   controllers: [AppController],
   providers: [AppService],
