@@ -41,6 +41,8 @@ export const useApi = () => {
       makeRequest(endpoint, { method: 'POST', body, ...options }),
     patch: (endpoint: string, body?: any, options = {}) =>
       makeRequest(endpoint, { method: 'PATCH', body, ...options }),
+    put: (endpoint: string, body?: any, options = {}) =>
+      makeRequest(endpoint, { method: 'PUT', body, ...options }),
     delete: (endpoint: string, options = {}) =>
       makeRequest(endpoint, { method: 'DELETE', ...options }),
   }

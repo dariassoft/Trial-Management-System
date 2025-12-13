@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TiposEnsayoService } from './tipos-ensayo.service';
 import { CreateTipoEnsayoDto } from './dto/create-tipo-ensayo.dto';
@@ -24,9 +24,22 @@ export class TiposEnsayoController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar tipos de ensayo' })
-  findAll() {
-    return this.service.findAll();
+  @ApiOperation({ summary: 'Listar tipos de ensayo con búsqueda, filtros y paginación' })
+  @ApiResponse({ status: 200, description: 'Lista de tipos de ensayo' })
+  findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('sort') sort: string = 'nombre',
+    @Query('order') order: string = 'ASC',
+    @Query('q') q: string = '',
+  ) {
+    return this.service.findAll({
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+      sort,
+      order: order.toUpperCase() as 'ASC' | 'DESC',
+      q,
+    });
   }
 
   @Get(':id')

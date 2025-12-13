@@ -342,6 +342,7 @@ const {
   expandedTipoEnsayoId,
   tiposEnsayoStore,
   showFormVariable,
+  editingVariable,
   showFormDias,
   diasInput,
   cargarTiposEnsayo,

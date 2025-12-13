@@ -74,11 +74,10 @@ interface Emits {
 }
 
 defineProps<Props>()
-defineEmits<Emits>()
+const emit = defineEmits<Emits>()
 
 function enviar() {
-  // Validación básica
-  // El composable se encargará de validar los números
+  emit('save')
 }
 </script>
 

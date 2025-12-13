@@ -30,8 +30,14 @@ let TiposEnsayoController = class TiposEnsayoController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
-        return this.service.findAll();
+    findAll(page = '1', limit = '10', sort = 'nombre', order = 'ASC', q = '') {
+        return this.service.findAll({
+            page: parseInt(page, 10),
+            limit: parseInt(limit, 10),
+            sort,
+            order: order.toUpperCase(),
+            q,
+        });
     }
     findOne(id) {
         return this.service.findOne(id);
@@ -76,9 +82,15 @@ __decorate([
 ], TiposEnsayoController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Listar tipos de ensayo' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar tipos de ensayo con búsqueda, filtros y paginación' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de tipos de ensayo' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('sort')),
+    __param(3, (0, common_1.Query)('order')),
+    __param(4, (0, common_1.Query)('q')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String, String, String]),
     __metadata("design:returntype", void 0)
 ], TiposEnsayoController.prototype, "findAll", null);
 __decorate([

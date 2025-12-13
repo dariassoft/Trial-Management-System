@@ -293,6 +293,15 @@ export const useTiposEnsayoStore = defineStore('tiposEnsayo', () => {
         }
       }
 
+      // Actualizar el elemento en items
+      const idx = items.value.findIndex(item => item.id === tipoEnsayoId)
+      if (idx >= 0) {
+        items.value[idx].evaluacionCsv = data.evaluacionCsv
+        if (data.dias) {
+          items.value[idx].dias = data.dias
+        }
+      }
+
       return data
     } catch (err: any) {
       error.value = err.message || 'Error al establecer días de evaluación'

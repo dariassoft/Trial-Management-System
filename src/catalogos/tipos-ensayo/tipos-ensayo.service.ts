@@ -30,8 +30,49 @@ export class TiposEnsayoService {
     return this.repository.save(newTipo);
   }
 
-  async findAll(): Promise<TipoEnsayo[]> {
-    return this.repository.find({ order: { nombre: 'ASC' } });
+  async findAll(options: {
+    page: number;
+    limit: number;
+    sort: string;
+    order: 'ASC' | 'DESC';
+    q: string;
+  }): Promise<{ data: TipoEnsayo[]; meta: { total: number; page: number; limit: number; pageCount: number } }> {
+    const { page, limit, sort, order, q } = options;
+    const skip = (page - 1) * limit;
+
+    // Campos permitidos para ordenamiento
+    const allowedSortFields = ['id', 'nombre', 'createdAt'];
+    const sortField = allowedSortFields.includes(sort) ? sort : 'nombre';
+
+    // Construir query
+    let query = this.repository.createQueryBuilder('t');
+
+    // Aplicar búsqueda si existe
+    if (q && q.trim()) {
+      query = query.where('LOWER(t.nombre) LIKE LOWER(:q)', { q: `%${q}%` });
+    }
+
+    // Obtener total antes de aplicar paginación
+    const total = await query.getCount();
+
+    // Aplicar ordenamiento y paginación
+    const data = await query
+      .orderBy(`t.${sortField}`, order)
+      .skip(skip)
+      .take(limit)
+      .getMany();
+
+    const pageCount = Math.ceil(total / limit);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        pageCount,
+      },
+    };
   }
 
   async findOne(id: number): Promise<TipoEnsayo> {

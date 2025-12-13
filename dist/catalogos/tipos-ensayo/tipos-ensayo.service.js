@@ -43,9 +43,37 @@ let TiposEnsayoService = class TiposEnsayoService {
             return this.repository.save(newTipo);
         });
     }
-    findAll() {
+    findAll(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.find({ order: { nombre: 'ASC' } });
+            const { page, limit, sort, order, q } = options;
+            const skip = (page - 1) * limit;
+            // Campos permitidos para ordenamiento
+            const allowedSortFields = ['id', 'nombre', 'createdAt'];
+            const sortField = allowedSortFields.includes(sort) ? sort : 'nombre';
+            // Construir query
+            let query = this.repository.createQueryBuilder('t');
+            // Aplicar búsqueda si existe
+            if (q && q.trim()) {
+                query = query.where('LOWER(t.nombre) LIKE LOWER(:q)', { q: `%${q}%` });
+            }
+            // Obtener total antes de aplicar paginación
+            const total = yield query.getCount();
+            // Aplicar ordenamiento y paginación
+            const data = yield query
+                .orderBy(`t.${sortField}`, order)
+                .skip(skip)
+                .take(limit)
+                .getMany();
+            const pageCount = Math.ceil(total / limit);
+            return {
+                data,
+                meta: {
+                    total,
+                    page,
+                    limit,
+                    pageCount,
+                },
+            };
         });
     }
     findOne(id) {
