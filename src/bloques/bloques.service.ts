@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Scope, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Scope, Inject, BadRequestException, ConflictException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
 import { Role } from '../entities/rol.entity';
@@ -24,19 +24,78 @@ export class BloquesService {
     return { isInvitado, labIds };
   }
 
-  create(dto: CreateBloqueDto) {
-    const entity = this.repo.create({
-      ensayo: { id: dto.ensayoId } as any,
-      nombreBloque: dto.nombreBloque,
+  async create(dto: CreateBloqueDto) {
+    // Validar que el nombre no esté vacío
+    if (!dto.nombreBloque || !dto.nombreBloque.trim()) {
+      throw new BadRequestException('nombreBloque es requerido');
+    }
+
+    // Validar que ensayoId esté presente
+    if (!dto.ensayoId) {
+      throw new BadRequestException('ensayoId es requerido');
+    }
+
+    // Verificar si ya existe un bloque con este nombre para este ensayo
+    const existente = await this.repo.findOne({
+      where: {
+        ensayo: { id: dto.ensayoId },
+        nombreBloque: dto.nombreBloque.trim(),
+      },
     });
-    return this.repo.save(entity);
+
+    if (existente) {
+      throw new ConflictException(
+        `Ya existe un bloque con el nombre "${dto.nombreBloque}" para este ensayo`,
+      );
+    }
+
+    try {
+      const entity = this.repo.create({
+        ensayo: { id: dto.ensayoId } as any,
+        nombreBloque: dto.nombreBloque.trim(),
+      });
+      return await this.repo.save(entity);
+    } catch (error: any) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException(
+          `Ya existe un bloque con el nombre "${dto.nombreBloque}" para este ensayo`,
+        );
+      }
+      throw error;
+    }
   }
 
-  findAll() {
+  findAll(ensayoId?: number) {
     const { isInvitado, labIds } = this.auth;
-    if (!isInvitado) {
-      return this.repo.find({ relations: { ensayo: true } });
+
+    // Si viene ensayoId, filtrar por ese ensayo
+    if (ensayoId) {
+      if (!isInvitado) {
+        return this.repo.find({
+          where: { ensayo: { id: ensayoId } },
+          relations: { ensayo: true },
+          order: { nombreBloque: 'ASC' },
+        });
+      }
+
+      const qb = this.repo.createQueryBuilder('b')
+        .leftJoinAndSelect('b.ensayo', 'e')
+        .leftJoin('e.tratamientos', 't')
+        .leftJoin('t.productos', 'tp')
+        .leftJoin('tp.producto', 'p')
+        .leftJoin('p.laboratorio', 'l')
+        .where('b.ensayo.id = :ensayoId', { ensayoId })
+        .andWhere('l.id IN (:...labIds)', { labIds })
+        .orderBy('b.nombreBloque', 'ASC')
+        .distinct(true);
+      return qb.getMany();
     }
+
+    // Si no viene ensayoId, traer todos (comportamiento original)
+    if (!isInvitado) {
+      return this.repo.find({ relations: { ensayo: true }, order: { nombreBloque: 'ASC' } });
+    }
+
     const qb = this.repo.createQueryBuilder('b')
       .leftJoinAndSelect('b.ensayo', 'e')
       .leftJoin('e.tratamientos', 't')
@@ -44,6 +103,7 @@ export class BloquesService {
       .leftJoin('tp.producto', 'p')
       .leftJoin('p.laboratorio', 'l')
       .where('l.id IN (:...labIds)', { labIds })
+      .orderBy('b.nombreBloque', 'ASC')
       .distinct(true);
     return qb.getMany();
   }

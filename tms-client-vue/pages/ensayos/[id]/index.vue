@@ -113,12 +113,19 @@
           </div>
         </div>
       </div>
+
+      <!-- Bloques -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Diseño Experimental</h2>
+        <BloquesList :ensayo-id="ensayo.id" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Ensayo, Usuario } from '~/stores/ensayos'
+import BloquesList from '~/components/bloques/BloquesList.vue'
 
 defineProps<{
   ensayo: Ensayo | null

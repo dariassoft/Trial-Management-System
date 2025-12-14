@@ -28,8 +28,9 @@ let BloquesController = class BloquesController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
-        return this.service.findAll();
+    findAll(ensayoId) {
+        const ensayoIdNum = ensayoId ? parseInt(ensayoId, 10) : undefined;
+        return this.service.findAll(ensayoIdNum);
     }
     findOne(id) {
         return this.service.findOne(id);
@@ -47,14 +48,7 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Crear un bloque' }),
     (0, swagger_1.ApiCreatedResponse)({ type: bloque_entity_1.Bloque, description: 'Bloque creado' }),
-    (0, swagger_1.ApiBody)({
-        type: create_bloque_dto_1.CreateBloqueDto,
-        examples: {
-            default: {
-                value: { ensayoId: 1, nombreBloque: 'A' },
-            },
-        },
-    }),
+    (0, swagger_1.ApiBody)({ type: create_bloque_dto_1.CreateBloqueDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_bloque_dto_1.CreateBloqueDto]),
@@ -64,8 +58,9 @@ __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar bloques' }),
     (0, swagger_1.ApiOkResponse)({ type: bloque_entity_1.Bloque, isArray: true }),
+    __param(0, (0, common_1.Query)('ensayoId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BloquesController.prototype, "findAll", null);
 __decorate([
@@ -84,12 +79,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Actualizar bloque' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: Number }),
     (0, swagger_1.ApiOkResponse)({ type: bloque_entity_1.Bloque }),
-    (0, swagger_1.ApiBody)({
-        type: update_bloque_dto_1.UpdateBloqueDto,
-        examples: {
-            default: { value: { nombreBloque: 'B' } },
-        },
-    }),
+    (0, swagger_1.ApiBody)({ type: update_bloque_dto_1.UpdateBloqueDto }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

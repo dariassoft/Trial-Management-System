@@ -6,7 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/locations/data/locations.data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/locations/data/locations.data.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/bloques/bloques.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bloques/bloques.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/bloques/bloques.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bloques/bloques.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/bloques/bloques.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/bloques/bloques.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/bloques/bloques.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/bloques/bloques.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docker-compose.frontend.yml" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docker-compose.frontend.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_MAESTRO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_MAESTRO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id].vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/tiposEnsayo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/tiposEnsayo.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,6 +153,8 @@
       <workItem from="1765476503276" duration="20106000" />
       <workItem from="1765509781127" duration="6224000" />
       <workItem from="1765641112776" duration="11126000" />
+      <workItem from="1765662672897" duration="8868000" />
+      <workItem from="1765674853777" duration="3379000" />
     </task>
     <servers />
   </component>

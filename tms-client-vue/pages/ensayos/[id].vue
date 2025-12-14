@@ -6,23 +6,30 @@
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ ensayo?.nombreEnsayo || 'Cargando...' }}</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-1">Detalles del ensayo</p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         <NuxtLink
           v-if="!$route.path.endsWith('/edit')"
           :to="`/ensayos/${id}/edit`"
-          class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 font-medium"
+          class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 font-medium transition"
         >
           ✏️ Editar
         </NuxtLink>
+        <NuxtLink
+          :to="`/bloques?ensayoId=${id}`"
+          class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 font-medium transition"
+          title="Ver bloques y parcelas de este ensayo"
+        >
+          📐 Bloques y Parcelas
+        </NuxtLink>
         <button
           @click="openDeleteDialog"
-          class="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 font-medium"
+          class="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 font-medium transition"
         >
           🗑️ Eliminar
         </button>
         <button
           @click="$router.back()"
-          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
         >
           ← Atrás
         </button>

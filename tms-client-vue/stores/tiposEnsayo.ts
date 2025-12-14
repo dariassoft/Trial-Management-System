@@ -282,7 +282,7 @@ export const useTiposEnsayoStore = defineStore('tiposEnsayo', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await api.put(`/catalogos/tipos-ensayo/${tipoEnsayoId}/evaluacion`, payload)
+      const res = await api.patch(`/catalogos/tipos-ensayo/${tipoEnsayoId}/evaluacion`, payload)
       const data = res && (res.data ?? res)
 
       // Actualizar el current

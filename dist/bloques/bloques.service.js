@@ -41,16 +41,66 @@ let BloquesService = class BloquesService {
         return { isInvitado, labIds };
     }
     create(dto) {
-        const entity = this.repo.create({
-            ensayo: { id: dto.ensayoId },
-            nombreBloque: dto.nombreBloque,
+        return __awaiter(this, void 0, void 0, function* () {
+            // Validar que el nombre no esté vacío
+            if (!dto.nombreBloque || !dto.nombreBloque.trim()) {
+                throw new common_1.BadRequestException('nombreBloque es requerido');
+            }
+            // Validar que ensayoId esté presente
+            if (!dto.ensayoId) {
+                throw new common_1.BadRequestException('ensayoId es requerido');
+            }
+            // Verificar si ya existe un bloque con este nombre para este ensayo
+            const existente = yield this.repo.findOne({
+                where: {
+                    ensayo: { id: dto.ensayoId },
+                    nombreBloque: dto.nombreBloque.trim(),
+                },
+            });
+            if (existente) {
+                throw new common_1.ConflictException(`Ya existe un bloque con el nombre "${dto.nombreBloque}" para este ensayo`);
+            }
+            try {
+                const entity = this.repo.create({
+                    ensayo: { id: dto.ensayoId },
+                    nombreBloque: dto.nombreBloque.trim(),
+                });
+                return yield this.repo.save(entity);
+            }
+            catch (error) {
+                if (error.code === 'ER_DUP_ENTRY') {
+                    throw new common_1.ConflictException(`Ya existe un bloque con el nombre "${dto.nombreBloque}" para este ensayo`);
+                }
+                throw error;
+            }
         });
-        return this.repo.save(entity);
     }
-    findAll() {
+    findAll(ensayoId) {
         const { isInvitado, labIds } = this.auth;
+        // Si viene ensayoId, filtrar por ese ensayo
+        if (ensayoId) {
+            if (!isInvitado) {
+                return this.repo.find({
+                    where: { ensayo: { id: ensayoId } },
+                    relations: { ensayo: true },
+                    order: { nombreBloque: 'ASC' },
+                });
+            }
+            const qb = this.repo.createQueryBuilder('b')
+                .leftJoinAndSelect('b.ensayo', 'e')
+                .leftJoin('e.tratamientos', 't')
+                .leftJoin('t.productos', 'tp')
+                .leftJoin('tp.producto', 'p')
+                .leftJoin('p.laboratorio', 'l')
+                .where('b.ensayo.id = :ensayoId', { ensayoId })
+                .andWhere('l.id IN (:...labIds)', { labIds })
+                .orderBy('b.nombreBloque', 'ASC')
+                .distinct(true);
+            return qb.getMany();
+        }
+        // Si no viene ensayoId, traer todos (comportamiento original)
         if (!isInvitado) {
-            return this.repo.find({ relations: { ensayo: true } });
+            return this.repo.find({ relations: { ensayo: true }, order: { nombreBloque: 'ASC' } });
         }
         const qb = this.repo.createQueryBuilder('b')
             .leftJoinAndSelect('b.ensayo', 'e')
@@ -59,6 +109,7 @@ let BloquesService = class BloquesService {
             .leftJoin('tp.producto', 'p')
             .leftJoin('p.laboratorio', 'l')
             .where('l.id IN (:...labIds)', { labIds })
+            .orderBy('b.nombreBloque', 'ASC')
             .distinct(true);
         return qb.getMany();
     }

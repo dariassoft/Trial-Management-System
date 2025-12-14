@@ -47,6 +47,13 @@ const allModules = [
     roles: ['Superadministrador', 'Administrador', 'Investigador'],
   },
   {
+    id: 'bloques',
+    name: 'Bloques y Parcelas',
+    icon: '📐',
+    href: '/bloques',
+    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
+  },
+  {
     id: 'protocolos',
     name: 'Protocolos y Tratamientos',
     icon: '📋',
@@ -58,13 +65,6 @@ const allModules = [
     name: 'Tipos de Ensayo',
     icon: '🔬',
     href: '/tipos-ensayo',
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
-  },
-  {
-    id: 'parcelas',
-    name: 'Parcelas',
-    icon: '📍',
-    href: '/parcelas',
     roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
   },
   {

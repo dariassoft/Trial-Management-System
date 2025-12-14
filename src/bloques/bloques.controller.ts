@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, ParseIntPipe, Query } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiParam } from '@nestjs/swagger';
 import { BloquesService } from './bloques.service';
 import { CreateBloqueDto } from './dto/create-bloque.dto';
@@ -19,14 +19,7 @@ export class BloquesController {
   @Post()
   @ApiOperation({ summary: 'Crear un bloque' })
   @ApiCreatedResponse({ type: Bloque, description: 'Bloque creado' })
-  @ApiBody({
-    type: CreateBloqueDto,
-    examples: {
-      default: {
-        value: { ensayoId: 1, nombreBloque: 'A' },
-      },
-    },
-  })
+  @ApiBody({ type: CreateBloqueDto })
   create(@Body() dto: CreateBloqueDto) {
     return this.service.create(dto);
   }
@@ -34,8 +27,9 @@ export class BloquesController {
   @Get()
   @ApiOperation({ summary: 'Listar bloques' })
   @ApiOkResponse({ type: Bloque, isArray: true })
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query('ensayoId') ensayoId?: string) {
+    const ensayoIdNum = ensayoId ? parseInt(ensayoId, 10) : undefined;
+    return this.service.findAll(ensayoIdNum);
   }
 
   @Get(':id')
@@ -51,12 +45,7 @@ export class BloquesController {
   @ApiOperation({ summary: 'Actualizar bloque' })
   @ApiParam({ name: 'id', type: Number })
   @ApiOkResponse({ type: Bloque })
-  @ApiBody({
-    type: UpdateBloqueDto,
-    examples: {
-      default: { value: { nombreBloque: 'B' } },
-    },
-  })
+  @ApiBody({ type: UpdateBloqueDto })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateBloqueDto) {
     return this.service.update(id, dto);
   }
