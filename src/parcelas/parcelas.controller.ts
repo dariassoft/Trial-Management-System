@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, ParseIntPipe } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiParam } from '@nestjs/swagger';
 import { ParcelasService } from './parcelas.service';
 import { CreateParcelaDto } from './dto/create-parcela.dto';
@@ -39,10 +39,25 @@ export class ParcelasController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar parcelas' })
+  @ApiOperation({ summary: 'Listar parcelas con filtros opcionales' })
   @ApiOkResponse({ type: Parcela, isArray: true })
-  findAll() {
-    return this.service.findAll();
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('sort') sort?: string,
+    @Query('order') order?: 'ASC' | 'DESC',
+    @Query('ensayoId', new ParseIntPipe({ optional: true })) ensayoId?: number,
+    @Query('bloqueId', new ParseIntPipe({ optional: true })) bloqueId?: number,
+  ) {
+    const params = {
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 10,
+      sort: sort || 'id',
+      order: order || 'ASC',
+      ensayoId,
+      bloqueId,
+    };
+    return this.service.findAll(params);
   }
 
   @Get(':id')

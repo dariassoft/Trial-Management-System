@@ -80,7 +80,7 @@
               {{ parcela.nombreParcela || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
-              {{ parcela.tratamiento?.nombreTratamiento || '-' }}
+              {{ parcela.tratamiento?.descripcion || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
               {{ parcela.posXGrid || '-' }}, {{ parcela.posYGrid || '-' }}
@@ -111,7 +111,7 @@
       v-if="showFormParcela"
       :parcela="editingParcela"
       :tratamientos="tratamientos"
-      :ensayo="ensayoActual"
+      :ensayo="props.ensayo"
       :bloque="bloqueActual"
       @save="guardarParcela"
       @close="cerrarFormParcela"
@@ -130,6 +130,7 @@ import ParcelaForm from './ParcelaForm.vue'
 interface Props {
   ensayoId: number
   bloqueId: number
+  ensayo?: any
 }
 
 const props = defineProps<Props>()
@@ -153,25 +154,7 @@ const tratamientos = ref<any[]>([])
 const ensayosStore = useEnsayosStore()
 const bloquesStore = useBloquesStore()
 
-// Obtener ensayo y bloque actuales - DESDE STORES (sin logs)
-const ensayoActual = computed(() => {
-  if (ensayosStore.currentEnsayo?.id === props.ensayoId) {
-    return ensayosStore.currentEnsayo
-  }
-
-  if (ensayosStore.items && ensayosStore.items.length > 0) {
-    const ensayo = ensayosStore.items.find((e: any) => e.id === props.ensayoId)
-    if (ensayo) return ensayo
-  }
-
-  if (parcelasStore.items && parcelasStore.items.length > 0) {
-    const ensayo = parcelasStore.items.find((p: any) => p.ensayo?.id === props.ensayoId)?.ensayo
-    if (ensayo) return ensayo
-  }
-
-  return null
-})
-
+// Obtener bloque actual - DESDE STORES
 const bloqueActual = computed(() => {
   if (bloquesStore.items && bloquesStore.items.length > 0) {
     const bloque = bloquesStore.items.find((b: any) => b.id === props.bloqueId)
@@ -188,18 +171,22 @@ const bloqueActual = computed(() => {
 
 const parcelas = computed(() => parcelasStore.items)
 
-// Cargar tratamientos
+// Cargar todos los tratamientos (ParcelaForm filtrará según protocolo del ensayo)
 async function cargarTratamientos() {
   try {
+    console.log('📋 Cargando TODOS los tratamientos...')
     const res = await api.get('/tratamientos', { params: { limit: 100 } })
     const data = res && (res.data ?? res)
 
     if (Array.isArray(data)) {
       tratamientos.value = data
+      console.log('✅ Tratamientos cargados:', data.length)
     } else if (data?.data) {
       tratamientos.value = data.data
+      console.log('✅ Tratamientos cargados:', data.data.length)
     } else {
       tratamientos.value = []
+      console.warn('⚠️ Sin tratamientos en respuesta')
     }
   } catch (err) {
     console.error('Error cargando tratamientos:', err)
@@ -232,14 +219,31 @@ async function editarParcela(parcela: any) {
 
 async function guardarParcela(datos: any) {
   try {
+    console.log('💾 Guardando parcela con datos:', datos)
+    console.log('  - editingParcela?.id:', editingParcela.value?.id)
+
     if (editingParcela.value?.id) {
+      console.log('✏️ MODO EDICIÓN - Actualizando parcela ID:', editingParcela.value.id)
+      console.log('  - Datos a actualizar:', datos)
       await actualizarParcela(editingParcela.value.id, datos)
+      console.log('  ✅ Actualización enviada')
     } else {
-      await crearParcela(datos)
+      console.log('➕ MODO CREACIÓN - Creando nueva parcela')
+      const datosConBloque = {
+        ...datos,
+        bloqueId: props.bloqueId,
+      }
+      console.log('  - Datos con bloqueId:', datosConBloque)
+      await crearParcela(datosConBloque)
+      console.log('  ✅ Creación enviada')
     }
+    console.log('✅ Parcela guardada, recargando listado...')
     await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId })
+    console.log('✅ Listado recargado')
+    cerrarFormParcela()
   } catch (err) {
-    console.error('Error al guardar parcela:', err)
+    console.error('❌ Error al guardar parcela:', err)
+    alert('Error al guardar: ' + (err instanceof Error ? err.message : 'Error desconocido'))
   }
 }
 

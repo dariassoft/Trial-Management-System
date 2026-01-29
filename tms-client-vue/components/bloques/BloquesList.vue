@@ -102,6 +102,7 @@
               v-if="bloqueExpandido === bloque.id"
               :key="`parcelas-${bloqueExpandido}`"
               :ensayo-id="ensayoId"
+              :ensayo="props.ensayo"
               :bloque-id="bloque.id"
             />
           </div>
@@ -127,6 +128,7 @@ import ParcelasList from '../parcelas/ParcelasList.vue'
 
 interface Props {
   ensayoId: number
+  ensayo?: any
 }
 
 const props = defineProps<Props>()

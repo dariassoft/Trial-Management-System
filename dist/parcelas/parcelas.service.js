@@ -52,20 +52,41 @@ let ParcelasService = class ParcelasService {
         return this.repo.save(entity);
     }
     findAll() {
-        const { isInvitado, labIds } = this.auth;
-        if (!isInvitado) {
-            return this.repo.find({ relations: { ensayo: true, bloque: true, tratamiento: true } });
-        }
-        const qb = this.repo.createQueryBuilder('pa')
-            .leftJoinAndSelect('pa.ensayo', 'ensayo')
-            .leftJoinAndSelect('pa.bloque', 'bloque')
-            .leftJoinAndSelect('pa.tratamiento', 'tratamiento')
-            .leftJoin('tratamiento.productos', 'tp')
-            .leftJoin('tp.producto', 'prod')
-            .leftJoin('prod.laboratorio', 'lab')
-            .where('lab.id IN (:...labIds)', { labIds })
-            .distinct(true);
-        return qb.getMany();
+        return __awaiter(this, arguments, void 0, function* (params = {}) {
+            const { page = 1, limit = 10, sort = 'id', order = 'ASC', ensayoId, bloqueId } = params;
+            const skip = (page - 1) * limit;
+            const { isInvitado, labIds } = this.auth;
+            const qb = this.repo.createQueryBuilder('pa')
+                .leftJoinAndSelect('pa.ensayo', 'ensayo')
+                .leftJoinAndSelect('pa.bloque', 'bloque')
+                .leftJoinAndSelect('pa.tratamiento', 'tratamiento');
+            if (isInvitado) {
+                qb.leftJoin('tratamiento.productos', 'tp')
+                    .leftJoin('tp.producto', 'prod')
+                    .leftJoin('prod.laboratorio', 'lab')
+                    .where('lab.id IN (:...labIds)', { labIds });
+            }
+            if (ensayoId) {
+                qb.andWhere('pa.ensayo.id = :ensayoId', { ensayoId });
+            }
+            if (bloqueId) {
+                qb.andWhere('pa.bloque.id = :bloqueId', { bloqueId });
+            }
+            qb.orderBy(`pa.${sort}`, order)
+                .skip(skip)
+                .take(limit);
+            const [data, total] = yield qb.getManyAndCount();
+            const pageCount = Math.ceil(total / limit);
+            return {
+                data,
+                meta: {
+                    total,
+                    page,
+                    limit,
+                    pageCount,
+                },
+            };
+        });
     }
     findOne(id) {
         return __awaiter(this, void 0, void 0, function* () {

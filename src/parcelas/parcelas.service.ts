@@ -36,21 +36,54 @@ export class ParcelasService {
     return this.repo.save(entity);
   }
 
-  findAll() {
+  async findAll(params: {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    order?: 'ASC' | 'DESC';
+    ensayoId?: number;
+    bloqueId?: number;
+  } = {}) {
+    const { page = 1, limit = 10, sort = 'id', order = 'ASC', ensayoId, bloqueId } = params;
+    const skip = (page - 1) * limit;
+
     const { isInvitado, labIds } = this.auth;
-    if (!isInvitado) {
-      return this.repo.find({ relations: { ensayo: true, bloque: true, tratamiento: true } });
-    }
+
     const qb = this.repo.createQueryBuilder('pa')
       .leftJoinAndSelect('pa.ensayo', 'ensayo')
       .leftJoinAndSelect('pa.bloque', 'bloque')
-      .leftJoinAndSelect('pa.tratamiento', 'tratamiento')
-      .leftJoin('tratamiento.productos', 'tp')
-      .leftJoin('tp.producto', 'prod')
-      .leftJoin('prod.laboratorio', 'lab')
-      .where('lab.id IN (:...labIds)', { labIds })
-      .distinct(true);
-    return qb.getMany();
+      .leftJoinAndSelect('pa.tratamiento', 'tratamiento');
+
+    if (isInvitado) {
+      qb.leftJoin('tratamiento.productos', 'tp')
+        .leftJoin('tp.producto', 'prod')
+        .leftJoin('prod.laboratorio', 'lab')
+        .where('lab.id IN (:...labIds)', { labIds });
+    }
+
+    if (ensayoId) {
+      qb.andWhere('pa.ensayo.id = :ensayoId', { ensayoId });
+    }
+    if (bloqueId) {
+      qb.andWhere('pa.bloque.id = :bloqueId', { bloqueId });
+    }
+
+    qb.orderBy(`pa.${sort}`, order as 'ASC' | 'DESC')
+      .skip(skip)
+      .take(limit);
+
+    const [data, total] = await qb.getManyAndCount();
+    const pageCount = Math.ceil(total / limit);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        pageCount,
+      },
+    };
   }
 
   async findOne(id: number) {

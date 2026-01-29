@@ -28,8 +28,16 @@ let ParcelasController = class ParcelasController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
-        return this.service.findAll();
+    findAll(page, limit, sort, order, ensayoId, bloqueId) {
+        const params = {
+            page: page ? parseInt(page, 10) : 1,
+            limit: limit ? parseInt(limit, 10) : 10,
+            sort: sort || 'id',
+            order: order || 'ASC',
+            ensayoId,
+            bloqueId,
+        };
+        return this.service.findAll(params);
     }
     findOne(id) {
         return this.service.findOne(id);
@@ -69,10 +77,16 @@ __decorate([
 ], ParcelasController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Listar parcelas' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar parcelas con filtros opcionales' }),
     (0, swagger_1.ApiOkResponse)({ type: parcela_entity_1.Parcela, isArray: true }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('sort')),
+    __param(3, (0, common_1.Query)('order')),
+    __param(4, (0, common_1.Query)('ensayoId', new common_1.ParseIntPipe({ optional: true }))),
+    __param(5, (0, common_1.Query)('bloqueId', new common_1.ParseIntPipe({ optional: true }))),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String, String, Number, Number]),
     __metadata("design:returntype", void 0)
 ], ParcelasController.prototype, "findAll", null);
 __decorate([

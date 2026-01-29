@@ -28,7 +28,7 @@
           >
             <option value="">Seleccionar tratamiento...</option>
             <option v-for="t in tratamientosDelEnsayo" :key="t.id" :value="t.id">
-              {{ t.nombreTratamiento }}
+              {{ t.descripcion || `Tratamiento ${t.id}` }}
             </option>
           </select>
           <p v-if="tratamientosDelEnsayo.length === 0" class="text-xs text-amber-500 mt-1">
@@ -334,7 +334,7 @@
           <!-- QR Code -->
           <div v-if="qrCodeData" class="flex flex-col items-center space-y-4">
             <div class="bg-white p-4 rounded-lg border border-gray-200">
-              <canvas ref="qrCanvas" />
+              <div id="qrDisplayCanvas"></div>
             </div>
 
             <!-- Información de la Parcela -->
@@ -344,6 +344,7 @@
               <p><strong>Tipo Ensayo:</strong> {{ qrInfo.tipoEnsayoNombre }}</p>
               <p><strong>Bloque:</strong> {{ qrInfo.bloqueNombre }}</p>
               <p><strong>Parcela:</strong> {{ qrInfo.parcelaNombre }}</p>
+              <p><strong>Tratamiento:</strong> {{ qrInfo.tratamientoNombre }}</p>
             </div>
 
             <!-- Botones de acción -->
@@ -376,8 +377,8 @@ import QRCode from 'qrcode'
 
 interface Props {
   parcela?: { id: number; nombreParcela?: string; posXGrid?: number; posYGrid?: number; tratamientoId: number } | null
-  tratamientos: Array<{ id: number; nombreTratamiento: string }>
-  ensayo?: { id: number; nombreEnsayo: string; codigoLabor?: string; laboratorio?: { nombre: string }; tipoEnsayo?: { nombre: string } }
+  tratamientos: Array<{ id: number; descripcion: string; protocolo?: { id: number; nombre: string } }>
+  ensayo?: { id: number; nombreEnsayo: string; codigoLabor?: string; laboratorio?: { nombre: string }; tipoEnsayo?: { nombre: string }; protocolo?: { id: number; nombre: string } }
   bloque?: { id: number; nombreBloque: string }
 }
 
@@ -405,73 +406,132 @@ const qrInfo = ref<any>({})
 
 // Propiedades calculadas
 const codigoLabor = computed(() => {
-  const valor = props.ensayo?.codigoLabor
-  console.log('📌 codigoLabor prop:', valor)
-  return valor ?? ''
+  const codigo = props.ensayo?.codigoLabor || ''
+  console.log('📌 codigoLabor computed:', codigo, 'ensayo:', props.ensayo)
+  return codigo
 })
 const nombreBloque = computed(() => {
-  const valor = props.bloque?.nombreBloque
-  console.log('📌 nombreBloque prop:', valor)
-  return valor ?? ''
+  const bloque = props.bloque?.nombreBloque || ''
+  console.log('📌 nombreBloque computed:', bloque)
+  return bloque
 })
 
 const tratamientosDelEnsayo = computed(() => {
-  console.log('📌 tratamientosDelEnsayo:', props.tratamientos)
-  return props.tratamientos ?? []
+  console.log('==== tratamientosDelEnsayo computed ====')
+  console.log('📦 props.tratamientos disponibles:', props.tratamientos?.length || 0)
+  console.log('📦 props.ensayo:', props.ensayo)
+  console.log('📦 protocolo ID del ensayo:', props.ensayo?.protocolo?.id)
+
+  // Si no hay tratamientos, devolver vacío
+  if (!props.tratamientos || props.tratamientos.length === 0) {
+    console.log('⚠️ No hay tratamientos disponibles')
+    return []
+  }
+
+  // Si no hay protocolo, devolver todos los tratamientos (fallback)
+  if (!props.ensayo?.protocolo?.id) {
+    console.log('⚠️ No hay protocolo en ensayo, retornando todos los tratamientos')
+    console.log('📦 Total:', props.tratamientos.length)
+    props.tratamientos.forEach((t: any) => {
+      console.log(`  - Tratamiento ${t.id}:`, t.descripcion, '| Protocolo:', t.protocolo)
+    })
+    return props.tratamientos
+  }
+
+  // Filtrar solo los tratamientos del protocolo del ensayo
+  const protocoloId = props.ensayo.protocolo.id
+  console.log(`🔍 Filtrando por protocolo ID: ${protocoloId}`)
+
+  const filtered = props.tratamientos.filter((t: any) => {
+    // El tratamiento siempre trae protocolo como objeto (según la respuesta)
+    const tratamientoProtocoloId = t.protocolo?.id
+    const matches = tratamientoProtocoloId === protocoloId
+
+    console.log(`  ${matches ? '✅' : '❌'} Trat ${t.id}: protocolo=${tratamientoProtocoloId}, esperado=${protocoloId}, desc="${t.descripcion.substring(0, 20)}"`)
+    return matches
+  })
+
+  console.log(`📦 Total filtrado: ${filtered.length} de ${props.tratamientos.length} tratamientos`)
+  console.log('==== fin tratamientosDelEnsayo ====')
+  return filtered
 })
 
 // Watch para ver cuando cambian los props
 watch(
-  () => [props.ensayo?.codigoLabor, props.bloque?.nombreBloque],
-  ([newCodigo, newBloque]) => {
-    console.log('👀 Props cambiaron - Código:', newCodigo, 'Bloque:', newBloque)
-    // Auto-completar si hay datos válidos
-    if (newCodigo && newBloque && !form.nombreParcela) {
-      console.log('🔄 Auto-completando nombre/código (desde props watch)...')
-      autocompletarNombre()
-    }
-  }
-)
-
-// Auto-completar nombre cuando cambian posiciones
-watch(
-  () => [form.posXGrid, form.posYGrid],
-  () => {
-    // Solo auto-completar si hay valores válidos
-    if (
-      form.posXGrid &&
-      form.posYGrid &&
-      codigoLabor.value &&
-      nombreBloque.value &&
-      !form.nombreParcela // Solo si está vacío
-    ) {
-      console.log('🔄 Auto-completando nombre/código (desde posiciones)...')
-      autocompletarNombre()
-    }
-  }
-)
-
-watch(
   () => props.parcela,
   (newVal) => {
-    if (newVal) {
-      form.tratamientoId = newVal.tratamientoId
+    console.log('📝 ParcelaForm: parcela prop cambió:', newVal)
+    if (newVal?.id) {
+      // EDICIÓN: Cargar datos de parcela existente
+      console.log('✏️ Modo EDICIÓN - Cargando datos de parcela existente')
+      form.tratamientoId = newVal.tratamientoId || null
       form.nombreParcela = newVal.nombreParcela || ''
       form.posXGrid = newVal.posXGrid || null
       form.posYGrid = newVal.posYGrid || null
     } else {
+      // CREACIÓN: Limpiar form e intentar autocompletar
+      console.log('➕ Modo CREACIÓN - Inicializando form vacío')
       form.tratamientoId = null
       form.nombreParcela = ''
       form.posXGrid = null
       form.posYGrid = null
+      // Autocompletar nombre cuando sea nuevo
+      autocompletarNombre()
     }
   },
   { immediate: true },
 )
 
+// Watch para ver cuando se cargan los props del ensayo y bloque
+watch(
+  () => [props.ensayo?.id, props.bloque?.id],
+  ([ensayoId, bloqueId]) => {
+    console.log('🔄 Props ensayo/bloque cargados:', { ensayoId, bloqueId })
+    console.log('  - Verificando si es creación:', !props.parcela?.id)
+
+    // Si es creación y los datos están listos, autocompletar
+    if (!props.parcela?.id && ensayoId && bloqueId && !form.nombreParcela) {
+      console.log('✅ Datos listos - Auto-completando nombre')
+      autocompletarNombre()
+    }
+  }
+)
+
+// Watch para auto-completar cuando cambian los datos del ensayo/bloque
+watch(
+  () => [codigoLabor.value, nombreBloque.value, form.posXGrid, form.posYGrid],
+  ([codigo, bloque, posX, posY]) => {
+    console.log('🔄 Auto-completar watch disparado')
+    console.log('  - codigoLabor:', codigo)
+    console.log('  - nombreBloque:', bloque)
+    console.log('  - posX:', posX)
+    console.log('  - posY:', posY)
+    console.log('  - parcela id:', props.parcela?.id)
+    console.log('  - nombreParcela actual:', form.nombreParcela)
+
+    // Solo autocompletar si es creación (sin id) y el nombre está vacío
+    if (!props.parcela?.id && !form.nombreParcela) {
+      console.log('✅ Es creación y nombre vacío - Auto-completando')
+      autocompletarNombre()
+    }
+  },
+  { immediate: false }  // NO usar immediate para no interferir con carga de datos
+)
+
 function autocompletarNombre() {
+  // Usar codigoLabor si existe y no está vacío, si no usar nombreBloque
+  const codigo = codigoLabor.value?.trim() ? codigoLabor.value : nombreBloque.value
+  const bloque = nombreBloque.value || 'BLOQUE'
   const numero = form.posXGrid && form.posYGrid ? `-${form.posXGrid}.${form.posYGrid}` : ''
-  form.nombreParcela = `${codigoLabor.value}-${nombreBloque.value}${numero}`
+
+  // Si codigo es igual a bloque (porque codigoLabor estaba vacío), no repetir
+  if (codigo === bloque) {
+    form.nombreParcela = `${bloque}${numero}`
+  } else {
+    form.nombreParcela = `${codigo}-${bloque}${numero}`
+  }
+
+  console.log('✏️ Nombre autogenerado:', form.nombreParcela)
 }
 
 function mostrarInfoPosiciones() {
@@ -485,12 +545,6 @@ function mostrarInfoNombreCodigo() {
 async function generarYMostrarQR() {
   try {
     console.log('📱 Iniciando generación de QR...')
-
-    if (!qrCanvas.value) {
-      console.error('❌ Canvas ref no está disponible')
-      alert('Error: No se pudo generar QR (canvas no disponible)')
-      return
-    }
 
     const tratamiento = props.tratamientos.find(t => t.id === form.tratamientoId)
     console.log('📋 Tratamiento encontrado:', tratamiento)
@@ -514,15 +568,27 @@ async function generarYMostrarQR() {
       tipoEnsayoNombre: props.ensayo?.tipoEnsayo?.nombre || 'Sin tipo',
       bloqueNombre: `Bloque ${nombreBloque.value}`,
       parcelaNombre: form.nombreParcela || `(${form.posXGrid}, ${form.posYGrid})`,
-      tratamientoNombre: tratamiento?.nombreTratamiento || 'Sin tratamiento',
+      tratamientoNombre: tratamiento?.descripcion || 'Sin tratamiento',
     }
 
     console.log('📦 QR Info:', qrInfo.value)
+    mostrarQRModal.value = true
 
-    // Generar QR en canvas
+    // Esperar a que el DOM se actualice con el nuevo qrCodeData
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // Buscar el div y generar el QR allí
+    const displayDiv = document.getElementById('qrDisplayCanvas')
+    if (!displayDiv) {
+      console.error('❌ No se encontró div#qrDisplayCanvas')
+      return
+    }
+
+    const canvas = document.createElement('canvas')
     console.log('🎨 Generando QR en canvas...')
+
     QRCode.toCanvas(
-      qrCanvas.value,
+      canvas,
       qrDataStr,
       { width: 250, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } },
       (err) => {
@@ -531,7 +597,11 @@ async function generarYMostrarQR() {
           alert('Error al generar QR: ' + err.message)
         } else {
           console.log('✅ QR generado exitosamente')
-          mostrarQRModal.value = true
+          // Limpiar div anterior y agregar el nuevo canvas
+          displayDiv.innerHTML = ''
+          displayDiv.appendChild(canvas)
+          // Guardar el canvas para impresión/descarga
+          qrCanvas.value = canvas
         }
       }
     )
@@ -544,8 +614,11 @@ async function generarYMostrarQR() {
 function imprimirQR() {
   if (!qrCanvas.value) return
 
-  const printWindow = window.open('', '', 'height=600,width=600')
+  const printWindow = window.open('', '', 'height=800,width=600')
   if (!printWindow) return
+
+  // Convertir canvas a imagen
+  const qrImage = qrCanvas.value.toDataURL('image/png')
 
   const html = `
     <!DOCTYPE html>
@@ -553,26 +626,86 @@ function imprimirQR() {
     <head>
       <title>Código QR - Parcela</title>
       <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .qr-container { margin: 20px 0; }
-        canvas { max-width: 300px; }
-        .info { margin-top: 20px; text-align: left; border: 1px solid #ccc; padding: 10px; }
-        .info p { margin: 5px 0; }
-        .info strong { display: inline-block; width: 120px; }
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 20px;
+          background: white;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          background: white;
+          padding: 20px;
+          border: 1px solid #ccc;
+        }
+        h2 {
+          margin-top: 0;
+          color: #333;
+        }
+        .qr-container {
+          margin: 20px 0;
+          text-align: center;
+        }
+        .qr-container img {
+          max-width: 300px;
+          border: 2px solid #333;
+          padding: 10px;
+        }
+        .info {
+          margin-top: 20px;
+          text-align: left;
+          border-top: 2px solid #333;
+          padding-top: 15px;
+        }
+        .info p {
+          margin: 8px 0;
+          font-size: 12px;
+        }
+        .info-label {
+          font-weight: bold;
+          display: inline-block;
+          min-width: 140px;
+        }
+        .footer {
+          margin-top: 20px;
+          font-size: 10px;
+          color: #666;
+          border-top: 1px solid #ccc;
+          padding-top: 10px;
+        }
+        @media print {
+          body {
+            margin: 0;
+            padding: 10px;
+          }
+          .container {
+            border: none;
+          }
+        }
       </style>
     </head>
     <body>
-      <h2>Código QR - Parcela</h2>
-      <div class="qr-container">
-        ${qrCanvas.value!.outerHTML}
-      </div>
-      <div class="info">
-        <p><strong>Ensayo:</strong> ${qrInfo.value.ensayoNombre}</p>
-        <p><strong>Laboratorio:</strong> ${qrInfo.value.laboratorioNombre}</p>
-        <p><strong>Tipo Ensayo:</strong> ${qrInfo.value.tipoEnsayoNombre}</p>
-        <p><strong>Bloque:</strong> ${qrInfo.value.bloqueNombre}</p>
-        <p><strong>Parcela:</strong> ${qrInfo.value.parcelaNombre}</p>
-        <p><strong>Tratamiento:</strong> ${qrInfo.value.tratamientoNombre}</p>
+      <div class="container">
+        <h2>📱 Código QR - Parcela</h2>
+
+        <div class="qr-container">
+          <img src="${qrImage}" alt="Código QR" />
+        </div>
+
+        <div class="info">
+          <p><span class="info-label">Ensayo:</span> ${qrInfo.value.ensayoNombre}</p>
+          <p><span class="info-label">Laboratorio:</span> ${qrInfo.value.laboratorioNombre}</p>
+          <p><span class="info-label">Tipo Ensayo:</span> ${qrInfo.value.tipoEnsayoNombre}</p>
+          <p><span class="info-label">Bloque:</span> ${qrInfo.value.bloqueNombre}</p>
+          <p><span class="info-label">Parcela:</span> ${qrInfo.value.parcelaNombre}</p>
+          <p><span class="info-label">Tratamiento:</span> ${qrInfo.value.tratamientoNombre}</p>
+        </div>
+
+        <div class="footer">
+          <p>Impreso el: ${new Date().toLocaleString('es-AR')}</p>
+          <p>Sistema: Trial Management System (TMS)</p>
+        </div>
       </div>
     </body>
     </html>
@@ -583,27 +716,87 @@ function imprimirQR() {
 
   setTimeout(() => {
     printWindow!.print()
+    printWindow!.close()
   }, 250)
 }
 
 function descargarQR() {
   if (!qrCanvas.value) return
 
+  // Crear canvas con leyenda
+  const downloadCanvas = document.createElement('canvas')
+  const ctx = downloadCanvas.getContext('2d')
+  if (!ctx) return
+
+  const qrSize = 250
+  const padding = 20
+  const textHeight = 120
+  const totalWidth = qrSize + 2 * padding
+  const totalHeight = qrSize + textHeight + 3 * padding
+
+  downloadCanvas.width = totalWidth
+  downloadCanvas.height = totalHeight
+
+  // Fondo blanco
+  ctx.fillStyle = 'white'
+  ctx.fillRect(0, 0, totalWidth, totalHeight)
+
+  // Dibujar QR en el centro
+  ctx.drawImage(qrCanvas.value, padding, padding, qrSize, qrSize)
+
+  // Texto
+  ctx.fillStyle = 'black'
+  ctx.font = 'bold 12px Arial'
+  ctx.textAlign = 'left'
+
+  const textX = padding
+  const textY = qrSize + padding + 20
+  const lineHeight = 15
+
+  ctx.fillText(`Ensayo: ${qrInfo.value.ensayoNombre}`, textX, textY)
+  ctx.fillText(`Laboratorio: ${qrInfo.value.laboratorioNombre}`, textX, textY + lineHeight)
+  ctx.fillText(`Tipo Ensayo: ${qrInfo.value.tipoEnsayoNombre}`, textX, textY + lineHeight * 2)
+  ctx.fillText(`Bloque: ${qrInfo.value.bloqueNombre}`, textX, textY + lineHeight * 3)
+  ctx.fillText(`Parcela: ${qrInfo.value.parcelaNombre}`, textX, textY + lineHeight * 4)
+  ctx.fillText(`Tratamiento: ${qrInfo.value.tratamientoNombre}`, textX, textY + lineHeight * 5)
+
+  // Descargar
   const link = document.createElement('a')
-  link.href = qrCanvas.value.toDataURL('image/png')
-  link.download = `parcela-${qrInfo.value.parcelaNombre}.png`
+  link.href = downloadCanvas.toDataURL('image/png')
+  link.download = `parcela-qr-${qrInfo.value.parcelaNombre}-${new Date().getTime()}.png`
   link.click()
 }
 
 function enviar() {
-  if (!form.tratamientoId) return
+  console.log('📨 Enviando parcela')
+  console.log('  - form.tratamientoId:', form.tratamientoId)
+  console.log('  - form.nombreParcela:', form.nombreParcela)
+  console.log('  - form.posXGrid:', form.posXGrid)
+  console.log('  - form.posYGrid:', form.posYGrid)
 
-  emit('save', {
+  // Validar que tratamientoId esté definido
+  if (form.tratamientoId === null || form.tratamientoId === undefined) {
+    console.error('❌ Error: tratamientoId es requerido')
+    alert('Por favor selecciona un tratamiento')
+    return
+  }
+
+  // Validar que al menos haya posiciones o nombre
+  if (!form.nombreParcela && (!form.posXGrid || !form.posYGrid)) {
+    console.error('❌ Error: Se requiere nombre o posiciones')
+    alert('Por favor ingresa un nombre o posiciones')
+    return
+  }
+
+  const datos = {
     tratamientoId: form.tratamientoId,
     nombreParcela: form.nombreParcela.trim() || null,
-    posXGrid: form.posXGrid,
-    posYGrid: form.posYGrid,
-  })
+    posXGrid: form.posXGrid || null,
+    posYGrid: form.posYGrid || null,
+  }
+
+  console.log('✅ Emitiendo save con datos válidos:', datos)
+  emit('save', datos)
 }
 </script>
 

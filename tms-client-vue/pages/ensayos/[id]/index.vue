@@ -117,7 +117,7 @@
       <!-- Bloques -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Diseño Experimental</h2>
-        <BloquesList :ensayo-id="ensayo.id" />
+        <BloquesList :ensayo-id="ensayo.id" :ensayo="ensayo" />
       </div>
     </div>
   </div>

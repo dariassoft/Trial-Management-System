@@ -32,6 +32,7 @@ export function useParcelas() {
 
   async function actualizarParcela(id: number, datos: any) {
     const payload = {
+      tratamientoId: datos.tratamientoId,
       nombreParcela: datos.nombreParcela,
       posXGrid: datos.posXGrid,
       posYGrid: datos.posYGrid,

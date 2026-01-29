@@ -49,19 +49,25 @@ export const useParcelasStore = defineStore('parcelas', () => {
     loading.value = true
     error.value = null
     try {
+      console.log('📦 fetchParcelas - params recibidos:', params)
+
       const query = {
         page: params.page ?? paginacion.value.page,
         limit: params.limit ?? paginacion.value.limit,
         sort: params.sort ?? filtros.value.sort,
         order: params.order ?? filtros.value.order,
-        ...(filtros.value.ensayoId && { ensayoId: filtros.value.ensayoId }),
-        ...(filtros.value.bloqueId && { bloqueId: filtros.value.bloqueId }),
+        // IMPORTANTE: Usar los params directos, no filtros.value
+        ...(params.ensayoId && { ensayoId: params.ensayoId }),
+        ...(params.bloqueId && { bloqueId: params.bloqueId }),
       }
+      console.log('🔍 Query enviada al API:', query)
+
       const res = await api.get('/parcelas', { params: query })
       const data = res && (res.data ?? res)
 
       if (Array.isArray(data)) {
         items.value = data
+        console.log('✅ Parcelas cargadas:', data.length)
       } else if (data?.data) {
         items.value = data.data
         if (data.meta) {
@@ -69,11 +75,12 @@ export const useParcelasStore = defineStore('parcelas', () => {
           paginacion.value.pageCount = data.meta.pageCount
           paginacion.value.page = data.meta.page
         }
+        console.log('✅ Parcelas cargadas:', data.data.length)
       }
       return data
     } catch (err: any) {
       error.value = err.message || 'Error al cargar parcelas'
-      console.error('Error fetchParcelas:', err)
+      console.error('❌ Error fetchParcelas:', err)
       throw err
     } finally {
       loading.value = false
