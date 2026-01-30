@@ -6,22 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/datos-campo/datos-campo.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/datos-campo/datos-campo.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/datos-campo/datos-campo.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/datos-campo/datos-campo.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/fotos/fotos.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/fotos/fotos.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/fotos/fotos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/fotos/fotos.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/datos-campo/datos-campo.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/datos-campo/datos-campo.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/datos-campo/datos-campo.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/datos-campo/datos-campo.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fotos/fotos.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/fotos/fotos.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fotos/fotos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/fotos/fotos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/datos-campo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/datos-campo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +174,7 @@
       <workItem from="1769646599587" duration="584000" />
       <workItem from="1769647214885" duration="1368000" />
       <workItem from="1769725057114" duration="16487000" />
-      <workItem from="1769745345154" duration="1884000" />
+      <workItem from="1769745345154" duration="2916000" />
     </task>
     <servers />
   </component>

@@ -3,14 +3,38 @@
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 shadow">
       <div class="max-w-7xl mx-auto px-4 py-4">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          📊 Mediciones en Campo
-        </h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-1">
-          Selecciona un ensayo para registrar mediciones
-        </p>
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              📊 Mediciones en Campo
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">
+              Selecciona un ensayo para registrar mediciones
+            </p>
+          </div>
+          <!-- Botón Escanear QR -->
+          <button
+            @click="abrirEscanerQR"
+            class="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg
+                   font-medium transition flex items-center gap-2 shadow-lg"
+            title="Escanear QR de parcela"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+            <span class="hidden sm:inline">Escanear QR</span>
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- Componente QR Scanner Modal -->
+    <MediaQRScannerModal
+      v-if="showQRScanner"
+      @scanned="handleQRScanned"
+      @close="showQRScanner = false"
+      @error="handleQRError"
+    />
 
     <!-- Contenido -->
     <div class="max-w-7xl mx-auto px-4 py-6">
@@ -121,6 +145,7 @@ const api = useApi()
 const busqueda = ref('')
 const loading = ref(false)
 const ensayos = ref<any[]>([])
+const showQRScanner = ref(false)
 
 const ensayosFiltrados = computed(() => {
   if (!busqueda.value.trim()) return ensayos.value
@@ -158,6 +183,87 @@ function formatDate(date?: string | null) {
 
 function irAMedicion(ensayoId: number) {
   router.push(`/mediciones/${ensayoId}`)
+}
+
+// === Funciones QR ===
+function abrirEscanerQR() {
+  showQRScanner.value = true
+}
+
+async function handleQRScanned(data: any) {
+  console.log('📱 QR escaneado:', data)
+  showQRScanner.value = false
+
+  try {
+    // El QR puede contener diferentes formatos:
+    // 1. { parcelaId, ensayoId, bloqueId } - JSON estructurado
+    // 2. URL con parámetros
+    // 3. Texto simple con el código de parcela
+
+    let ensayoId: number | null = null
+    let momentoId: number | null = null
+
+    if (data.ensayoId) {
+      ensayoId = data.ensayoId
+    } else if (data.raw) {
+      // Intentar parsear el raw como JSON o extraer info
+      try {
+        const parsed = JSON.parse(data.raw)
+        ensayoId = parsed.ensayoId || parsed.ensayo_id
+      } catch {
+        // Si no es JSON, buscar por código de parcela
+        const codigo = data.raw.trim()
+        console.log('🔍 Buscando parcela por código:', codigo)
+
+        // Buscar la parcela por nombre
+        const response = await api.get('/parcelas', {
+          params: { nombreParcela: codigo, limit: 1 }
+        })
+        const parcelas = response?.data || response || []
+
+        if (parcelas.length > 0) {
+          const parcela = parcelas[0]
+          ensayoId = parcela.ensayo?.id || parcela.ensayoId
+
+          // Buscar el momento activo más reciente
+          if (ensayoId) {
+            const aplicacionesRes = await api.get('/aplicaciones', {
+              params: { ensayoId, limit: 10 }
+            })
+            const aplicaciones = aplicacionesRes?.data || aplicacionesRes || []
+
+            if (aplicaciones.length > 0) {
+              // Tomar la última aplicación y su primer momento
+              const ultimaApp = aplicaciones[aplicaciones.length - 1]
+              if (ultimaApp.momentos && ultimaApp.momentos.length > 0) {
+                momentoId = ultimaApp.momentos[0].id
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (ensayoId && momentoId) {
+      // Navegar directamente al momento de medición
+      router.push(`/mediciones/${ensayoId}/momento/${momentoId}`)
+      alert(`✅ Parcela encontrada. Navegando a mediciones...`)
+    } else if (ensayoId) {
+      // Navegar al ensayo para seleccionar momento
+      router.push(`/mediciones/${ensayoId}`)
+      alert(`✅ Ensayo encontrado. Selecciona el momento de evaluación.`)
+    } else {
+      alert('❌ No se pudo identificar la parcela. Verifica el código QR.')
+    }
+  } catch (err: any) {
+    console.error('Error procesando QR:', err)
+    alert('❌ Error al buscar la parcela: ' + (err.message || 'Error desconocido'))
+  }
+}
+
+function handleQRError(message: string) {
+  console.error('Error QR:', message)
+  alert('Error de escaneo: ' + message)
 }
 
 onMounted(async () => {

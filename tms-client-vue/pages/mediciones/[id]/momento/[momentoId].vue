@@ -158,17 +158,6 @@
             @delete-existing="handleDeleteExistingPhoto"
           />
         </div>
-
-        <!-- Escáner QR para cambiar de parcela -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-            🔍 Buscar Parcela
-          </h4>
-          <QRScanner
-            @scanned="handleQRScanned"
-            @error="handleQRError"
-          />
-        </div>
       </div>
     </div>
 
@@ -271,24 +260,6 @@ async function handleDeleteExistingPhoto(photoId: number) {
   }
 }
 
-// Manejo de QR escaneado
-function handleQRScanned(data: any) {
-  console.log('📱 QR escaneado:', data)
-
-  // Buscar la parcela por ID
-  const index = parcelas.value.findIndex(p => p.id === data.parcelaId)
-  if (index !== -1) {
-    parcelaActualIndex.value = index
-    cargarDatosParcela()
-    alert(`✅ Parcela encontrada: ${parcelas.value[index].nombreParcela}`)
-  } else {
-    alert(`❌ Parcela con ID ${data.parcelaId} no encontrada en este ensayo`)
-  }
-}
-
-function handleQRError(message: string) {
-  console.error('Error QR:', message)
-}
 
 function getPlaceholder(variable: any) {
   if (variable.unidad_medida === '%') return '0-100'
