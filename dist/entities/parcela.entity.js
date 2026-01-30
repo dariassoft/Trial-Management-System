@@ -59,8 +59,9 @@ __decorate([
     __metadata("design:type", Object)
 ], Parcela.prototype, "cosecha", void 0);
 exports.Parcela = Parcela = __decorate([
-    (0, typeorm_1.Entity)('Parcela'),
-    (0, typeorm_1.Unique)(['bloque', 'tratamiento']),
+    (0, typeorm_1.Entity)('Parcela')
+    // Eliminado: @Unique(['bloque', 'tratamiento']) - Un tratamiento puede repetirse en diferentes parcelas del mismo bloque
+    ,
     (0, typeorm_1.Unique)('uq_parcela_ensayo_nombre', ['ensayo', 'nombreParcela']),
     (0, typeorm_1.Index)('idx_parcela_nombre', ['nombreParcela'])
 ], Parcela);

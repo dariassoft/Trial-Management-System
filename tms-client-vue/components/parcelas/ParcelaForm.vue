@@ -428,32 +428,16 @@ const tratamientosDelEnsayo = computed(() => {
     return []
   }
 
-  // Si no hay protocolo, devolver todos los tratamientos (fallback)
-  if (!props.ensayo?.protocolo?.id) {
-    console.log('⚠️ No hay protocolo en ensayo, retornando todos los tratamientos')
-    console.log('📦 Total:', props.tratamientos.length)
-    props.tratamientos.forEach((t: any) => {
-      console.log(`  - Tratamiento ${t.id}:`, t.descripcion, '| Protocolo:', t.protocolo)
-    })
+  // Los tratamientos ya vienen filtrados por protocoloId desde el backend
+  // Si el ensayo tiene protocolo, retornar directamente los tratamientos
+  if (props.ensayo?.protocolo?.id || props.ensayo?.protocoloId) {
+    console.log('✅ Tratamientos ya filtrados por backend:', props.tratamientos.length)
     return props.tratamientos
   }
 
-  // Filtrar solo los tratamientos del protocolo del ensayo
-  const protocoloId = props.ensayo.protocolo.id
-  console.log(`🔍 Filtrando por protocolo ID: ${protocoloId}`)
-
-  const filtered = props.tratamientos.filter((t: any) => {
-    // El tratamiento siempre trae protocolo como objeto (según la respuesta)
-    const tratamientoProtocoloId = t.protocolo?.id
-    const matches = tratamientoProtocoloId === protocoloId
-
-    console.log(`  ${matches ? '✅' : '❌'} Trat ${t.id}: protocolo=${tratamientoProtocoloId}, esperado=${protocoloId}, desc="${t.descripcion.substring(0, 20)}"`)
-    return matches
-  })
-
-  console.log(`📦 Total filtrado: ${filtered.length} de ${props.tratamientos.length} tratamientos`)
-  console.log('==== fin tratamientosDelEnsayo ====')
-  return filtered
+  // Si no hay protocolo en el ensayo, mostrar todos (fallback)
+  console.log('⚠️ No hay protocolo en ensayo, retornando todos los tratamientos')
+  return props.tratamientos
 })
 
 // Watch para ver cuando cambian los props
@@ -464,10 +448,18 @@ watch(
     if (newVal?.id) {
       // EDICIÓN: Cargar datos de parcela existente
       console.log('✏️ Modo EDICIÓN - Cargando datos de parcela existente')
-      form.tratamientoId = newVal.tratamientoId || null
-      form.nombreParcela = newVal.nombreParcela || ''
+      // El tratamientoId puede venir directamente o dentro del objeto tratamiento
+      form.tratamientoId = newVal.tratamientoId || newVal.tratamiento?.id || null
       form.posXGrid = newVal.posXGrid || null
       form.posYGrid = newVal.posYGrid || null
+      console.log('   - tratamientoId cargado:', form.tratamientoId)
+      console.log('   - posXGrid cargado:', form.posXGrid)
+      console.log('   - posYGrid cargado:', form.posYGrid)
+
+      // Regenerar el nombre con los datos actuales del ensayo/bloque y las posiciones
+      // Esto asegura que el nombre siempre tenga el formato correcto
+      autocompletarNombre()
+      console.log('   - nombreParcela regenerado:', form.nombreParcela)
     } else {
       // CREACIÓN: Limpiar form e intentar autocompletar
       console.log('➕ Modo CREACIÓN - Inicializando form vacío')
@@ -497,10 +489,10 @@ watch(
   }
 )
 
-// Watch para auto-completar cuando cambian los datos del ensayo/bloque
+// Watch para auto-completar cuando cambian los datos del ensayo/bloque o posiciones
 watch(
   () => [codigoLabor.value, nombreBloque.value, form.posXGrid, form.posYGrid],
-  ([codigo, bloque, posX, posY]) => {
+  ([codigo, bloque, posX, posY], oldValues) => {
     console.log('🔄 Auto-completar watch disparado')
     console.log('  - codigoLabor:', codigo)
     console.log('  - nombreBloque:', bloque)
@@ -508,30 +500,49 @@ watch(
     console.log('  - posY:', posY)
     console.log('  - parcela id:', props.parcela?.id)
     console.log('  - nombreParcela actual:', form.nombreParcela)
+    console.log('  - oldValues:', oldValues)
 
-    // Solo autocompletar si es creación (sin id) y el nombre está vacío
-    if (!props.parcela?.id && !form.nombreParcela) {
-      console.log('✅ Es creación y nombre vacío - Auto-completando')
-      autocompletarNombre()
-    }
+    // Siempre regenerar el nombre cuando cambien las posiciones o datos
+    // Tanto en creación como en edición
+    console.log('✅ Regenerando nombre de parcela')
+    autocompletarNombre()
   },
-  { immediate: false }  // NO usar immediate para no interferir con carga de datos
+  { immediate: true }  // Ejecutar inmediatamente al montar
 )
 
 function autocompletarNombre() {
-  // Usar codigoLabor si existe y no está vacío, si no usar nombreBloque
-  const codigo = codigoLabor.value?.trim() ? codigoLabor.value : nombreBloque.value
-  const bloque = nombreBloque.value || 'BLOQUE'
-  const numero = form.posXGrid && form.posYGrid ? `-${form.posXGrid}.${form.posYGrid}` : ''
+  const codigo = codigoLabor.value?.trim() || ''
+  const bloque = nombreBloque.value?.trim() || ''
 
-  // Si codigo es igual a bloque (porque codigoLabor estaba vacío), no repetir
-  if (codigo === bloque) {
-    form.nombreParcela = `${bloque}${numero}`
-  } else {
-    form.nombreParcela = `${codigo}-${bloque}${numero}`
+  // Construir el nombre de la parcela según la fórmula: codigoLabor-bloque-X.Y
+  let nombreGenerado = ''
+
+  // Si hay código labor, empezar con él
+  if (codigo) {
+    nombreGenerado = codigo
   }
 
+  // Agregar el nombre del bloque
+  if (bloque) {
+    if (nombreGenerado) {
+      nombreGenerado += `-${bloque}`
+    } else {
+      nombreGenerado = bloque
+    }
+  }
+
+  // Agregar posiciones X.Y solo si ambas están definidas
+  if (form.posXGrid && form.posYGrid) {
+    nombreGenerado += `-${form.posXGrid}.${form.posYGrid}`
+  }
+
+  form.nombreParcela = nombreGenerado || 'PARCELA'
+
   console.log('✏️ Nombre autogenerado:', form.nombreParcela)
+  console.log('   - codigoLabor:', codigo)
+  console.log('   - nombreBloque:', bloque)
+  console.log('   - posX:', form.posXGrid)
+  console.log('   - posY:', form.posYGrid)
 }
 
 function mostrarInfoPosiciones() {
@@ -563,11 +574,11 @@ async function generarYMostrarQR() {
 
     qrCodeData.value = qrDataStr
     qrInfo.value = {
-      ensayoNombre: props.ensayo?.nombreEnsayo || 'Sin nombre',
-      laboratorioNombre: props.ensayo?.laboratorio?.nombre || 'Sin laboratorio',
-      tipoEnsayoNombre: props.ensayo?.tipoEnsayo?.nombre || 'Sin tipo',
-      bloqueNombre: `Bloque ${nombreBloque.value}`,
-      parcelaNombre: form.nombreParcela || `(${form.posXGrid}, ${form.posYGrid})`,
+      ensayoNombre: props.ensayo?.nombreEnsayo || props.ensayo?.nombre || 'Sin nombre',
+      laboratorioNombre: props.ensayo?.laboratorio?.nombre || props.ensayo?.laboratorio || 'Sin laboratorio',
+      tipoEnsayoNombre: props.ensayo?.tipoEnsayo?.nombre || props.ensayo?.tipoEnsayo || 'Sin tipo',
+      bloqueNombre: `Bloque ${nombreBloque.value || props.bloque?.nombreBloque || '?'}`,
+      parcelaNombre: form.nombreParcela || `(${form.posXGrid || '?'}, ${form.posYGrid || '?'})`,
       tratamientoNombre: tratamiento?.descripcion || 'Sin tratamiento',
     }
 

@@ -77,17 +77,28 @@ let BloquesService = class BloquesService {
     }
     findAll(ensayoId) {
         const { isInvitado, labIds } = this.auth;
+        // Relaciones del ensayo a cargar (para tener codigoLabor, protocolo, laboratorio, tipoEnsayo)
+        const ensayoRelations = {
+            ensayo: {
+                protocolo: true,
+                laboratorio: true,
+                tipoEnsayo: true,
+            },
+        };
         // Si viene ensayoId, filtrar por ese ensayo
         if (ensayoId) {
             if (!isInvitado) {
                 return this.repo.find({
                     where: { ensayo: { id: ensayoId } },
-                    relations: { ensayo: true },
+                    relations: ensayoRelations,
                     order: { nombreBloque: 'ASC' },
                 });
             }
             const qb = this.repo.createQueryBuilder('b')
                 .leftJoinAndSelect('b.ensayo', 'e')
+                .leftJoinAndSelect('e.protocolo', 'protocolo')
+                .leftJoinAndSelect('e.laboratorio', 'laboratorio')
+                .leftJoinAndSelect('e.tipoEnsayo', 'tipoEnsayo')
                 .leftJoin('e.tratamientos', 't')
                 .leftJoin('t.productos', 'tp')
                 .leftJoin('tp.producto', 'p')
@@ -100,10 +111,13 @@ let BloquesService = class BloquesService {
         }
         // Si no viene ensayoId, traer todos (comportamiento original)
         if (!isInvitado) {
-            return this.repo.find({ relations: { ensayo: true }, order: { nombreBloque: 'ASC' } });
+            return this.repo.find({ relations: ensayoRelations, order: { nombreBloque: 'ASC' } });
         }
         const qb = this.repo.createQueryBuilder('b')
             .leftJoinAndSelect('b.ensayo', 'e')
+            .leftJoinAndSelect('e.protocolo', 'protocolo')
+            .leftJoinAndSelect('e.laboratorio', 'laboratorio')
+            .leftJoinAndSelect('e.tipoEnsayo', 'tipoEnsayo')
             .leftJoin('e.tratamientos', 't')
             .leftJoin('t.productos', 'tp')
             .leftJoin('tp.producto', 'p')

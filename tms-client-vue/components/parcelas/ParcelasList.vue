@@ -6,7 +6,7 @@
         Parcelas ({{ parcelas.length }})
       </h3>
       <button
-        @click="abrirFormParcela()"
+        @click="abrirNuevaParcela"
         class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition flex items-center gap-2"
       >
         <span>+</span> Nueva Parcela
@@ -35,7 +35,7 @@
         No hay parcelas creadas para este bloque
       </p>
       <button
-        @click="abrirFormParcela()"
+        @click="abrirNuevaParcela"
         class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
       >
         Crear primera parcela
@@ -111,7 +111,7 @@
       v-if="showFormParcela"
       :parcela="editingParcela"
       :tratamientos="tratamientos"
-      :ensayo="props.ensayo"
+      :ensayo="ensayoActual"
       :bloque="bloqueActual"
       @save="guardarParcela"
       @close="cerrarFormParcela"
@@ -131,6 +131,7 @@ interface Props {
   ensayoId: number
   bloqueId: number
   ensayo?: any
+  bloque?: any
 }
 
 const props = defineProps<Props>()
@@ -151,42 +152,109 @@ const {
 
 const api = useApi()
 const tratamientos = ref<any[]>([])
+const ensayoCompleto = ref<any>(null)
 const ensayosStore = useEnsayosStore()
 const bloquesStore = useBloquesStore()
 
-// Obtener bloque actual - DESDE STORES
+// Obtener el ensayo con toda la info (de props o cargado)
+const ensayoActual = computed(() => {
+  // Priorizar ensayo cargado completo si existe
+  if (ensayoCompleto.value) return ensayoCompleto.value
+  // Si no, intentar usar el de props
+  if (props.ensayo) return props.ensayo
+  // Finalmente, buscar en el store
+  const storeEnsayo = ensayosStore.currentEnsayo
+  if (storeEnsayo && Number(storeEnsayo.id) === Number(props.ensayoId)) return storeEnsayo
+  return null
+})
+
+// Obtener bloque actual - DESDE PROPS O STORES
 const bloqueActual = computed(() => {
+  // Priorizar el bloque que viene como prop
+  if (props.bloque) {
+    console.log('📌 bloqueActual desde props:', props.bloque)
+    return props.bloque
+  }
+
   if (bloquesStore.items && bloquesStore.items.length > 0) {
     const bloque = bloquesStore.items.find((b: any) => b.id === props.bloqueId)
-    if (bloque) return bloque
+    if (bloque) {
+      console.log('📌 bloqueActual desde store:', bloque)
+      return bloque
+    }
   }
 
   if (parcelasStore.items && parcelasStore.items.length > 0) {
     const bloque = parcelasStore.items.find((p: any) => p.bloque?.id === props.bloqueId)?.bloque
-    if (bloque) return bloque
+    if (bloque) {
+      console.log('📌 bloqueActual desde parcelas:', bloque)
+      return bloque
+    }
   }
 
+  console.log('⚠️ bloqueActual no encontrado')
   return null
 })
 
 const parcelas = computed(() => parcelasStore.items)
 
-// Cargar todos los tratamientos (ParcelaForm filtrará según protocolo del ensayo)
+// Cargar ensayo completo con todas las relaciones
+async function cargarEnsayoCompleto() {
+  try {
+    console.log('📋 Cargando ensayo completo para ID:', props.ensayoId)
+    const res = await api.get(`/ensayos/${props.ensayoId}`)
+    const data = res && (res.data ?? res)
+    ensayoCompleto.value = data
+    console.log('✅ Ensayo completo cargado:', data?.nombreEnsayo)
+    console.log('   - codigoLabor:', data?.codigoLabor)
+    console.log('   - protocolo:', data?.protocolo)
+    console.log('   - laboratorio:', data?.laboratorio)
+    console.log('   - tipoEnsayo:', data?.tipoEnsayo)
+    return data
+  } catch (err) {
+    console.error('Error cargando ensayo completo:', err)
+    return null
+  }
+}
+
+// Cargar tratamientos filtrados por protocolo del ensayo
 async function cargarTratamientos() {
   try {
-    console.log('📋 Cargando TODOS los tratamientos...')
-    const res = await api.get('/tratamientos', { params: { limit: 100 } })
-    const data = res && (res.data ?? res)
+    // Usar ensayoCompleto directamente (ya fue cargado)
+    const ensayo = ensayoCompleto.value || props.ensayo
+    const protocoloId = ensayo?.protocolo?.id || ensayo?.protocoloId
 
-    if (Array.isArray(data)) {
-      tratamientos.value = data
-      console.log('✅ Tratamientos cargados:', data.length)
-    } else if (data?.data) {
-      tratamientos.value = data.data
-      console.log('✅ Tratamientos cargados:', data.data.length)
+    console.log('📋 cargarTratamientos - ensayo:', ensayo?.nombreEnsayo)
+    console.log('   - protocoloId:', protocoloId)
+
+    if (protocoloId) {
+      console.log('📋 Cargando tratamientos FILTRADOS por protocoloId:', protocoloId)
+      const res = await api.get('/tratamientos', { params: { protocoloId, limit: 100 } })
+      const data = res && (res.data ?? res)
+
+      if (Array.isArray(data)) {
+        tratamientos.value = data
+        console.log('✅ Tratamientos del protocolo cargados:', data.length)
+      } else if (data?.data) {
+        tratamientos.value = data.data
+        console.log('✅ Tratamientos del protocolo cargados:', data.data.length)
+      } else {
+        tratamientos.value = []
+        console.warn('⚠️ Sin tratamientos para este protocolo')
+      }
     } else {
-      tratamientos.value = []
-      console.warn('⚠️ Sin tratamientos en respuesta')
+      console.log('⚠️ No hay protocoloId, cargando TODOS los tratamientos como fallback...')
+      const res = await api.get('/tratamientos', { params: { limit: 100 } })
+      const data = res && (res.data ?? res)
+
+      if (Array.isArray(data)) {
+        tratamientos.value = data
+      } else if (data?.data) {
+        tratamientos.value = data.data
+      } else {
+        tratamientos.value = []
+      }
+      console.log('✅ Tratamientos (todos) cargados:', tratamientos.value.length)
     }
   } catch (err) {
     console.error('Error cargando tratamientos:', err)
@@ -203,6 +271,9 @@ onMounted(async () => {
 
   try {
     console.log('🔄 Cargando datos para bloque...')
+    // Primero cargar el ensayo completo
+    await cargarEnsayoCompleto()
+    // Luego cargar tratamientos (que dependen del protocolo del ensayo)
     await Promise.all([
       cargarTratamientos(),
       cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId })
@@ -214,7 +285,49 @@ onMounted(async () => {
 })
 
 async function editarParcela(parcela: any) {
-  abrirFormParcela(parcela)
+  console.log('🖊️ Abriendo formulario de edición')
+  console.log('   - parcela:', parcela)
+  console.log('   - parcela.tratamiento:', parcela?.tratamiento)
+  console.log('   - ensayoActual:', ensayoActual.value)
+  console.log('   - ensayoActual.codigoLabor:', ensayoActual.value?.codigoLabor)
+  console.log('   - ensayoActual.protocolo:', ensayoActual.value?.protocolo)
+  console.log('   - bloqueActual:', bloqueActual.value)
+
+  // Si no hay ensayo completo, cargarlo primero (igual que en creación)
+  if (!ensayoCompleto.value) {
+    console.log('⏳ Cargando ensayo completo antes de abrir formulario de edición...')
+    await cargarEnsayoCompleto()
+    console.log('✅ Ensayo cargado:', ensayoCompleto.value?.nombreEnsayo)
+  }
+
+  // Preparar la parcela con tratamientoId extraído del objeto tratamiento
+  const parcelaParaEditar = {
+    ...parcela,
+    tratamientoId: parcela.tratamiento?.id || parcela.tratamientoId,
+  }
+  console.log('   - parcelaParaEditar:', parcelaParaEditar)
+
+  abrirFormParcela(parcelaParaEditar)
+}
+
+async function abrirNuevaParcela() {
+  console.log('➕ Abriendo formulario de nueva parcela')
+  console.log('   - ensayoCompleto:', ensayoCompleto.value)
+  console.log('   - ensayoActual:', ensayoActual.value)
+  console.log('   - ensayoActual.codigoLabor:', ensayoActual.value?.codigoLabor)
+  console.log('   - ensayoActual.protocolo:', ensayoActual.value?.protocolo)
+  console.log('   - bloqueActual:', bloqueActual.value)
+  console.log('   - bloqueActual.nombreBloque:', bloqueActual.value?.nombreBloque)
+  console.log('   - tratamientos:', tratamientos.value?.length)
+
+  // Si no hay ensayo completo, cargarlo primero
+  if (!ensayoCompleto.value) {
+    console.log('⏳ Cargando ensayo completo antes de abrir formulario...')
+    await cargarEnsayoCompleto()
+    console.log('✅ Ensayo cargado:', ensayoCompleto.value?.nombreEnsayo)
+  }
+
+  abrirFormParcela()
 }
 
 async function guardarParcela(datos: any) {

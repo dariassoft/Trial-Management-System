@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Scope, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Scope, Inject, ConflictException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
 import { Role } from '../entities/rol.entity';
@@ -24,16 +24,27 @@ export class ParcelasService {
     return { isInvitado, labIds };
   }
 
-  create(dto: CreateParcelaDto) {
-    const entity = this.repo.create({
-      ensayo: { id: dto.ensayoId } as any,
-      bloque: { id: dto.bloqueId } as any,
-      tratamiento: { id: dto.tratamientoId } as any,
-      nombreParcela: dto.nombreParcela,
-      posXGrid: dto.posXGrid,
-      posYGrid: dto.posYGrid,
-    });
-    return this.repo.save(entity);
+  async create(dto: CreateParcelaDto) {
+    try {
+      const entity = this.repo.create({
+        ensayo: { id: dto.ensayoId } as any,
+        bloque: { id: dto.bloqueId } as any,
+        tratamiento: { id: dto.tratamientoId } as any,
+        nombreParcela: dto.nombreParcela,
+        posXGrid: dto.posXGrid,
+        posYGrid: dto.posYGrid,
+      });
+      return await this.repo.save(entity);
+    } catch (error: any) {
+      // Manejar error de clave duplicada
+      if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+        if (error.sqlMessage?.includes('uq_parcela_ensayo_nombre')) {
+          throw new ConflictException(`Ya existe una parcela con el nombre "${dto.nombreParcela}" en este ensayo. Por favor, usa un nombre diferente o ajusta las posiciones X/Y.`);
+        }
+        throw new ConflictException('Ya existe una parcela con estos datos. Verifica que no haya duplicados.');
+      }
+      throw error;
+    }
   }
 
   async findAll(params: {

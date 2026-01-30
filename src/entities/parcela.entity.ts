@@ -6,7 +6,7 @@ import { DatosCampo } from './datos-campo.entity';
 import { DatosCosecha } from './datos-cosecha.entity';
 
 @Entity('Parcela')
-@Unique(['bloque', 'tratamiento'])
+// Eliminado: @Unique(['bloque', 'tratamiento']) - Un tratamiento puede repetirse en diferentes parcelas del mismo bloque
 @Unique('uq_parcela_ensayo_nombre', ['ensayo', 'nombreParcela'])
 @Index('idx_parcela_nombre', ['nombreParcela'])
 export class Parcela {

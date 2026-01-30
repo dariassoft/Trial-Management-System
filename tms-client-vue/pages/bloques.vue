@@ -164,6 +164,8 @@
                         <ParcelasList
                           :ensayo-id="grupo.ensayo.id"
                           :bloque-id="bloque.id"
+                          :ensayo="grupo.ensayo"
+                          :bloque="bloque"
                         />
                       </div>
                     </Transition>

@@ -41,15 +41,30 @@ let ParcelasService = class ParcelasService {
         return { isInvitado, labIds };
     }
     create(dto) {
-        const entity = this.repo.create({
-            ensayo: { id: dto.ensayoId },
-            bloque: { id: dto.bloqueId },
-            tratamiento: { id: dto.tratamientoId },
-            nombreParcela: dto.nombreParcela,
-            posXGrid: dto.posXGrid,
-            posYGrid: dto.posYGrid,
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const entity = this.repo.create({
+                    ensayo: { id: dto.ensayoId },
+                    bloque: { id: dto.bloqueId },
+                    tratamiento: { id: dto.tratamientoId },
+                    nombreParcela: dto.nombreParcela,
+                    posXGrid: dto.posXGrid,
+                    posYGrid: dto.posYGrid,
+                });
+                return yield this.repo.save(entity);
+            }
+            catch (error) {
+                // Manejar error de clave duplicada
+                if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+                    if ((_a = error.sqlMessage) === null || _a === void 0 ? void 0 : _a.includes('uq_parcela_ensayo_nombre')) {
+                        throw new common_1.ConflictException(`Ya existe una parcela con el nombre "${dto.nombreParcela}" en este ensayo. Por favor, usa un nombre diferente o ajusta las posiciones X/Y.`);
+                    }
+                    throw new common_1.ConflictException('Ya existe una parcela con estos datos. Verifica que no haya duplicados.');
+                }
+                throw error;
+            }
         });
-        return this.repo.save(entity);
     }
     findAll() {
         return __awaiter(this, arguments, void 0, function* (params = {}) {
