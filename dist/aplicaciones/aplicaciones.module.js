@@ -12,12 +12,15 @@ const typeorm_1 = require("@nestjs/typeorm");
 const aplicaciones_service_1 = require("./aplicaciones.service");
 const aplicaciones_controller_1 = require("./aplicaciones.controller");
 const aplicacion_entity_1 = require("../entities/aplicacion.entity");
+const ensayo_entity_1 = require("../entities/ensayo.entity");
+const tipo_ensayo_evaluacion_dia_entity_1 = require("../entities/tipo-ensayo-evaluacion-dia.entity");
+const momento_evaluacion_entity_1 = require("../entities/momento-evaluacion.entity");
 let AplicacionesModule = class AplicacionesModule {
 };
 exports.AplicacionesModule = AplicacionesModule;
 exports.AplicacionesModule = AplicacionesModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([aplicacion_entity_1.Aplicacion])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([aplicacion_entity_1.Aplicacion, ensayo_entity_1.Ensayo, tipo_ensayo_evaluacion_dia_entity_1.TipoEnsayoEvaluacionDia, momento_evaluacion_entity_1.MomentoEvaluacion])],
         controllers: [aplicaciones_controller_1.AplicacionesController],
         providers: [aplicaciones_service_1.AplicacionesService],
     })

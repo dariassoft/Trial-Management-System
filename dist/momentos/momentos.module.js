@@ -12,12 +12,14 @@ const typeorm_1 = require("@nestjs/typeorm");
 const momentos_service_1 = require("./momentos.service");
 const momentos_controller_1 = require("./momentos.controller");
 const momento_evaluacion_entity_1 = require("../entities/momento-evaluacion.entity");
+const datos_campo_entity_1 = require("../entities/datos-campo.entity");
+const parcela_entity_1 = require("../entities/parcela.entity");
 let MomentosModule = class MomentosModule {
 };
 exports.MomentosModule = MomentosModule;
 exports.MomentosModule = MomentosModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([momento_evaluacion_entity_1.MomentoEvaluacion])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([momento_evaluacion_entity_1.MomentoEvaluacion, datos_campo_entity_1.DatosCampo, parcela_entity_1.Parcela])],
         controllers: [momentos_controller_1.MomentosController],
         providers: [momentos_service_1.MomentosService],
     })

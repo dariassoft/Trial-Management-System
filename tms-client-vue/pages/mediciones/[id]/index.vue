@@ -1,0 +1,487 @@
+<template>
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 shadow">
+      <div class="max-w-7xl mx-auto px-4 py-4">
+        <div class="flex items-center gap-4">
+          <button
+            @click="router.push('/mediciones')"
+            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            ← Volver
+          </button>
+          <div>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+              {{ ensayo?.nombreEnsayo || 'Cargando...' }}
+            </h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ ensayo?.codigoLabor || '' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div v-if="loading" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- Contenido -->
+    <div v-else class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <!-- Info del ensayo -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+          📋 Información del Ensayo
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <span class="text-gray-500 dark:text-gray-400">Laboratorio:</span>
+            <p class="font-medium text-gray-900 dark:text-white">
+              {{ ensayo?.laboratorio?.nombre || '-' }}
+            </p>
+          </div>
+          <div>
+            <span class="text-gray-500 dark:text-gray-400">Tipo:</span>
+            <p class="font-medium text-gray-900 dark:text-white">
+              {{ ensayo?.tipoEnsayo?.nombre || '-' }}
+            </p>
+          </div>
+          <div>
+            <span class="text-gray-500 dark:text-gray-400">Fecha Siembra:</span>
+            <p class="font-medium text-gray-900 dark:text-white">
+              {{ formatDate(ensayo?.fechaSiembra) }}
+            </p>
+          </div>
+          <div>
+            <span class="text-gray-500 dark:text-gray-400">Estado:</span>
+            <p class="font-medium text-gray-900 dark:text-white">
+              {{ ensayo?.status?.nombre || '-' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aplicaciones -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+            💉 Aplicaciones
+          </h2>
+          <button
+            @click="abrirNuevaAplicacion"
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg
+                   font-medium transition flex items-center gap-2"
+          >
+            <span>+</span> Nueva Aplicación
+          </button>
+        </div>
+
+        <!-- Lista de aplicaciones -->
+        <div v-if="aplicaciones.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400">
+          <p>No hay aplicaciones registradas</p>
+          <p class="text-sm mt-2">Crea una aplicación para empezar a registrar mediciones</p>
+        </div>
+
+        <div v-else class="divide-y divide-gray-200 dark:divide-gray-700">
+          <div
+            v-for="aplicacion in aplicaciones"
+            :key="aplicacion.id"
+            class="p-4"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">
+                  {{ aplicacion.nombreAplicacion }}
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  📅 {{ formatDateTime(aplicacion.fechaHora) }}
+                  <span v-if="aplicacion.estadioCultivo">
+                    | 🌿 Estadio: {{ aplicacion.estadioCultivo }}
+                  </span>
+                </p>
+              </div>
+              <button
+                @click="editarAplicacion(aplicacion)"
+                class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition"
+                title="Editar aplicación"
+              >
+                ✏️
+              </button>
+            </div>
+
+            <!-- Momentos de esta aplicación -->
+            <div class="mt-4 space-y-2">
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Momentos de evaluación:
+              </p>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div
+                  v-for="momento in aplicacion.momentos"
+                  :key="momento.id"
+                  @click="irAMedirMomento(momento.id)"
+                  class="p-3 rounded-lg border cursor-pointer transition hover:shadow-md"
+                  :class="getMomentoClass(momentoProgreso[momento.id])"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-gray-900 dark:text-white">
+                      {{ momento.nombreMomento }}
+                    </span>
+                    <span :class="getMomentoIconClass(momentoProgreso[momento.id])">
+                      {{ getMomentoIcon(momentoProgreso[momento.id]) }}
+                    </span>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {{ formatDate(momento.fechaEvaluacion) }}
+                  </p>
+
+                  <!-- Barra de progreso -->
+                  <div v-if="momentoProgreso[momento.id]" class="mt-2">
+                    <div class="h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                      <div
+                        class="h-full transition-all duration-300"
+                        :class="momentoProgreso[momento.id]?.porcentaje >= 100 ? 'bg-green-500' : 'bg-blue-500'"
+                        :style="{ width: `${momentoProgreso[momento.id]?.porcentaje || 0}%` }"
+                      ></div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {{ momentoProgreso[momento.id]?.parcelasMedidas || 0 }}/{{ momentoProgreso[momento.id]?.totalParcelas || 0 }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Nueva/Editar Aplicación -->
+    <Teleport to="body">
+      <div
+        v-if="showNuevaAplicacion"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        @click.self="showNuevaAplicacion = false"
+      >
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ editingAplicacionId ? 'Editar Aplicación' : 'Nueva Aplicación' }}
+            </h3>
+          </div>
+
+          <form @submit.prevent="guardarAplicacion" class="p-4 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Nombre de la aplicación
+              </label>
+              <input
+                v-model="formAplicacion.nombreAplicacion"
+                type="text"
+                placeholder="Primera aplicación"
+                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Fecha y hora
+              </label>
+              <input
+                v-model="formAplicacion.fechaHora"
+                type="datetime-local"
+                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Estadio del cultivo
+              </label>
+              <input
+                v-model="formAplicacion.estadioCultivo"
+                type="text"
+                placeholder="V2, V4, R1..."
+                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Temp (°C)
+                </label>
+                <input
+                  v-model.number="formAplicacion.tempC"
+                  type="number"
+                  step="0.1"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Humedad (%)
+                </label>
+                <input
+                  v-model.number="formAplicacion.humedadPct"
+                  type="number"
+                  step="0.1"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Viento (km/h)
+                </label>
+                <input
+                  v-model.number="formAplicacion.vientoKmh"
+                  type="number"
+                  step="0.1"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+              <button
+                type="button"
+                @click="showNuevaAplicacion = false"
+                class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100
+                       dark:hover:bg-gray-700 rounded-lg transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                :disabled="guardando"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
+                       font-medium transition disabled:opacity-50"
+              >
+                {{ guardando ? 'Guardando...' : (editingAplicacionId ? 'Guardar Cambios' : 'Crear Aplicación') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useEnsayosStore } from '~/stores/ensayos'
+import { useAplicacionesStore } from '~/stores/aplicaciones'
+import { useApi } from '~/composables/useApi'
+
+definePageMeta({
+  middleware: 'auth',
+  layout: 'default',
+})
+
+const route = useRoute()
+const router = useRouter()
+const ensayosStore = useEnsayosStore()
+const aplicacionesStore = useAplicacionesStore()
+const api = useApi()
+
+const ensayoId = computed(() => Number(route.params.id))
+const loading = ref(false)
+const guardando = ref(false)
+const showNuevaAplicacion = ref(false)
+const editingAplicacionId = ref<number | null>(null)
+
+const ensayo = ref<any>(null)
+const aplicaciones = computed(() => aplicacionesStore.items || [])
+const momentoProgreso = ref<Record<number, any>>({})
+
+const formAplicacion = ref({
+  nombreAplicacion: 'Primera aplicación',
+  fechaHora: '',
+  estadioCultivo: '',
+  tempC: null as number | null,
+  humedadPct: null as number | null,
+  vientoKmh: null as number | null,
+})
+
+function editarAplicacion(aplicacion: any) {
+  editingAplicacionId.value = aplicacion.id
+  formAplicacion.value = {
+    nombreAplicacion: aplicacion.nombreAplicacion || '',
+    fechaHora: aplicacion.fechaHora ? new Date(aplicacion.fechaHora).toISOString().slice(0, 16) : '',
+    estadioCultivo: aplicacion.estadioCultivo || '',
+    tempC: aplicacion.tempC || null,
+    humedadPct: aplicacion.humedadPct || null,
+    vientoKmh: aplicacion.vientoKmh || null,
+  }
+  showNuevaAplicacion.value = true
+}
+
+function abrirNuevaAplicacion() {
+  editingAplicacionId.value = null
+  formAplicacion.value = {
+    nombreAplicacion: 'Primera aplicación',
+    fechaHora: '',
+    estadioCultivo: '',
+    tempC: null,
+    humedadPct: null,
+    vientoKmh: null,
+  }
+  showNuevaAplicacion.value = true
+}
+
+function formatDate(date?: string | null) {
+  if (!date) return '-'
+  try {
+    return new Date(date).toLocaleDateString('es-AR')
+  } catch {
+    return date
+  }
+}
+
+function formatDateTime(date?: string | null) {
+  if (!date) return '-'
+  try {
+    return new Date(date).toLocaleString('es-AR')
+  } catch {
+    return date
+  }
+}
+
+function getMomentoClass(progreso: any) {
+  if (!progreso) return 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
+
+  if (progreso.estado === 'completado') {
+    return 'border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/30'
+  }
+  if (progreso.estado === 'en_progreso') {
+    return 'border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/30'
+  }
+  return 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
+}
+
+function getMomentoIcon(progreso: any) {
+  if (!progreso) return '📋'
+  if (progreso.estado === 'completado') return '✅'
+  if (progreso.estado === 'en_progreso') return '🔵'
+  return '⏳'
+}
+
+function getMomentoIconClass(progreso: any) {
+  return 'text-lg'
+}
+
+async function cargarProgresoMomentos() {
+  for (const aplicacion of aplicaciones.value) {
+    if (aplicacion.momentos) {
+      for (const momento of aplicacion.momentos) {
+        try {
+          const res = await api.get(`/momentos/${momento.id}/progreso`)
+          const progreso = res?.data ?? res
+          momentoProgreso.value[momento.id] = progreso
+        } catch (err) {
+          console.error(`Error cargando progreso del momento ${momento.id}:`, err)
+        }
+      }
+    }
+  }
+}
+
+function irAMedirMomento(momentoId: number) {
+  console.log('🎯 Navegando a momento:', momentoId)
+  console.log('🎯 URL:', `/mediciones/${ensayoId.value}/momento/${momentoId}`)
+  router.push(`/mediciones/${ensayoId.value}/momento/${momentoId}`)
+}
+
+async function guardarAplicacion() {
+  guardando.value = true
+  try {
+    // Construir objeto solo con campos que tienen valor
+    const datos: Record<string, any> = {}
+
+    if (formAplicacion.value.nombreAplicacion) {
+      datos.nombreAplicacion = formAplicacion.value.nombreAplicacion
+    }
+    if (formAplicacion.value.fechaHora) {
+      datos.fechaHora = formAplicacion.value.fechaHora
+    }
+    if (formAplicacion.value.estadioCultivo) {
+      datos.estadioCultivo = formAplicacion.value.estadioCultivo
+    }
+    // Convertir a números - los inputs HTML devuelven strings
+    if (formAplicacion.value.tempC !== null && formAplicacion.value.tempC !== undefined && formAplicacion.value.tempC !== '') {
+      datos.tempC = parseFloat(String(formAplicacion.value.tempC))
+    }
+    if (formAplicacion.value.humedadPct !== null && formAplicacion.value.humedadPct !== undefined && formAplicacion.value.humedadPct !== '') {
+      datos.humedadPct = parseFloat(String(formAplicacion.value.humedadPct))
+    }
+    if (formAplicacion.value.vientoKmh !== null && formAplicacion.value.vientoKmh !== undefined && formAplicacion.value.vientoKmh !== '') {
+      datos.vientoKmh = parseFloat(String(formAplicacion.value.vientoKmh))
+    }
+
+    if (editingAplicacionId.value) {
+      // Modo edición - NO enviar ensayoId
+      console.log('📝 Actualizando aplicación:', editingAplicacionId.value, datos)
+      await aplicacionesStore.update(editingAplicacionId.value, datos)
+    } else {
+      // Modo creación - incluir ensayoId
+      datos.ensayoId = ensayoId.value
+      console.log('➕ Creando aplicación:', datos)
+      await aplicacionesStore.create(datos)
+    }
+
+    showNuevaAplicacion.value = false
+    editingAplicacionId.value = null
+
+    // Recargar aplicaciones
+    await aplicacionesStore.fetchByEnsayo(ensayoId.value)
+
+    // Recargar progreso
+    await cargarProgresoMomentos()
+
+    // Reset form
+    formAplicacion.value = {
+      nombreAplicacion: 'Primera aplicación',
+      fechaHora: '',
+      estadioCultivo: '',
+      tempC: null,
+      humedadPct: null,
+      vientoKmh: null,
+    }
+  } catch (err) {
+    console.error('Error guardando aplicación:', err)
+    alert('Error al guardar la aplicación')
+  } finally {
+    guardando.value = false
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    // Cargar ensayo
+    const res = await api.get(`/ensayos/${ensayoId.value}`)
+    ensayo.value = res?.data ?? res
+
+    // Cargar aplicaciones
+    await aplicacionesStore.fetchByEnsayo(ensayoId.value)
+
+    // Cargar progreso de cada momento
+    await cargarProgresoMomentos()
+  } catch (err) {
+    console.error('Error cargando datos:', err)
+  } finally {
+    loading.value = false
+  }
+})
+
+useHead({
+  title: computed(() => `Mediciones - ${ensayo.value?.nombreEnsayo || 'Ensayo'}`),
+})
+</script>

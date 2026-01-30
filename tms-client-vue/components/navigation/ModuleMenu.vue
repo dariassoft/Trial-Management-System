@@ -68,10 +68,10 @@ const allModules = [
     roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
   },
   {
-    id: 'datos-campo',
-    name: 'Datos de Campo',
-    icon: '📝',
-    href: '/datos-campo',
+    id: 'mediciones',
+    name: 'Mediciones',
+    icon: '📱',
+    href: '/mediciones',
     roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
   },
   {

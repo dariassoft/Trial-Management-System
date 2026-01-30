@@ -11,6 +11,32 @@ export class ProtocoloVariablesService {
     private readonly repository: Repository<ProtocoloVariable>,
   ) {}
 
+  async findAll(): Promise<ProtocoloVariable[]> {
+    return this.repository.find({
+      relations: ['tipoEnsayo'],
+      order: { id: 'ASC' },
+    });
+  }
+
+  async findByTipoEnsayo(tipoEnsayoId: number): Promise<ProtocoloVariable[]> {
+    return this.repository.find({
+      where: { tipoEnsayo: { id: tipoEnsayoId } },
+      relations: ['tipoEnsayo'],
+      order: { id: 'ASC' },
+    });
+  }
+
+  async findOne(id: number): Promise<ProtocoloVariable> {
+    const variable = await this.repository.findOne({
+      where: { id },
+      relations: ['tipoEnsayo'],
+    });
+    if (!variable) {
+      throw new NotFoundException(`Variable con ID ${id} no encontrada.`);
+    }
+    return variable;
+  }
+
   async update(id: number, dto: UpdateProtocoloVariableDto): Promise<ProtocoloVariable> {
     const variable = await this.repository.findOne({ where: { id } });
     if (!variable) {

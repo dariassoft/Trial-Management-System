@@ -88,6 +88,7 @@ let EnsayosService = class EnsayosService {
                 .leftJoinAndSelect('e.variedad', 'variedad')
                 .leftJoinAndSelect('e.cultivo', 'cultivo')
                 .leftJoinAndSelect('e.tipoSiembra', 'tipoSiembra')
+                .leftJoinAndSelect('e.tipoEnsayo', 'tipoEnsayo')
                 .leftJoinAndSelect('e.status', 'status');
             if (query.q) {
                 const searchTerm = `%${query.q}%`;

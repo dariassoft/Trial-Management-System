@@ -30,6 +30,35 @@ let ProtocoloVariablesService = class ProtocoloVariablesService {
     constructor(repository) {
         this.repository = repository;
     }
+    findAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.find({
+                relations: ['tipoEnsayo'],
+                order: { id: 'ASC' },
+            });
+        });
+    }
+    findByTipoEnsayo(tipoEnsayoId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.find({
+                where: { tipoEnsayo: { id: tipoEnsayoId } },
+                relations: ['tipoEnsayo'],
+                order: { id: 'ASC' },
+            });
+        });
+    }
+    findOne(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const variable = yield this.repository.findOne({
+                where: { id },
+                relations: ['tipoEnsayo'],
+            });
+            if (!variable) {
+                throw new common_1.NotFoundException(`Variable con ID ${id} no encontrada.`);
+            }
+            return variable;
+        });
+    }
     update(id, dto) {
         return __awaiter(this, void 0, void 0, function* () {
             const variable = yield this.repository.findOne({ where: { id } });

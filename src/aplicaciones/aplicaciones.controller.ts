@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, ParseIntPipe } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiParam } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AplicacionesService } from './aplicaciones.service';
 import { CreateAplicacionDto } from './dto/create-aplicacion.dto';
 import { UpdateAplicacionDto } from './dto/update-aplicacion.dto';
@@ -44,9 +44,10 @@ export class AplicacionesController {
 
   @Get()
   @ApiOperation({ summary: 'Listar aplicaciones' })
+  @ApiQuery({ name: 'ensayoId', required: false, type: Number, description: 'Filtrar por ensayo' })
   @ApiOkResponse({ type: Aplicacion, isArray: true })
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query('ensayoId') ensayoId?: string) {
+    return this.service.findAll({ ensayoId: ensayoId ? parseInt(ensayoId, 10) : undefined });
   }
 
   @Get(':id')

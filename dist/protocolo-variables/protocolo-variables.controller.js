@@ -19,15 +19,44 @@ const protocolo_variables_service_1 = require("./protocolo-variables.service");
 const update_protocolo_variable_dto_1 = require("./dto/update-protocolo-variable.dto");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const rol_entity_1 = require("../entities/rol.entity");
+const protocolo_variable_entity_1 = require("../entities/protocolo-variable.entity");
 let ProtocoloVariablesController = class ProtocoloVariablesController {
     constructor(service) {
         this.service = service;
+    }
+    findAll(tipoEnsayoId) {
+        if (tipoEnsayoId) {
+            return this.service.findByTipoEnsayo(parseInt(tipoEnsayoId, 10));
+        }
+        return this.service.findAll();
+    }
+    findOne(id) {
+        return this.service.findOne(id);
     }
     update(id, dto) {
         return this.service.update(id, dto);
     }
 };
 exports.ProtocoloVariablesController = ProtocoloVariablesController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar todas las variables (opcional: filtrar por tipoEnsayoId)' }),
+    (0, swagger_1.ApiQuery)({ name: 'tipoEnsayoId', required: false, type: Number, description: 'Filtrar por tipo de ensayo' }),
+    (0, swagger_1.ApiOkResponse)({ type: protocolo_variable_entity_1.ProtocoloVariable, isArray: true }),
+    __param(0, (0, common_1.Query)('tipoEnsayoId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProtocoloVariablesController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener una variable por ID' }),
+    (0, swagger_1.ApiOkResponse)({ type: protocolo_variable_entity_1.ProtocoloVariable }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ProtocoloVariablesController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),

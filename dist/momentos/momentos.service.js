@@ -28,10 +28,14 @@ const rol_entity_1 = require("../entities/rol.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const momento_evaluacion_entity_1 = require("../entities/momento-evaluacion.entity");
+const datos_campo_entity_1 = require("../entities/datos-campo.entity");
+const parcela_entity_1 = require("../entities/parcela.entity");
 let MomentosService = class MomentosService {
-    constructor(req, repo) {
+    constructor(req, repo, datosCampoRepo, parcelaRepo) {
         this.req = req;
         this.repo = repo;
+        this.datosCampoRepo = datosCampoRepo;
+        this.parcelaRepo = parcelaRepo;
     }
     get auth() {
         var _a;
@@ -49,21 +53,67 @@ let MomentosService = class MomentosService {
         });
         return this.repo.save(entity);
     }
-    findAll() {
-        const { isInvitado, labIds } = this.auth;
-        if (!isInvitado) {
-            return this.repo.find({ relations: { aplicacion: true } });
-        }
-        const qb = this.repo.createQueryBuilder('m')
-            .leftJoinAndSelect('m.aplicacion', 'a')
-            .leftJoin('a.ensayo', 'e')
-            .leftJoin('e.tratamientos', 't')
-            .leftJoin('t.productos', 'tp')
-            .leftJoin('tp.producto', 'p')
-            .leftJoin('p.laboratorio', 'l')
-            .where('l.id IN (:...labIds)', { labIds })
-            .distinct(true);
-        return qb.getMany();
+    findAll(query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { isInvitado, labIds } = this.auth;
+            const qb = this.repo.createQueryBuilder('m')
+                .leftJoinAndSelect('m.aplicacion', 'a')
+                .leftJoinAndSelect('a.ensayo', 'e')
+                .orderBy('m.diasDespuesAplicacion', 'ASC');
+            if (query === null || query === void 0 ? void 0 : query.aplicacionId) {
+                qb.andWhere('a.id = :aplicacionId', { aplicacionId: query.aplicacionId });
+            }
+            if (isInvitado) {
+                qb.leftJoin('e.tratamientos', 't')
+                    .leftJoin('t.productos', 'tp')
+                    .leftJoin('tp.producto', 'p')
+                    .leftJoin('p.laboratorio', 'l')
+                    .andWhere('l.id IN (:...labIds)', { labIds })
+                    .distinct(true);
+            }
+            return qb.getMany();
+        });
+    }
+    /**
+     * Obtener el progreso de un momento (parcelas medidas vs total)
+     */
+    getProgreso(momentoId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const momento = yield this.repo.findOne({
+                where: { id: momentoId },
+                relations: ['aplicacion', 'aplicacion.ensayo'],
+            });
+            if (!momento)
+                throw new common_1.NotFoundException(`Momento ${momentoId} no encontrado`);
+            const ensayoId = momento.aplicacion.ensayo.id;
+            // Contar parcelas totales del ensayo
+            const totalParcelas = yield this.parcelaRepo.count({
+                where: { ensayo: { id: ensayoId } },
+            });
+            // Contar parcelas ya medidas en este momento
+            const parcelasMedidas = yield this.datosCampoRepo.count({
+                where: { momento: { id: momentoId } },
+            });
+            // Obtener las parcelas pendientes
+            const parcelasConMedicion = yield this.datosCampoRepo.find({
+                where: { momento: { id: momentoId } },
+                relations: ['parcela'],
+                select: { id: true, parcela: { id: true } },
+            });
+            const idsMedidas = parcelasConMedicion.map(dc => dc.parcela.id);
+            return {
+                momentoId,
+                nombreMomento: momento.nombreMomento,
+                diasDespuesAplicacion: momento.diasDespuesAplicacion,
+                fechaEvaluacion: momento.fechaEvaluacion,
+                totalParcelas,
+                parcelasMedidas,
+                parcelasPendientes: totalParcelas - parcelasMedidas,
+                porcentaje: totalParcelas > 0 ? Math.round((parcelasMedidas / totalParcelas) * 100) : 0,
+                estado: parcelasMedidas === 0 ? 'pendiente' : parcelasMedidas >= totalParcelas ? 'completado' : 'en_progreso',
+                idsParcelasMedidas: idsMedidas,
+            };
+        });
     }
     findOne(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -117,5 +167,9 @@ exports.MomentosService = MomentosService = __decorate([
     (0, common_1.Injectable)({ scope: common_1.Scope.REQUEST }),
     __param(0, (0, common_1.Inject)(core_1.REQUEST)),
     __param(1, (0, typeorm_1.InjectRepository)(momento_evaluacion_entity_1.MomentoEvaluacion)),
-    __metadata("design:paramtypes", [Object, typeorm_2.Repository])
+    __param(2, (0, typeorm_1.InjectRepository)(datos_campo_entity_1.DatosCampo)),
+    __param(3, (0, typeorm_1.InjectRepository)(parcela_entity_1.Parcela)),
+    __metadata("design:paramtypes", [Object, typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], MomentosService);

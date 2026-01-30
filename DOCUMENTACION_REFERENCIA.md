@@ -1,40 +1,41 @@
 # 📚 DOCUMENTACIÓN DE REFERENCIA - TMS
 
-**Versión**: 2.0 | **Actualizado**: Diciembre 11, 2025
+**Versión**: 3.0 | **Actualizado**: Enero 29, 2026
 
 ---
 
 ## 🚀 INICIO RÁPIDO PARA IA ASSISTANTS
 
-### Primero: Leer estos 4 documentos (en orden)
+### Primero: Leer estos documentos clave
 
-1. **gemini-rules.md** (Este proyecto)
+1. **STATUS_PROYECTO_ENERO_2026.md** (Estado Actual)
    ```
-   📍 /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/gemini-rules.md
+   📍 /tms-backend/STATUS_PROYECTO_ENERO_2026.md
+   ⏱️ Lectura: 5 minutos
+   📖 Qué contiene: Resumen ejecutivo, sesiones completadas, correcciones recientes
+   ```
+
+2. **TAREAS_PENDIENTES_GUIA.md** (Qué falta por hacer)
+   ```
+   📍 /tms-backend/TAREAS_PENDIENTES_GUIA.md
+   ⏱️ Lectura: 10 minutos
+   📖 Qué contiene: ABMs pendientes, cronograma, checklists
+   ```
+
+3. **PLAN_MEDICIONES_CAMPO.md** (Sistema de Mediciones)
+   ```
+   📍 /tms-backend/PLAN_MEDICIONES_CAMPO.md
+   ⏱️ Lectura: 15-20 minutos
+   📖 Qué contiene: Modelo de datos, flujo de trabajo, diseño UI mobile-first
+   ```
+
+4. **gemini-rules.md** (Reglas y Estructura)
+   ```
+   📍 /tms-backend/gemini-rules.md
    ⏱️ Lectura: 10-15 minutos
    📖 Qué contiene: Estructura, Docker, rutas, convenciones
    ```
 
-2. **DOCUMENTACION_REFERENCIA.md** (Este archivo)
-   ```
-   📍 /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/DOCUMENTACION_REFERENCIA.md
-   ⏱️ Lectura: 5-10 minutos
-   📖 Qué contiene: Cómo usar con IA, referencias cruzadas, guía rápida
-   ```
-
-3. **TEMPLATE_PROMPTS.md** (Templates listos)
-   ```
-   📍 /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/TEMPLATE_PROMPTS.md
-   ⏱️ Lectura: 5 minutos
-   📖 Qué contiene: 5 templates pre-formateados, copiar/pegar
-   ```
-
-4. **PLAN_MAESTRO.md** (Roadmap)
-   ```
-   📍 /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/tms-client-vue/docs/PLAN_MAESTRO.md
-   ⏱️ Lectura: 10-15 minutos
-   📖 Qué contiene: 9 sesiones, estado actual, próximas tareas
-   ```
 
 ---
 

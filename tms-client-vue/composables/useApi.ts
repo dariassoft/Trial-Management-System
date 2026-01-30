@@ -35,8 +35,23 @@ export const useApi = () => {
   return {
     apiBase,
     makeRequest,
-    get: (endpoint: string, options = {}) =>
-      makeRequest(endpoint, { method: 'GET', ...options }),
+    get: (endpoint: string, options: any = {}) => {
+      // Si hay params, construir query string
+      if (options.params) {
+        const queryParams = new URLSearchParams()
+        Object.entries(options.params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            queryParams.append(key, String(value))
+          }
+        })
+        const queryString = queryParams.toString()
+        if (queryString) {
+          endpoint = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${queryString}`
+        }
+        delete options.params
+      }
+      return makeRequest(endpoint, { method: 'GET', ...options })
+    },
     post: (endpoint: string, body?: any, options = {}) =>
       makeRequest(endpoint, { method: 'POST', body, ...options }),
     patch: (endpoint: string, body?: any, options = {}) =>

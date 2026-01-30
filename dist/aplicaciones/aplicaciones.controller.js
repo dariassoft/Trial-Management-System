@@ -28,8 +28,8 @@ let AplicacionesController = class AplicacionesController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
-        return this.service.findAll();
+    findAll(ensayoId) {
+        return this.service.findAll({ ensayoId: ensayoId ? parseInt(ensayoId, 10) : undefined });
     }
     findOne(id) {
         return this.service.findOne(id);
@@ -74,9 +74,11 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar aplicaciones' }),
+    (0, swagger_1.ApiQuery)({ name: 'ensayoId', required: false, type: Number, description: 'Filtrar por ensayo' }),
     (0, swagger_1.ApiOkResponse)({ type: aplicacion_entity_1.Aplicacion, isArray: true }),
+    __param(0, (0, common_1.Query)('ensayoId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AplicacionesController.prototype, "findAll", null);
 __decorate([

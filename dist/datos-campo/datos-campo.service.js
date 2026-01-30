@@ -45,16 +45,39 @@ let DatosCampoService = class DatosCampoService {
     }
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const qr = this.dataSource.createQueryRunner();
             yield qr.connect();
             yield qr.startTransaction();
             try {
-                const visita = this.repo.create({
-                    parcela: { id: dto.parcela_id_fk },
-                    momento: { id: dto.momento_id_fk },
-                    observaciones: dto.observaciones,
+                // Buscar si ya existe un registro para esta parcela+momento
+                const existente = yield this.repo.findOne({
+                    where: {
+                        parcela: { id: dto.parcela_id_fk },
+                        momento: { id: dto.momento_id_fk },
+                    },
+                    relations: ['mediciones'],
                 });
-                const visitaGuardada = yield qr.manager.save(visita);
+                let visitaGuardada;
+                if (existente) {
+                    // ACTUALIZAR existente
+                    existente.observaciones = dto.observaciones;
+                    visitaGuardada = yield qr.manager.save(existente);
+                    // Eliminar mediciones anteriores y crear nuevas
+                    if ((_a = existente.mediciones) === null || _a === void 0 ? void 0 : _a.length) {
+                        yield qr.manager.delete(datos_campo_medicion_entity_1.DatosCampoMedicion, { visita: { id: existente.id } });
+                    }
+                }
+                else {
+                    // CREAR nuevo
+                    const visita = this.repo.create({
+                        parcela: { id: dto.parcela_id_fk },
+                        momento: { id: dto.momento_id_fk },
+                        observaciones: dto.observaciones,
+                    });
+                    visitaGuardada = yield qr.manager.save(visita);
+                }
+                // Guardar mediciones
                 const mediciones = (dto.mediciones || []).map((m) => {
                     const med = new datos_campo_medicion_entity_1.DatosCampoMedicion();
                     med.visita = visitaGuardada;

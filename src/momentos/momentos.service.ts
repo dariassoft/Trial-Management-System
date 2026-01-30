@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { MomentoEvaluacion } from '../entities/momento-evaluacion.entity';
 import { CreateMomentoDto } from './dto/create-momento.dto';
 import { UpdateMomentoDto } from './dto/update-momento.dto';
+import { DatosCampo } from '../entities/datos-campo.entity';
+import { Parcela } from '../entities/parcela.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class MomentosService {
@@ -15,6 +17,10 @@ export class MomentosService {
     @Inject(REQUEST) private readonly req: Request,
     @InjectRepository(MomentoEvaluacion)
     private readonly repo: Repository<MomentoEvaluacion>,
+    @InjectRepository(DatosCampo)
+    private readonly datosCampoRepo: Repository<DatosCampo>,
+    @InjectRepository(Parcela)
+    private readonly parcelaRepo: Repository<Parcela>,
   ) {}
 
   private get auth() {
@@ -34,21 +40,74 @@ export class MomentosService {
     return this.repo.save(entity);
   }
 
-  findAll() {
+  async findAll(query?: { aplicacionId?: number }) {
     const { isInvitado, labIds } = this.auth;
-    if (!isInvitado) {
-      return this.repo.find({ relations: { aplicacion: true } });
-    }
+
     const qb = this.repo.createQueryBuilder('m')
       .leftJoinAndSelect('m.aplicacion', 'a')
-      .leftJoin('a.ensayo', 'e')
-      .leftJoin('e.tratamientos', 't')
-      .leftJoin('t.productos', 'tp')
-      .leftJoin('tp.producto', 'p')
-      .leftJoin('p.laboratorio', 'l')
-      .where('l.id IN (:...labIds)', { labIds })
-      .distinct(true);
+      .leftJoinAndSelect('a.ensayo', 'e')
+      .orderBy('m.diasDespuesAplicacion', 'ASC');
+
+    if (query?.aplicacionId) {
+      qb.andWhere('a.id = :aplicacionId', { aplicacionId: query.aplicacionId });
+    }
+
+    if (isInvitado) {
+      qb.leftJoin('e.tratamientos', 't')
+        .leftJoin('t.productos', 'tp')
+        .leftJoin('tp.producto', 'p')
+        .leftJoin('p.laboratorio', 'l')
+        .andWhere('l.id IN (:...labIds)', { labIds })
+        .distinct(true);
+    }
+
     return qb.getMany();
+  }
+
+  /**
+   * Obtener el progreso de un momento (parcelas medidas vs total)
+   */
+  async getProgreso(momentoId: number) {
+    const momento = await this.repo.findOne({
+      where: { id: momentoId },
+      relations: ['aplicacion', 'aplicacion.ensayo'],
+    });
+
+    if (!momento) throw new NotFoundException(`Momento ${momentoId} no encontrado`);
+
+    const ensayoId = momento.aplicacion.ensayo.id;
+
+    // Contar parcelas totales del ensayo
+    const totalParcelas = await this.parcelaRepo.count({
+      where: { ensayo: { id: ensayoId } },
+    });
+
+    // Contar parcelas ya medidas en este momento
+    const parcelasMedidas = await this.datosCampoRepo.count({
+      where: { momento: { id: momentoId } },
+    });
+
+    // Obtener las parcelas pendientes
+    const parcelasConMedicion = await this.datosCampoRepo.find({
+      where: { momento: { id: momentoId } },
+      relations: ['parcela'],
+      select: { id: true, parcela: { id: true } },
+    });
+
+    const idsMedidas = parcelasConMedicion.map(dc => dc.parcela.id);
+
+    return {
+      momentoId,
+      nombreMomento: momento.nombreMomento,
+      diasDespuesAplicacion: momento.diasDespuesAplicacion,
+      fechaEvaluacion: momento.fechaEvaluacion,
+      totalParcelas,
+      parcelasMedidas,
+      parcelasPendientes: totalParcelas - parcelasMedidas,
+      porcentaje: totalParcelas > 0 ? Math.round((parcelasMedidas / totalParcelas) * 100) : 0,
+      estado: parcelasMedidas === 0 ? 'pendiente' : parcelasMedidas >= totalParcelas ? 'completado' : 'en_progreso',
+      idsParcelasMedidas: idsMedidas,
+    };
   }
 
   async findOne(id: number) {

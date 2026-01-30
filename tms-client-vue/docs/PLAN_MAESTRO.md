@@ -1,8 +1,8 @@
 # 🚀 PLAN MAESTRO TMS - ROADMAP ACTUALIZADO
 
-**Actualizado**: Diciembre 13, 2025  
-**Versión**: 2.3 - Sesión 4 completada
-**Estado Global**: ✅ Sesión 4 Completada - Listo para Sesión 5
+**Actualizado**: Enero 29, 2026  
+**Versión**: 3.0 - Sesión 4 completada + Correcciones Parcelas
+**Estado Global**: ✅ Sesiones 1-4 Completadas - Listo para Mediciones en Campo
 
 ---
 
@@ -13,6 +13,24 @@ Raíz Proyecto: /media/Datos/Projects/WebstormProjects/TrialManagementSystem/
 Backend:       /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend
 Frontend:      /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/tms-client-vue
 ```
+
+---
+
+## 📚 DOCUMENTACIÓN PRINCIPAL (Enero 2026)
+
+Los siguientes documentos contienen el estado actual y plan de trabajo:
+
+1. **STATUS_PROYECTO_ENERO_2026.md** - Estado actual del proyecto
+   - Ubicación: `/tms-backend/STATUS_PROYECTO_ENERO_2026.md`
+   
+2. **TAREAS_PENDIENTES_GUIA.md** - Lista de tareas pendientes
+   - Ubicación: `/tms-backend/TAREAS_PENDIENTES_GUIA.md`
+   
+3. **PLAN_MEDICIONES_CAMPO.md** - Plan detallado para mediciones
+   - Ubicación: `/tms-backend/PLAN_MEDICIONES_CAMPO.md`
+   
+4. **gemini-rules.md** - Estructura, reglas, Docker
+   - Ubicación: `/tms-backend/gemini-rules.md`
 
 ---
 

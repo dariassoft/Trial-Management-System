@@ -33,13 +33,37 @@ export class DatosCampoService {
     await qr.connect();
     await qr.startTransaction();
     try {
-      const visita = this.repo.create({
-        parcela: { id: dto.parcela_id_fk } as any,
-        momento: { id: dto.momento_id_fk } as any,
-        observaciones: dto.observaciones,
+      // Buscar si ya existe un registro para esta parcela+momento
+      const existente = await this.repo.findOne({
+        where: {
+          parcela: { id: dto.parcela_id_fk },
+          momento: { id: dto.momento_id_fk },
+        },
+        relations: ['mediciones'],
       });
-      const visitaGuardada = await qr.manager.save(visita);
 
+      let visitaGuardada: DatosCampo;
+
+      if (existente) {
+        // ACTUALIZAR existente
+        existente.observaciones = dto.observaciones;
+        visitaGuardada = await qr.manager.save(existente);
+
+        // Eliminar mediciones anteriores y crear nuevas
+        if (existente.mediciones?.length) {
+          await qr.manager.delete(DatosCampoMedicion, { visita: { id: existente.id } });
+        }
+      } else {
+        // CREAR nuevo
+        const visita = this.repo.create({
+          parcela: { id: dto.parcela_id_fk } as any,
+          momento: { id: dto.momento_id_fk } as any,
+          observaciones: dto.observaciones,
+        });
+        visitaGuardada = await qr.manager.save(visita);
+      }
+
+      // Guardar mediciones
       const mediciones: DatosCampoMedicion[] = (dto.mediciones || []).map((m) => {
         const med = new DatosCampoMedicion();
         med.visita = visitaGuardada;

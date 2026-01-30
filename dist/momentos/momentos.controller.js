@@ -28,11 +28,14 @@ let MomentosController = class MomentosController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
-        return this.service.findAll();
+    findAll(aplicacionId) {
+        return this.service.findAll({ aplicacionId: aplicacionId ? parseInt(aplicacionId, 10) : undefined });
     }
     findOne(id) {
         return this.service.findOne(id);
+    }
+    getProgreso(id) {
+        return this.service.getProgreso(id);
     }
     update(id, dto) {
         return this.service.update(id, dto);
@@ -68,9 +71,11 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar momentos de evaluación' }),
+    (0, swagger_1.ApiQuery)({ name: 'aplicacionId', required: false, type: Number, description: 'Filtrar por aplicación' }),
     (0, swagger_1.ApiOkResponse)({ type: momento_evaluacion_entity_1.MomentoEvaluacion, isArray: true }),
+    __param(0, (0, common_1.Query)('aplicacionId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MomentosController.prototype, "findAll", null);
 __decorate([
@@ -83,6 +88,31 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], MomentosController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)(':id/progreso'),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener progreso de un momento (parcelas medidas vs pendientes)' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: Number }),
+    (0, swagger_1.ApiOkResponse)({
+        schema: {
+            example: {
+                momentoId: 1,
+                nombreMomento: '7 DDA',
+                diasDespuesAplicacion: 7,
+                fechaEvaluacion: '2025-04-01',
+                totalParcelas: 48,
+                parcelasMedidas: 24,
+                parcelasPendientes: 24,
+                porcentaje: 50,
+                estado: 'en_progreso',
+                idsParcelasMedidas: [1, 2, 3]
+            }
+        }
+    }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], MomentosController.prototype, "getProgreso", null);
 __decorate([
     (0, roles_decorator_1.Roles)(rol_entity_1.Role.TECNICO, rol_entity_1.Role.MANAGER, rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN),
     (0, common_1.Patch)(':id'),
