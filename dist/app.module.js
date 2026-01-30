@@ -27,6 +27,7 @@ const tratamientos_producto_module_1 = require("./tratamientos-producto/tratamie
 const protocolo_variables_module_1 = require("./protocolo-variables/protocolo-variables.module");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
+const fotos_module_1 = require("./fotos/fotos.module");
 const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const cultivos_module_1 = require("./catalogos/cultivos/cultivos.module");
@@ -68,10 +69,10 @@ exports.AppModule = AppModule = __decorate([
             }),
             // 2. Módulo de TypeORM (opcional durante generación de OpenAPI)
             ...ormModules,
-            // Servir archivos estáticos (fotos)
+            // Servir archivos estáticos (fotos y videos)
             serve_static_1.ServeStaticModule.forRoot({
                 serveRoot: '/uploads',
-                rootPath: (0, path_1.join)(__dirname, '..', 'uploads'),
+                rootPath: (0, path_1.join)(process.cwd(), 'uploads'),
             }),
             ensayos_module_1.EnsayosModule,
             laboratorios_module_1.LaboratoriosModule,
@@ -94,6 +95,7 @@ exports.AppModule = AppModule = __decorate([
             tipos_siembra_module_1.TiposSiembraModule,
             protocolos_module_1.ProtocolosModule, // Añadido
             status_ensayo_module_1.StatusEnsayoModule, // Nuevo
+            fotos_module_1.FotosModule, // Para subir/servir fotos y videos
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

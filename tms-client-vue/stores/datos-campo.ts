@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useApi } from '~/composables/useApi'
+import { useAuthStore } from '~/stores/auth'
 import { ref } from 'vue'
 
 export interface Medicion {
@@ -61,8 +62,24 @@ export const useDatosCampoStore = defineStore('datosCampo', () => {
     error.value = null
     try {
       const res = await api.get('/datos-campo', { params: { momentoId, limit: 200 } })
-      const data = res && (res.data ?? res)
-      items.value = Array.isArray(data) ? data : (data?.data || [])
+      console.log('📡 fetchByMomento respuesta raw:', res)
+
+      // La API devuelve { data: [...], meta: {...} }
+      let data: any[]
+      if (res?.data && Array.isArray(res.data)) {
+        data = res.data
+      } else if (Array.isArray(res)) {
+        data = res
+      } else {
+        data = res?.data?.data || res?.data || []
+      }
+
+      console.log('📡 fetchByMomento items procesados:', data.length)
+      if (data.length > 0) {
+        console.log('📡 Primer item fotos:', data[0]?.fotos?.length)
+      }
+
+      items.value = data
       return items.value
     } catch (err: any) {
       error.value = err.message || 'Error al cargar datos de campo'
@@ -169,6 +186,38 @@ export const useDatosCampoStore = defineStore('datosCampo', () => {
     )
   }
 
+  // Subir foto o video para una visita (DatosCampo)
+  async function uploadFoto(visitaId: number, file: Blob, filename: string): Promise<any> {
+    loading.value = true
+    error.value = null
+    try {
+      const formData = new FormData()
+      formData.append('file', file, filename)
+
+      // Usar $fetch directamente para FormData
+      const config = useRuntimeConfig()
+      const baseURL = config.public.apiBase || 'http://localhost:3000/api/v1'
+      const authStore = useAuthStore()
+
+      const res = await $fetch(`${baseURL}/datos-campo/${visitaId}/upload-foto`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: authStore.token ? `Bearer ${authStore.token}` : '',
+        },
+      })
+
+      console.log('📸 Foto subida:', res)
+      return res
+    } catch (err: any) {
+      error.value = err.message || 'Error al subir foto'
+      console.error('Error uploadFoto:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Limpiar estado
   function reset() {
     items.value = []
@@ -187,6 +236,7 @@ export const useDatosCampoStore = defineStore('datosCampo', () => {
     guardarMedicion,
     update,
     findByParcelaMomento,
+    uploadFoto,
     reset,
   }
 })

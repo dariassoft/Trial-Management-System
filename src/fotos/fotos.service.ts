@@ -27,21 +27,53 @@ export class FotosService {
   }
 
   async create(idVisita: number, file: any) {
-    const visita = await this.visitaRepo.findOne({ where: { id: idVisita } });
+    // Cargar visita con relaciones para obtener info de parcela, bloque y ensayo
+    const visita = await this.visitaRepo.findOne({
+      where: { id: idVisita },
+      relations: ['parcela', 'parcela.bloque', 'parcela.ensayo', 'momento'],
+    });
     if (!visita) throw new NotFoundException(`Visita (DatosCampo) ${idVisita} no encontrada`);
 
-    // Construir ruta relativa a /uploads para servirla vía HTTP
+    // Extraer información para el nombre descriptivo
+    const parcela = visita.parcela;
+    const bloque = parcela?.bloque;
+    const ensayo = parcela?.ensayo;
+    const momento = visita.momento;
+
+    // Construir nombre descriptivo del archivo
+    // Formato: ensayo{id}_bloque{nombre}_parcela{nombre}_DDA{dias}_{timestamp}.{ext}
+    const ensayoId = ensayo?.id || 0;
+    const bloqueNombre = (bloque?.nombreBloque || 'X').replace(/[^a-zA-Z0-9]/g, '');
+    const parcelaNombre = (parcela?.nombreParcela || 'X').replace(/[^a-zA-Z0-9\-\.]/g, '_');
+    const dda = momento?.diasDespuesAplicacion ?? 0;
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname) || `.${file.mimetype?.split('/')[1] || 'bin'}`;
+    const isVideo = file.mimetype?.startsWith('video/');
+    const tipo = isVideo ? 'video' : 'foto';
+
+    const nuevoNombre = `${tipo}_E${ensayoId}_B${bloqueNombre}_${parcelaNombre}_DDA${dda}_${timestamp}${ext}`;
+
+    // Estructura de carpetas: /uploads/ensayo_{id}/bloque_{nombre}/
     const uploadsRoot = path.join(process.cwd(), 'uploads');
-    let relative = path.relative(uploadsRoot, file.path).split(path.sep).join('/');
-    if (!relative || relative.startsWith('..')) {
-      // Fallback al nombre del archivo en raíz si por alguna razón no coincide
-      relative = file.filename;
-    }
+    const ensayoDir = path.join(uploadsRoot, `ensayo_${ensayoId}`);
+    const bloqueDir = path.join(ensayoDir, `bloque_${bloqueNombre}`);
+
+    // Crear carpetas si no existen
+    const fs = require('fs');
+    if (!fs.existsSync(ensayoDir)) fs.mkdirSync(ensayoDir, { recursive: true });
+    if (!fs.existsSync(bloqueDir)) fs.mkdirSync(bloqueDir, { recursive: true });
+
+    // Mover archivo a la nueva ubicación
+    const nuevoPath = path.join(bloqueDir, nuevoNombre);
+    fs.renameSync(file.path, nuevoPath);
+
+    // Construir ruta relativa para servir vía HTTP
+    const relative = path.relative(uploadsRoot, nuevoPath).split(path.sep).join('/');
     const file_path = `/uploads/${relative}`;
 
     const foto = this.fotoRepo.create({
       visita,
-      file_name: file.originalname,
+      file_name: nuevoNombre,
       file_path,
       mime_type: file.mimetype,
     });

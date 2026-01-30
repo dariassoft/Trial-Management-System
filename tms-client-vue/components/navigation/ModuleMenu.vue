@@ -95,6 +95,13 @@ const allModules = [
     href: '/reportes',
     roles: ['Superadministrador', 'Administrador', 'Investigador', 'Analista'],
   },
+  {
+    id: 'settings',
+    name: 'Configuración',
+    icon: '⚙️',
+    href: '/settings',
+    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio', 'Analista'],
+  },
 ]
 
 // Filtrar módulos según rol del usuario

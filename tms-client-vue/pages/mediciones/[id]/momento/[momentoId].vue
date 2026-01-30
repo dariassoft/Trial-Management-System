@@ -140,52 +140,33 @@
           ></textarea>
         </div>
 
-        <!-- Sección de fotos -->
+        <!-- Sección de fotos y videos -->
         <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              📸 Fotos
-            </h4>
-            <button
-              @click="tomarFoto"
-              class="px-3 py-1 bg-gray-200 dark:bg-gray-600 rounded-lg text-sm"
-            >
-              + Agregar
-            </button>
-          </div>
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            📸 Fotos y Videos
+          </h4>
 
-          <!-- Preview de fotos -->
-          <div v-if="fotos.length > 0" class="flex gap-2 overflow-x-auto">
-            <div
-              v-for="(foto, idx) in fotos"
-              :key="idx"
-              class="relative w-20 h-20 flex-shrink-0"
-            >
-              <img
-                :src="foto.preview"
-                class="w-full h-full object-cover rounded-lg"
-              />
-              <button
-                @click="eliminarFoto(idx)"
-                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs"
-              >
-                ×
-              </button>
-            </div>
-          </div>
+          <MediaCapture
+            v-if="parcelaActual"
+            ref="mediaCaptureRef"
+            :parcela-id="parcelaActual.id"
+            :momento-id="momentoId"
+            :ensayo-id="ensayoId"
+            :existing-photos="existingPhotos"
+            @captured="handleMediaCaptured"
+            @error="handleMediaError"
+            @delete-existing="handleDeleteExistingPhoto"
+          />
+        </div>
 
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            Sin fotos adjuntas
-          </p>
-
-          <!-- Input file oculto -->
-          <input
-            ref="fileInput"
-            type="file"
-            accept="image/*"
-            capture="environment"
-            @change="handleFileSelect"
-            class="hidden"
+        <!-- Escáner QR para cambiar de parcela -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            🔍 Buscar Parcela
+          </h4>
+          <QRScanner
+            @scanned="handleQRScanned"
+            @error="handleQRError"
           />
         </div>
       </div>
@@ -234,7 +215,6 @@
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
-import { useMomentosStore } from '~/stores/momentos'
 import { useDatosCampoStore } from '~/stores/datos-campo'
 
 definePageMeta({
@@ -245,7 +225,6 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const api = useApi()
-const momentosStore = useMomentosStore()
 const datosCampoStore = useDatosCampoStore()
 
 const ensayoId = computed(() => Number(route.params.id))
@@ -259,8 +238,9 @@ const variables = ref<any[]>([])
 const parcelaActualIndex = ref(0)
 const formMediciones = reactive<Record<number, string>>({})
 const formObservaciones = ref('')
-const fotos = ref<{ file: File; preview: string }[]>([])
-const fileInput = ref<HTMLInputElement | null>(null)
+const mediaCaptureRef = ref<any>(null)
+const capturedMedia = ref<any[]>([])
+const existingPhotos = ref<any[]>([])
 
 const parcelaActual = computed(() => parcelas.value[parcelaActualIndex.value])
 const esUltimaParcela = computed(() => parcelaActualIndex.value >= parcelas.value.length - 1)
@@ -268,6 +248,47 @@ const progresoPorcentaje = computed(() => {
   if (parcelas.value.length === 0) return 0
   return Math.round(((parcelaActualIndex.value + 1) / parcelas.value.length) * 100)
 })
+
+// Manejo de media capturada
+function handleMediaCaptured(files: any[]) {
+  capturedMedia.value = files
+  console.log('📸 Media capturada:', files.length, 'archivos')
+}
+
+function handleMediaError(message: string) {
+  alert('Error de captura: ' + message)
+}
+
+// Eliminar foto existente
+async function handleDeleteExistingPhoto(photoId: number) {
+  try {
+    await api.delete(`/fotos/${photoId}`)
+    existingPhotos.value = existingPhotos.value.filter(p => p.id !== photoId)
+    console.log('🗑️ Foto eliminada:', photoId)
+  } catch (err: any) {
+    console.error('Error eliminando foto:', err)
+    alert('Error al eliminar: ' + (err.message || 'Error desconocido'))
+  }
+}
+
+// Manejo de QR escaneado
+function handleQRScanned(data: any) {
+  console.log('📱 QR escaneado:', data)
+
+  // Buscar la parcela por ID
+  const index = parcelas.value.findIndex(p => p.id === data.parcelaId)
+  if (index !== -1) {
+    parcelaActualIndex.value = index
+    cargarDatosParcela()
+    alert(`✅ Parcela encontrada: ${parcelas.value[index].nombreParcela}`)
+  } else {
+    alert(`❌ Parcela con ID ${data.parcelaId} no encontrada en este ensayo`)
+  }
+}
+
+function handleQRError(message: string) {
+  console.error('Error QR:', message)
+}
 
 function getPlaceholder(variable: any) {
   if (variable.unidad_medida === '%') return '0-100'
@@ -319,6 +340,31 @@ function saltarSiguiente() {
   }
 }
 
+// Recargar datos de la parcela actual desde el servidor (para refrescar fotos)
+async function recargarDatosParcelaActual() {
+  try {
+    console.log('🔄 Recargando datos del momento:', momentoId.value)
+
+    // Recargar todos los datos de campo del momento para actualizar el store
+    const datos = await datosCampoStore.fetchByMomento(momentoId.value)
+    console.log('🔄 Datos recargados:', datos?.length, 'registros')
+
+    // Buscar el registro actualizado
+    const existente = datosCampoStore.findByParcelaMomento(
+      parcelaActual.value?.id,
+      momentoId.value
+    )
+    console.log('🔄 Registro encontrado:', existente?.id, 'con fotos:', existente?.fotos?.length)
+
+    if (existente?.fotos) {
+      existingPhotos.value = [...existente.fotos] // Forzar reactividad
+      console.log('🔄 Fotos actualizadas:', existingPhotos.value.length)
+    }
+  } catch (err) {
+    console.error('Error recargando datos:', err)
+  }
+}
+
 async function guardarYSiguiente() {
   guardando.value = true
   try {
@@ -331,14 +377,35 @@ async function guardarYSiguiente() {
       }))
 
     // Guardar datos de campo
-    await datosCampoStore.guardarMedicion({
+    const datosCampo = await datosCampoStore.guardarMedicion({
       parcela_id_fk: parcelaActual.value.id,
       momento_id_fk: momentoId.value,
       observaciones: formObservaciones.value || undefined,
       mediciones,
     })
 
-    // TODO: Subir fotos si hay
+    // Subir fotos/videos si hay
+    if (capturedMedia.value.length > 0 && datosCampo?.id) {
+      console.log('📸 Subiendo', capturedMedia.value.length, 'archivos...')
+      for (const media of capturedMedia.value) {
+        try {
+          await datosCampoStore.uploadFoto(datosCampo.id, media.blob, media.filename)
+          console.log('✅ Archivo subido:', media.filename)
+        } catch (uploadErr: any) {
+          console.error('❌ Error subiendo archivo:', media.filename, uploadErr)
+          // Continuamos con los demás archivos aunque falle uno
+        }
+      }
+
+      // Limpiar archivos capturados después de subir
+      capturedMedia.value = []
+      if (mediaCaptureRef.value) {
+        mediaCaptureRef.value.clearFiles?.()
+      }
+
+      // Recargar datos para obtener las fotos actualizadas
+      await recargarDatosParcelaActual()
+    }
 
     if (esUltimaParcela.value) {
       alert('✅ Todas las parcelas han sido medidas')
@@ -355,9 +422,6 @@ async function guardarYSiguiente() {
   }
 }
 
-function guardarFormActual() {
-  // Guardar estado actual del form en memoria (opcional para navegación)
-}
 
 function cargarDatosParcela() {
   // Limpiar form
@@ -365,7 +429,13 @@ function cargarDatosParcela() {
     formMediciones[Number(key)] = ''
   })
   formObservaciones.value = ''
-  fotos.value = []
+  capturedMedia.value = []
+  existingPhotos.value = []
+
+  // Limpiar componente de captura
+  if (mediaCaptureRef.value) {
+    mediaCaptureRef.value.clearFiles?.()
+  }
 
   // Buscar si ya hay medición existente
   const existente = datosCampoStore.findByParcelaMomento(
@@ -380,27 +450,15 @@ function cargarDatosParcela() {
         formMediciones[m.variable.id] = m.valor
       }
     })
+    // Cargar fotos existentes
+    if (existente.fotos && existente.fotos.length > 0) {
+      existingPhotos.value = existente.fotos
+      console.log('📷 Fotos existentes cargadas:', existente.fotos.length)
+    }
   }
 }
 
-function tomarFoto() {
-  fileInput.value?.click()
-}
 
-function handleFileSelect(e: Event) {
-  const input = e.target as HTMLInputElement
-  if (input.files?.length) {
-    const file = input.files[0]
-    const preview = URL.createObjectURL(file)
-    fotos.value.push({ file, preview })
-    input.value = ''
-  }
-}
-
-function eliminarFoto(idx: number) {
-  URL.revokeObjectURL(fotos.value[idx].preview)
-  fotos.value.splice(idx, 1)
-}
 
 onMounted(async () => {
   loading.value = true

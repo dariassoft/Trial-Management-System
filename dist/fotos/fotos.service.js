@@ -78,20 +78,49 @@ let FotosService = class FotosService {
     }
     create(idVisita, file) {
         return __awaiter(this, void 0, void 0, function* () {
-            const visita = yield this.visitaRepo.findOne({ where: { id: idVisita } });
+            var _a, _b, _c;
+            // Cargar visita con relaciones para obtener info de parcela, bloque y ensayo
+            const visita = yield this.visitaRepo.findOne({
+                where: { id: idVisita },
+                relations: ['parcela', 'parcela.bloque', 'parcela.ensayo', 'momento'],
+            });
             if (!visita)
                 throw new common_1.NotFoundException(`Visita (DatosCampo) ${idVisita} no encontrada`);
-            // Construir ruta relativa a /uploads para servirla vía HTTP
+            // Extraer información para el nombre descriptivo
+            const parcela = visita.parcela;
+            const bloque = parcela === null || parcela === void 0 ? void 0 : parcela.bloque;
+            const ensayo = parcela === null || parcela === void 0 ? void 0 : parcela.ensayo;
+            const momento = visita.momento;
+            // Construir nombre descriptivo del archivo
+            // Formato: ensayo{id}_bloque{nombre}_parcela{nombre}_DDA{dias}_{timestamp}.{ext}
+            const ensayoId = (ensayo === null || ensayo === void 0 ? void 0 : ensayo.id) || 0;
+            const bloqueNombre = ((bloque === null || bloque === void 0 ? void 0 : bloque.nombreBloque) || 'X').replace(/[^a-zA-Z0-9]/g, '');
+            const parcelaNombre = ((parcela === null || parcela === void 0 ? void 0 : parcela.nombreParcela) || 'X').replace(/[^a-zA-Z0-9\-\.]/g, '_');
+            const dda = (_a = momento === null || momento === void 0 ? void 0 : momento.diasDespuesAplicacion) !== null && _a !== void 0 ? _a : 0;
+            const timestamp = Date.now();
+            const ext = path.extname(file.originalname) || `.${((_b = file.mimetype) === null || _b === void 0 ? void 0 : _b.split('/')[1]) || 'bin'}`;
+            const isVideo = (_c = file.mimetype) === null || _c === void 0 ? void 0 : _c.startsWith('video/');
+            const tipo = isVideo ? 'video' : 'foto';
+            const nuevoNombre = `${tipo}_E${ensayoId}_B${bloqueNombre}_${parcelaNombre}_DDA${dda}_${timestamp}${ext}`;
+            // Estructura de carpetas: /uploads/ensayo_{id}/bloque_{nombre}/
             const uploadsRoot = path.join(process.cwd(), 'uploads');
-            let relative = path.relative(uploadsRoot, file.path).split(path.sep).join('/');
-            if (!relative || relative.startsWith('..')) {
-                // Fallback al nombre del archivo en raíz si por alguna razón no coincide
-                relative = file.filename;
-            }
+            const ensayoDir = path.join(uploadsRoot, `ensayo_${ensayoId}`);
+            const bloqueDir = path.join(ensayoDir, `bloque_${bloqueNombre}`);
+            // Crear carpetas si no existen
+            const fs = require('fs');
+            if (!fs.existsSync(ensayoDir))
+                fs.mkdirSync(ensayoDir, { recursive: true });
+            if (!fs.existsSync(bloqueDir))
+                fs.mkdirSync(bloqueDir, { recursive: true });
+            // Mover archivo a la nueva ubicación
+            const nuevoPath = path.join(bloqueDir, nuevoNombre);
+            fs.renameSync(file.path, nuevoPath);
+            // Construir ruta relativa para servir vía HTTP
+            const relative = path.relative(uploadsRoot, nuevoPath).split(path.sep).join('/');
             const file_path = `/uploads/${relative}`;
             const foto = this.fotoRepo.create({
                 visita,
-                file_name: file.originalname,
+                file_name: nuevoNombre,
                 file_path,
                 mime_type: file.mimetype,
             });

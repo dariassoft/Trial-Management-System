@@ -194,18 +194,18 @@ __decorate([
 __decorate([
     (0, roles_decorator_1.Roles)(rol_entity_1.Role.TECNICO, rol_entity_1.Role.MANAGER, rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN),
     (0, common_1.Post)(':idVisita/upload-foto'),
-    (0, swagger_1.ApiOperation)({ summary: 'Sube una foto para una visita (DatosCampo)' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Sube una foto o video para una visita (DatosCampo)' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiBody)({
         schema: {
             type: 'object',
             properties: {
-                file: { type: 'string', format: 'binary', description: 'Imagen (jpg, jpeg, png); máx. 10MB' },
+                file: { type: 'string', format: 'binary', description: 'Imagen o video (jpg, jpeg, png, webp, mp4, webm, mov); máx. 100MB' },
             },
             required: ['file'],
         },
     }),
-    (0, swagger_1.ApiCreatedResponse)({ type: foto_registro_entity_1.FotoRegistro, description: 'Foto registrada' }),
+    (0, swagger_1.ApiCreatedResponse)({ type: foto_registro_entity_1.FotoRegistro, description: 'Foto/video registrado' }),
     (0, swagger_1.ApiOkResponse)({ description: 'Ejemplo de respuesta', schema: { example: { id: 1, file_name: 'foto.jpg', file_path: '/uploads/visita_1/foto.jpg', mime_type: 'image/jpeg', fecha_subida: '2025-11-04T10:00:00.000Z' } } }),
     (0, swagger_1.ApiParam)({ name: 'idVisita', required: true, description: 'ID de la visita (DatosCampo)', type: Number }),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
@@ -228,7 +228,16 @@ __decorate([
                 cb(null, `visita_${req.params.idVisita}_${Date.now()}_${rand}.${ext}`);
             },
         }),
-        limits: { fileSize: 10 * 1024 * 1024 },
+        limits: { fileSize: 100 * 1024 * 1024 },
+        fileFilter: (req, file, cb) => {
+            // Aceptar imágenes y videos
+            if (file.mimetype.match(/^(image|video)\//)) {
+                cb(null, true);
+            }
+            else {
+                cb(new Error('Tipo de archivo no soportado. Solo imágenes y videos.'), false);
+            }
+        },
     })),
     __param(0, (0, common_1.Param)('idVisita', common_1.ParseIntPipe)),
     __param(1, (0, common_1.UploadedFile)()),

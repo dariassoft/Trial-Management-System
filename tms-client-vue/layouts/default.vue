@@ -3,7 +3,8 @@ import { useAuthStore } from '~/stores/auth'
 import { useTheme } from '~/composables/useTheme'
 import { ref, onMounted } from 'vue'
 import ModuleMenu from '~/components/navigation/ModuleMenu.vue'
-import TheToast from '~/components/common/TheToast.vue' // Importar el componente de Toast
+import TheToast from '~/components/common/TheToast.vue'
+import OfflineIndicator from '~/components/common/OfflineIndicator.vue'
 
 definePageMeta({
   layout: 'default',
@@ -103,6 +104,9 @@ onMounted(() => {
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
       <slot />
     </main>
+
+    <!-- Indicador de estado offline/sync -->
+    <OfflineIndicator />
 
     <!-- Footer -->
     <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-8">

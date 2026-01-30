@@ -60,10 +60,10 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     // 2. Módulo de TypeORM (opcional durante generación de OpenAPI)
     ...ormModules,
 
-    // Servir archivos estáticos (fotos)
+    // Servir archivos estáticos (fotos y videos)
     ServeStaticModule.forRoot({
       serveRoot: '/uploads',
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: join(process.cwd(), 'uploads'),
     }),
 
     EnsayosModule,
@@ -87,6 +87,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     TiposSiembraModule,
     ProtocolosModule, // Añadido
     StatusEnsayoModule, // Nuevo
+    FotosModule, // Para subir/servir fotos y videos
   ],
   controllers: [AppController],
   providers: [AppService],

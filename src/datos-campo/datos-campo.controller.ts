@@ -105,18 +105,18 @@ export class DatosCampoController {
 
   @Roles(Role.TECNICO, Role.MANAGER, Role.ADMIN, Role.SUPERADMIN)
   @Post(':idVisita/upload-foto')
-  @ApiOperation({ summary: 'Sube una foto para una visita (DatosCampo)' })
+  @ApiOperation({ summary: 'Sube una foto o video para una visita (DatosCampo)' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        file: { type: 'string', format: 'binary', description: 'Imagen (jpg, jpeg, png); máx. 10MB' },
+        file: { type: 'string', format: 'binary', description: 'Imagen o video (jpg, jpeg, png, webp, mp4, webm, mov); máx. 100MB' },
       },
       required: ['file'],
     },
   })
-  @ApiCreatedResponse({ type: FotoRegistro, description: 'Foto registrada' })
+  @ApiCreatedResponse({ type: FotoRegistro, description: 'Foto/video registrado' })
   @ApiOkResponse({ description: 'Ejemplo de respuesta', schema: { example: { id: 1, file_name: 'foto.jpg', file_path: '/uploads/visita_1/foto.jpg', mime_type: 'image/jpeg', fecha_subida: '2025-11-04T10:00:00.000Z' } } })
   @ApiParam({ name: 'idVisita', required: true, description: 'ID de la visita (DatosCampo)', type: Number })
   @UseInterceptors(
@@ -146,7 +146,15 @@ export class DatosCampoController {
           cb(null, `visita_${(req as any).params.idVisita}_${Date.now()}_${rand}.${ext}`);
         },
       }),
-      limits: { fileSize: 10 * 1024 * 1024 },
+      limits: { fileSize: 100 * 1024 * 1024 },
+      fileFilter: (req: any, file: any, cb: any) => {
+        // Aceptar imágenes y videos
+        if (file.mimetype.match(/^(image|video)\//)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Tipo de archivo no soportado. Solo imágenes y videos.'), false);
+        }
+      },
     }),
   )
   async uploadFoto(

@@ -94,7 +94,8 @@ export class DatosCampoService {
       .leftJoinAndSelect('dc.parcela', 'parcela')
       .leftJoinAndSelect('dc.momento', 'momento')
       .leftJoinAndSelect('dc.mediciones', 'mediciones')
-      .leftJoinAndSelect('mediciones.variable', 'variable');
+      .leftJoinAndSelect('mediciones.variable', 'variable')
+      .leftJoinAndSelect('dc.fotos', 'fotos');
     if (query?.parcelaId) qb.andWhere('parcela.id = :parcelaId', { parcelaId: query.parcelaId });
     if (query?.momentoId) qb.andWhere('momento.id = :momentoId', { momentoId: query.momentoId });
     if (isInvitado) {
@@ -116,7 +117,7 @@ export class DatosCampoService {
   async findOne(id: number) {
     const { isInvitado, labIds } = this.auth;
     if (!isInvitado) {
-      const entity = await this.repo.findOne({ where: { id }, relations: ['parcela', 'momento', 'mediciones', 'mediciones.variable'] });
+      const entity = await this.repo.findOne({ where: { id }, relations: ['parcela', 'momento', 'mediciones', 'mediciones.variable', 'fotos'] });
       if (!entity) throw new NotFoundException(`DatosCampo ${id} no encontrado`);
       return entity;
     }
@@ -125,6 +126,7 @@ export class DatosCampoService {
       .leftJoinAndSelect('dc.momento', 'momento')
       .leftJoinAndSelect('dc.mediciones', 'mediciones')
       .leftJoinAndSelect('mediciones.variable', 'variable')
+      .leftJoinAndSelect('dc.fotos', 'fotos')
       .leftJoin('parcela.tratamiento', 'trat')
       .leftJoin('trat.productos', 'tp')
       .leftJoin('tp.producto', 'prod')
