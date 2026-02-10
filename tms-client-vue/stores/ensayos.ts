@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useApi } from '~/composables/useApi'
+import { extractArrayFromResponse, extractTotalFromResponse, extractErrorMessage } from '~/utils/apiHelpers'
 
 export interface Usuario {
   id: number;
@@ -82,7 +83,7 @@ export const useEnsayosStore = defineStore('ensayos', () => {
       }
 
     } catch (err: any) {
-      error.value = err.data?.message || 'Error al actualizar ensayo'
+      error.value = extractErrorMessage(err, 'Error al actualizar ensayo')
       console.error('Error en updateEnsayo:', err)
       throw err
     } finally {
@@ -90,25 +91,28 @@ export const useEnsayosStore = defineStore('ensayos', () => {
     }
   }
   
-  const fetchEnsayos = async (params = {}) => {
+  const fetchEnsayos = async (params: any = {}) => {
     loading.value = true
     error.value = null
     try {
+      const limitValue = params.limit || pageSize.value
+      const pageValue = params.page || currentPage.value
       const queryParams = new URLSearchParams({
-        limit: params.limit || pageSize.value,
-        page: params.page || currentPage.value,
+        limit: String(limitValue),
+        page: String(pageValue),
         ...params,
       })
 
       const response = await api.get(`/ensayos?${queryParams}`)
 
-      ensayos.value = response.data || []
-      total.value = response.meta?.total || response.data.length
-      currentPage.value = params.page || currentPage.value
+      // Usar helpers para extraer datos de manera consistente
+      ensayos.value = extractArrayFromResponse(response)
+      total.value = extractTotalFromResponse(response, ensayos.value.length)
+      currentPage.value = pageValue
 
       return response
     } catch (err: any) {
-      error.value = err.data?.message || 'Error al cargar ensayos'
+      error.value = extractErrorMessage(err, 'Error al cargar ensayos')
       console.error('Error en fetchEnsayos:', err)
       throw err
     } finally {
@@ -124,7 +128,7 @@ export const useEnsayosStore = defineStore('ensayos', () => {
       ensayos.value.unshift(response)
       return response
     } catch (err: any) {
-      error.value = err.data?.message || 'Error al crear ensayo'
+      error.value = extractErrorMessage(err, 'Error al crear ensayo')
       console.error('Error en createEnsayo:', err)
       throw err
     } finally {
@@ -142,7 +146,7 @@ export const useEnsayosStore = defineStore('ensayos', () => {
         currentEnsayo.value = null
       }
     } catch (err: any) {
-      error.value = err.data?.message || 'Error al eliminar ensayo'
+      error.value = extractErrorMessage(err, 'Error al eliminar ensayo')
       console.error('Error en deleteEnsayo:', err)
       throw err
     } finally {

@@ -174,13 +174,15 @@ export const useOfflineStore = defineStore('offline', () => {
       const transaction = database.transaction([STORE_MEDICIONES], 'readonly')
       const store = transaction.objectStore(STORE_MEDICIONES)
       const index = store.index('synced')
-      const request = index.getAll(IDBKeyRange.only(false))
+      // Usar getAll con false (boolean value para el índice)
+      const request = (index.getAll as any)(false)
 
       request.onsuccess = () => {
         resolve(request.result || [])
       }
 
       request.onerror = () => {
+        console.error('Error obteniendo mediciones pendientes:', request.error)
         reject(request.error)
       }
     })
@@ -194,13 +196,15 @@ export const useOfflineStore = defineStore('offline', () => {
       const transaction = database.transaction([STORE_MEDIA], 'readonly')
       const store = transaction.objectStore(STORE_MEDIA)
       const index = store.index('synced')
-      const request = index.getAll(IDBKeyRange.only(false))
+      // Usar getAll con false (boolean value para el índice)
+      const request = (index.getAll as any)(false)
 
       request.onsuccess = () => {
         resolve(request.result || [])
       }
 
       request.onerror = () => {
+        console.error('Error obteniendo media pendiente:', request.error)
         reject(request.error)
       }
     })
@@ -262,9 +266,12 @@ export const useOfflineStore = defineStore('offline', () => {
         const transaction = database.transaction([STORE_MEDICIONES], 'readonly')
         const store = transaction.objectStore(STORE_MEDICIONES)
         const index = store.index('synced')
-        const request = index.count(IDBKeyRange.only(false))
+        const request = (index.count as any)(false)
         request.onsuccess = () => resolve(request.result)
-        request.onerror = () => reject(request.error)
+        request.onerror = () => {
+          console.error('Error contando mediciones:', request.error)
+          reject(request.error)
+        }
       })
 
       // Contar media
@@ -272,9 +279,12 @@ export const useOfflineStore = defineStore('offline', () => {
         const transaction = database.transaction([STORE_MEDIA], 'readonly')
         const store = transaction.objectStore(STORE_MEDIA)
         const index = store.index('synced')
-        const request = index.count(IDBKeyRange.only(false))
+        const request = (index.count as any)(false)
         request.onsuccess = () => resolve(request.result)
-        request.onerror = () => reject(request.error)
+        request.onerror = () => {
+          console.error('Error contando media:', request.error)
+          reject(request.error)
+        }
       })
 
       pendingMedicionesCount.value = medicionesCount

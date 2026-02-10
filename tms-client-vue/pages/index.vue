@@ -31,10 +31,18 @@ onMounted(async () => {
   try {
     // Cargar ensayos
     const response = await api.get('/ensayos?limit=100&page=1')
-    ensayos.value = response.data || []
+
+    // Manejar respuesta: puede ser un array directo o un objeto con data
+    if (Array.isArray(response)) {
+      ensayos.value = response
+    } else if (response && response.data && Array.isArray(response.data)) {
+      ensayos.value = response.data
+    } else {
+      ensayos.value = []
+    }
   } catch (err: any) {
     error.value = err.data?.message || 'Error al cargar ensayos'
-    console.error(err)
+    console.error('Error cargando ensayos:', err)
   } finally {
     loading.value = false
   }

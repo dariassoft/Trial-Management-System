@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useApi } from '~/composables/useApi'
 import { ref } from 'vue'
+import type { MomentoEvaluacion } from './momentos'
 
 export interface Aplicacion {
   id: number
@@ -21,13 +22,6 @@ export interface Aplicacion {
   momentos?: MomentoEvaluacion[]
 }
 
-export interface MomentoEvaluacion {
-  id: number
-  nombreMomento: string
-  diasDespuesAplicacion?: number | null
-  fechaEvaluacion?: string | null
-  aplicacion?: Aplicacion
-}
 
 export interface CreateAplicacionDto {
   ensayoId: number

@@ -272,7 +272,16 @@ onMounted(async () => {
     console.log('📋 Cargando ensayos para mediciones...')
     const response = await api.get('/ensayos', { params: { limit: 100 } })
     console.log('📋 Respuesta API:', response)
-    ensayos.value = response?.data || response || []
+
+    // Manejar respuesta: puede ser un array directo o un objeto con data
+    if (Array.isArray(response)) {
+      ensayos.value = response
+    } else if (response?.data && Array.isArray(response.data)) {
+      ensayos.value = response.data
+    } else {
+      ensayos.value = []
+    }
+
     console.log('📋 Ensayos cargados:', ensayos.value.length)
   } catch (err) {
     console.error('❌ Error cargando ensayos:', err)

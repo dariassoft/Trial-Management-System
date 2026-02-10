@@ -34,10 +34,11 @@ const handleLogin = async () => {
 
   try {
     await authStore.login(username.value, password.value)
+    // Login exitoso, redirigir
     navigateTo('/')
   } catch (err: any) {
-    error.value = err.data?.message || 'Error al iniciar sesión'
-  } finally {
+    // Error en login, mostrar mensaje y mantener en login
+    error.value = authStore.error || 'Error al iniciar sesión. Por favor intenta de nuevo'
     loading.value = false
   }
 }

@@ -39,7 +39,16 @@ export const useEnsayos = () => {
           Authorization: `Bearer ${authStore.token}`,
         },
       })
-      cultivos.value = response.data || response || []
+
+      // Manejar respuesta: puede ser un array directo o un objeto con data
+      if (Array.isArray(response)) {
+        cultivos.value = response
+      } else if (response?.data && Array.isArray(response.data)) {
+        cultivos.value = response.data
+      } else {
+        cultivos.value = []
+      }
+
       return cultivos.value
     } catch (error) {
       console.error('Error cargando cultivos:', error)
@@ -67,7 +76,16 @@ export const useEnsayos = () => {
           Authorization: `Bearer ${authStore.token}`,
         },
       })
-      variedades.value = response.data || response || []
+
+      // Manejar respuesta: puede ser un array directo o un objeto con data
+      if (Array.isArray(response)) {
+        variedades.value = response
+      } else if (response?.data && Array.isArray(response.data)) {
+        variedades.value = response.data
+      } else {
+        variedades.value = []
+      }
+
       return variedades.value
     } catch (error) {
       console.error('Error cargando variedades:', error)

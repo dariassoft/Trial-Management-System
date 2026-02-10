@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { extractErrorMessage } from '~/utils/apiHelpers'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
@@ -16,11 +17,24 @@ export const useAuthStore = defineStore('auth', () => {
   // Cargar auth desde localStorage
   const initializeAuth = () => {
     if (process.client) {
-      const savedToken = localStorage.getItem('token')
-      const savedUser = localStorage.getItem('user')
-      if (savedToken && savedUser) {
-        token.value = savedToken
-        user.value = JSON.parse(savedUser)
+      try {
+        const savedToken = localStorage.getItem('token')
+        const savedUser = localStorage.getItem('user')
+        if (savedToken && savedUser) {
+          token.value = savedToken
+          try {
+            user.value = JSON.parse(savedUser)
+          } catch (e) {
+            console.warn('Error al parsear usuario de localStorage:', e)
+            // Si el JSON es inválido, limpiar datos
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            token.value = null
+            user.value = null
+          }
+        }
+      } catch (e) {
+        console.warn('Error accediendo a localStorage:', e)
       }
     }
   }
@@ -35,18 +49,26 @@ export const useAuthStore = defineStore('auth', () => {
         body: { username, password },
       })
 
+      if (!response || !response.accessToken) {
+        throw new Error('Respuesta inválida del servidor')
+      }
+
       token.value = response.accessToken
       user.value = response.user
 
       // Guardar en localStorage
       if (process.client) {
-        localStorage.setItem('token', response.accessToken)
-        localStorage.setItem('user', JSON.stringify(response.user))
+        try {
+          localStorage.setItem('token', response.accessToken)
+          localStorage.setItem('user', JSON.stringify(response.user))
+        } catch (e) {
+          console.error('Error guardando en localStorage:', e)
+        }
       }
 
       return response
     } catch (err: any) {
-      error.value = err.data?.message || 'Error al iniciar sesión'
+      error.value = extractErrorMessage(err, 'Error al iniciar sesión')
       throw err
     } finally {
       loading.value = false
