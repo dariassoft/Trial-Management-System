@@ -1,8 +1,26 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import fs from 'fs'
+import path from 'path'
+
+// Cargar variables de entorno según el ambiente
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+const envPath = path.resolve(process.cwd(), envFile)
+
+let apiBase = 'http://localhost:3000/api/v1'
+
+// Leer archivo .env.production o .env.development
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf-8')
+  const apiBaseMatch = envContent.match(/NUXT_PUBLIC_API_BASE=(.+)/)
+  if (apiBaseMatch && apiBaseMatch[1]) {
+    apiBase = apiBaseMatch[1].trim()
+  }
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-11-27',
-  ssr: false, // SPA Mode
-  devtools: { enabled: true },
+  ssr: true, // SSR Mode - Server-Side Rendering para producción
+  devtools: { enabled: process.env.NODE_ENV === 'development' },
 
   // Módulos
   modules: [
@@ -27,11 +45,10 @@ export default defineNuxtConfig({
     port: 3001,
   },
 
-
-  // Configuración de CORS y API
+  // Configuración de CORS y API - Cargada desde .env.production en build
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000/api/v1',
+      apiBase: apiBase,
     },
   },
 
@@ -45,10 +62,15 @@ export default defineNuxtConfig({
     dirs: ['~/composables', '~/stores', '~/utils'],
   },
 
-  // Auto-import de $fetch
+  // Configuración de Nitro para SSR - genera .output/server/index.mjs
   nitro: {
     prerender: {
       crawlLinks: false,
+    },
+    output: {
+      dir: '.output',
+      serverDir: '.output/server',
+      publicDir: '.output/public',
     },
   },
 })

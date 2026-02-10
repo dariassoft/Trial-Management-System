@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxi build",
+    "build": "NODE_ENV=production nuxi build",
     "dev": "nuxi dev",
     "preview": "nuxi preview",
     "generate": "nuxi generate",
@@ -26,6 +26,7 @@
     "@nuxt/devtools": "^1.0.8",
     "@tailwindcss/forms": "^0.5.7",
     "autoprefixer": "^10.4.17",
+    "cross-env": "^7.0.3",
     "postcss": "^8.4.32",
     "typescript": "^5.3.3"
   }

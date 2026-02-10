@@ -6,15 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useEnsayos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useEnsayos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/middleware/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/middleware/auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/aplicaciones.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/aplicaciones.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/offline.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/offline.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/.env.production" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.env.production" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docker-compose.frontend.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docker-entrypoint.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-frontend.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
