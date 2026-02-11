@@ -182,29 +182,31 @@
             <span class="font-mono text-lg">{{ formatTime(recordingTime) }}</span>
             <span class="text-sm">/ {{ settings.maxVideoSeconds }}s</span>
           </div>
-        </div>
 
-        <!-- Controles -->
-        <div class="p-6 bg-black/80 flex justify-center">
-          <button
-            v-if="captureMode === 'photo'"
-            @click="takePhoto"
-            class="w-20 h-20 rounded-full bg-white border-4 border-gray-300
-                   hover:bg-gray-100 transition flex items-center justify-center"
-          >
-            <span class="w-16 h-16 rounded-full bg-white"></span>
-          </button>
+          <!-- Controles - Superpuestos sobre la imagen/video -->
+          <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-center items-center">
+            <button
+              v-if="captureMode === 'photo'"
+              @click="takePhoto"
+              class="w-20 h-20 rounded-full bg-white border-4 border-gray-300
+                     hover:bg-gray-100 transition flex items-center justify-center shadow-lg"
+              title="Capturar foto"
+            >
+              <span class="w-16 h-16 rounded-full bg-white"></span>
+            </button>
 
-          <button
-            v-else
-            @click="toggleRecording"
-            class="w-20 h-20 rounded-full transition flex items-center justify-center"
-            :class="isRecording ? 'bg-red-600' : 'bg-white border-4 border-red-500'"
-          >
-            <span
-              :class="isRecording ? 'w-8 h-8 rounded bg-white' : 'w-16 h-16 rounded-full bg-red-500'"
-            ></span>
-          </button>
+            <button
+              v-else
+              @click="toggleRecording"
+              class="w-20 h-20 rounded-full transition flex items-center justify-center shadow-lg"
+              :class="isRecording ? 'bg-red-600' : 'bg-white border-4 border-red-500'"
+              :title="isRecording ? 'Detener grabación' : 'Iniciar grabación'"
+            >
+              <span
+                :class="isRecording ? 'w-8 h-8 rounded bg-white' : 'w-16 h-16 rounded-full bg-red-500'"
+              ></span>
+            </button>
+          </div>
         </div>
       </div>
     </Teleport>
