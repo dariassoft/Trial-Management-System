@@ -117,6 +117,24 @@ __decorate([
     __metadata("design:type", Object)
 ], CreateEnsayoDto.prototype, "distSurcosCm", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Número de filas en la matriz de parcelas (define estructura NxM)', example: 3, type: Number, minimum: 1, maximum: 100 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateIf)(o => o.filas !== null && o.filas !== undefined && o.filas !== ''),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(100),
+    __metadata("design:type", Object)
+], CreateEnsayoDto.prototype, "filas", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Número de columnas en la matriz de parcelas (define estructura NxM)', example: 4, type: Number, minimum: 1, maximum: 100 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateIf)(o => o.columnas !== null && o.columnas !== undefined && o.columnas !== ''),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(100),
+    __metadata("design:type", Object)
+], CreateEnsayoDto.prototype, "columnas", void 0);
+__decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: 'Fecha de Inicio (YYYY-MM-DD)', example: '2025-12-10', type: String, format: 'date' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.ValidateIf)(o => o.fechaInicio !== null && o.fechaInicio !== ''),

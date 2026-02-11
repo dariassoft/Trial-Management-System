@@ -130,20 +130,35 @@ let ParcelasService = class ParcelasService {
     }
     update(id, dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c;
-            const partial = {
-                nombreParcela: (_a = dto.nombreParcela) !== null && _a !== void 0 ? _a : undefined,
-                posXGrid: (_b = dto.posXGrid) !== null && _b !== void 0 ? _b : undefined,
-                posYGrid: (_c = dto.posYGrid) !== null && _c !== void 0 ? _c : undefined,
-            };
-            if (dto.ensayoId !== undefined)
-                partial.ensayo = { id: dto.ensayoId };
-            if (dto.bloqueId !== undefined)
-                partial.bloque = { id: dto.bloqueId };
-            if (dto.tratamientoId !== undefined)
-                partial.tratamiento = { id: dto.tratamientoId };
-            yield this.repo.update({ id }, partial);
-            return this.findOne(id);
+            var _a, _b, _c, _d, _e, _f;
+            try {
+                const partial = {
+                    nombreParcela: (_a = dto.nombreParcela) !== null && _a !== void 0 ? _a : undefined,
+                    posXGrid: (_b = dto.posXGrid) !== null && _b !== void 0 ? _b : undefined,
+                    posYGrid: (_c = dto.posYGrid) !== null && _c !== void 0 ? _c : undefined,
+                };
+                if (dto.ensayoId !== undefined)
+                    partial.ensayo = { id: dto.ensayoId };
+                if (dto.bloqueId !== undefined)
+                    partial.bloque = { id: dto.bloqueId };
+                if (dto.tratamientoId !== undefined)
+                    partial.tratamiento = { id: dto.tratamientoId };
+                yield this.repo.update({ id }, partial);
+                return this.findOne(id);
+            }
+            catch (error) {
+                // Manejar error de clave duplicada
+                if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+                    if ((_d = error.sqlMessage) === null || _d === void 0 ? void 0 : _d.includes('uq_parcela_ensayo_nombre')) {
+                        throw new common_1.ConflictException(`Ya existe una parcela con el nombre "${dto.nombreParcela}" en este ensayo. Por favor, usa un nombre diferente o ajusta las posiciones X/Y.`);
+                    }
+                    if (((_e = error.sqlMessage) === null || _e === void 0 ? void 0 : _e.includes('posXGrid')) || ((_f = error.sqlMessage) === null || _f === void 0 ? void 0 : _f.includes('posYGrid'))) {
+                        throw new common_1.ConflictException(`La posición (${dto.posXGrid}, ${dto.posYGrid}) ya está ocupada en este bloque.`);
+                    }
+                    throw new common_1.ConflictException('Ya existe una parcela con estos datos. Verifica que no haya duplicados.');
+                }
+                throw error;
+            }
         });
     }
     remove(id) {

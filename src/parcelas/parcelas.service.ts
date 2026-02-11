@@ -120,16 +120,31 @@ export class ParcelasService {
   }
 
   async update(id: number, dto: UpdateParcelaDto) {
-    const partial: Partial<Parcela> = {
-      nombreParcela: dto.nombreParcela ?? undefined,
-      posXGrid: dto.posXGrid ?? undefined,
-      posYGrid: dto.posYGrid ?? undefined,
-    } as any;
-    if (dto.ensayoId !== undefined) (partial as any).ensayo = { id: dto.ensayoId } as any;
-    if (dto.bloqueId !== undefined) (partial as any).bloque = { id: dto.bloqueId } as any;
-    if (dto.tratamientoId !== undefined) (partial as any).tratamiento = { id: dto.tratamientoId } as any;
-    await this.repo.update({ id }, partial);
-    return this.findOne(id);
+    try {
+      const partial: Partial<Parcela> = {
+        nombreParcela: dto.nombreParcela ?? undefined,
+        posXGrid: dto.posXGrid ?? undefined,
+        posYGrid: dto.posYGrid ?? undefined,
+      } as any;
+      if (dto.ensayoId !== undefined) (partial as any).ensayo = { id: dto.ensayoId } as any;
+      if (dto.bloqueId !== undefined) (partial as any).bloque = { id: dto.bloqueId } as any;
+      if (dto.tratamientoId !== undefined) (partial as any).tratamiento = { id: dto.tratamientoId } as any;
+
+      await this.repo.update({ id }, partial);
+      return this.findOne(id);
+    } catch (error: any) {
+      // Manejar error de clave duplicada
+      if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+        if (error.sqlMessage?.includes('uq_parcela_ensayo_nombre')) {
+          throw new ConflictException(`Ya existe una parcela con el nombre "${dto.nombreParcela}" en este ensayo. Por favor, usa un nombre diferente o ajusta las posiciones X/Y.`);
+        }
+        if (error.sqlMessage?.includes('posXGrid') || error.sqlMessage?.includes('posYGrid')) {
+          throw new ConflictException(`La posición (${dto.posXGrid}, ${dto.posYGrid}) ya está ocupada en este bloque.`);
+        }
+        throw new ConflictException('Ya existe una parcela con estos datos. Verifica que no haya duplicados.');
+      }
+      throw error;
+    }
   }
 
   async remove(id: number) {

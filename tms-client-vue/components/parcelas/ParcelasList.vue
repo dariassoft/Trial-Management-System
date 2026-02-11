@@ -113,6 +113,7 @@
       :tratamientos="tratamientos"
       :ensayo="ensayoActual"
       :bloque="bloqueActual"
+      :parcelasExistentes="parcelas"
       @save="guardarParcela"
       @close="cerrarFormParcela"
     />
@@ -354,9 +355,18 @@ async function guardarParcela(datos: any) {
     await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId })
     console.log('✅ Listado recargado')
     cerrarFormParcela()
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Error al guardar parcela:', err)
-    alert('Error al guardar: ' + (err instanceof Error ? err.message : 'Error desconocido'))
+
+    // Manejar error 409 (Conflict - duplicado)
+    if (err.response?.status === 409 || err.status === 409) {
+      const mensaje = err.response?.data?.message || err.message || 'Esta parcela ya existe en el bloque'
+      alert(`⚠️ Conflicto al guardar: ${mensaje}\n\nLa posición (X, Y) ya está ocupada en este bloque.`)
+      console.log('🚫 Error 409 Conflict - Duplicado de parcela')
+      return
+    }
+
+    alert('❌ Error al guardar: ' + (err instanceof Error ? err.message : 'Error desconocido'))
   }
 }
 

@@ -85,6 +85,19 @@
             </button>
           </div>
 
+          <!-- Mostrar matriz visual si hay filas y columnas definidas -->
+          <div v-if="filasEnsayo && columnasEnsayo" class="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+            <MatrizVisual
+              :filas="filasEnsayo"
+              :columnas="columnasEnsayo"
+              :posXSeleccionada="form.posXGrid"
+              :posYSeleccionada="form.posYGrid"
+              :parcelasOcupadas="parcelasOcupadas"
+              @select="seleccionarCeldaMatriz"
+            />
+          </div>
+
+          <!-- Inputs para ingresar manualmente -->
           <div class="grid grid-cols-2 gap-2">
             <!-- Posición X -->
             <div>
@@ -95,9 +108,13 @@
                 v-model.number="form.posXGrid"
                 type="number"
                 min="1"
+                :max="columnasEnsayo || undefined"
                 placeholder="Columna"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <p v-if="columnasEnsayo" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Max: {{ columnasEnsayo }}
+              </p>
             </div>
 
             <!-- Posición Y -->
@@ -109,10 +126,19 @@
                 v-model.number="form.posYGrid"
                 type="number"
                 min="1"
+                :max="filasEnsayo || undefined"
                 placeholder="Fila"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <p v-if="filasEnsayo" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Max: {{ filasEnsayo }}
+              </p>
             </div>
+          </div>
+
+          <!-- Mostrar errores de validación -->
+          <div v-if="errorDuplicado" class="p-2 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded text-sm text-red-600 dark:text-red-400">
+            ⚠️ {{ errorDuplicado }}
           </div>
         </div>
 
@@ -374,12 +400,14 @@
 <script setup lang="ts">
 import { reactive, watch, ref, computed } from 'vue'
 import QRCode from 'qrcode'
+import MatrizVisual from './MatrizVisual.vue'
 
 interface Props {
   parcela?: { id: number; nombreParcela?: string; posXGrid?: number; posYGrid?: number; tratamientoId: number } | null
   tratamientos: Array<{ id: number; descripcion: string; protocolo?: { id: number; nombre: string } }>
-  ensayo?: { id: number; nombreEnsayo: string; codigoLabor?: string; laboratorio?: { nombre: string }; tipoEnsayo?: { nombre: string }; protocolo?: { id: number; nombre: string } }
+  ensayo?: { id: number; nombreEnsayo: string; codigoLabor?: string; filas?: number | null; columnas?: number | null; laboratorio?: { nombre: string }; tipoEnsayo?: { nombre: string }; protocolo?: { id: number; nombre: string } }
   bloque?: { id: number; nombreBloque: string }
+  parcelasExistentes?: Array<{ id: number; posXGrid?: number | null; posYGrid?: number | null; bloqueId: number }> | null
 }
 
 interface Emits {
@@ -387,7 +415,9 @@ interface Emits {
   (e: 'close'): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  parcelasExistentes: () => [],
+})
 const emit = defineEmits<Emits>()
 
 const form = reactive({
@@ -403,6 +433,8 @@ const mostrarInfoNombre = ref(false)
 const qrCanvas = ref<HTMLCanvasElement | null>(null)
 const qrCodeData = ref('')
 const qrInfo = ref<any>({})
+const errorDuplicado = ref('')
+const mostrarMatriz = ref(true)
 
 // Propiedades calculadas
 const codigoLabor = computed(() => {
@@ -414,6 +446,47 @@ const nombreBloque = computed(() => {
   const bloque = props.bloque?.nombreBloque || ''
   console.log('📌 nombreBloque computed:', bloque)
   return bloque
+})
+
+// Filas y columnas del ensayo
+const filasEnsayo = computed(() => props.ensayo?.filas || null)
+const columnasEnsayo = computed(() => props.ensayo?.columnas || null)
+
+// Parcelas ocupadas en el bloque actual (excluyendo la que se está editando)
+const parcelasOcupadas = computed(() => {
+  console.log('📍 parcelasOcupadas COMPUTED called')
+
+  if (!props.parcelasExistentes) {
+    console.log('⚠️ parcelasOcupadas: props.parcelasExistentes es null/undefined')
+    return []
+  }
+
+  console.log('🔍 Calculando parcelasOcupadas:')
+  console.log('   - props.parcelasExistentes:', props.parcelasExistentes?.length || 0, 'parcelas totales')
+  console.log('   - Estructura de parcela[0]:', props.parcelasExistentes[0])
+  console.log('   - props.bloque?.id:', props.bloque?.id)
+  console.log('   - props.parcela?.id (la que se edita):', props.parcela?.id)
+
+  const parcelas = props.parcelasExistentes
+    .filter(p => {
+      // La estructura viene como: { id, bloque: { id, nombreBloque }, posXGrid, posYGrid, ... }
+      const bloqueId = p.bloque?.id || p.bloqueId  // Intenta ambas estructuras
+      const bloqueIdComparison = Number(bloqueId) === Number(props.bloque?.id)
+      const noEsLaActual = p.id !== props.parcela?.id
+      const tieneUbicacion = p.posXGrid && p.posYGrid
+
+      console.log(`   📦 Parcela ${p.id}: bloque.id=${bloqueId}, mismoBloque=${bloqueIdComparison}, noEsLaActual=${noEsLaActual}, X=${p.posXGrid}, Y=${p.posYGrid}, tieneUbicacion=${tieneUbicacion}`)
+
+      if (bloqueIdComparison && noEsLaActual && tieneUbicacion) {
+        console.log(`      ✓ INCLUIDA: Parcela ${p.id}: X=${p.posXGrid}, Y=${p.posYGrid}`)
+      }
+
+      return bloqueIdComparison && noEsLaActual && tieneUbicacion
+    })
+    .map(p => ({ x: p.posXGrid as number, y: p.posYGrid as number }))
+
+  console.log('   → Parcelas ocupadas FINALES:', parcelas)
+  return parcelas
 })
 
 const tratamientosDelEnsayo = computed(() => {
@@ -510,6 +583,49 @@ watch(
   { immediate: true }  // Ejecutar inmediatamente al montar
 )
 
+// Watch para validar límites de filas y columnas
+watch(
+  () => [form.posXGrid, form.posYGrid, filasEnsayo.value, columnasEnsayo.value],
+  ([posX, posY, filas, columnas]) => {
+    console.log('🔍 Validando límites:', { posX, posY, filas, columnas })
+    errorDuplicado.value = ''
+
+    // Validar que X no exceda columnas
+    if (columnas && posX && posX > columnas) {
+      console.warn(`⚠️ Posición X (${posX}) excede columnas (${columnas})`)
+      errorDuplicado.value = `Posición X no puede ser mayor a ${columnas}`
+      form.posXGrid = columnas
+      return
+    }
+
+    // Validar que Y no exceda filas
+    if (filas && posY && posY > filas) {
+      console.warn(`⚠️ Posición Y (${posY}) excede filas (${filas})`)
+      errorDuplicado.value = `Posición Y no puede ser mayor a ${filas}`
+      form.posYGrid = filas
+      return
+    }
+
+    // Validar duplicados en el mismo bloque
+    if (posX && posY && props.parcelasExistentes) {
+      const duplicado = props.parcelasExistentes.some(
+        p => {
+          const bloqueId = p.bloque?.id || p.bloqueId  // Intenta ambas estructuras
+          return Number(bloqueId) === Number(props.bloque?.id) &&
+               p.posXGrid === posX &&
+               p.posYGrid === posY &&
+               p.id !== props.parcela?.id
+        }
+      )
+
+      if (duplicado) {
+        console.warn(`⚠️ Posición (${posX}, ${posY}) ya existe en este bloque`)
+        errorDuplicado.value = `La posición (${posX}, ${posY}) ya está ocupada en este bloque`
+      }
+    }
+  }
+)
+
 function autocompletarNombre() {
   const codigo = codigoLabor.value?.trim() || ''
   const bloque = nombreBloque.value?.trim() || ''
@@ -551,6 +667,13 @@ function mostrarInfoPosiciones() {
 
 function mostrarInfoNombreCodigo() {
   mostrarInfoNombre.value = true
+}
+
+function seleccionarCeldaMatriz(x: number, y: number) {
+  form.posXGrid = x
+  form.posYGrid = y
+  errorDuplicado.value = '' // Limpiar errores al seleccionar nueva celda
+  console.log(`✓ Celda seleccionada: (${x}, ${y})`)
 }
 
 async function generarYMostrarQR() {
@@ -797,6 +920,35 @@ function enviar() {
     console.error('❌ Error: Se requiere nombre o posiciones')
     alert('Por favor ingresa un nombre o posiciones')
     return
+  }
+
+  // Validar límites de filas y columnas
+  if (columnasEnsayo.value && form.posXGrid && form.posXGrid > columnasEnsayo.value) {
+    alert(`Posición X no puede ser mayor a ${columnasEnsayo.value}`)
+    return
+  }
+
+  if (filasEnsayo.value && form.posYGrid && form.posYGrid > filasEnsayo.value) {
+    alert(`Posición Y no puede ser mayor a ${filasEnsayo.value}`)
+    return
+  }
+
+  // Validar duplicados dentro del mismo bloque
+  if (form.posXGrid && form.posYGrid && props.parcelasExistentes) {
+    const duplicado = props.parcelasExistentes.some(
+      p => {
+        const bloqueId = p.bloque?.id || p.bloqueId  // Intenta ambas estructuras
+        return Number(bloqueId) === Number(props.bloque?.id) &&
+             p.posXGrid === form.posXGrid &&
+             p.posYGrid === form.posYGrid &&
+             p.id !== props.parcela?.id
+      }
+    )
+
+    if (duplicado) {
+      alert(`La posición (${form.posXGrid}, ${form.posYGrid}) ya está ocupada en este bloque`)
+      return
+    }
   }
 
   const datos = {

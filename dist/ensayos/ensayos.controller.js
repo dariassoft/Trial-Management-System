@@ -69,6 +69,8 @@ __decorate([
                     variedadId: 1,
                     tipoSiembraId: 1,
                     distSurcosCm: 52.5,
+                    filas: 3,
+                    columnas: 4,
                     fechaInicio: '2025-12-10',
                     fechaSiembra: '2025-12-15',
                     fechaCosecha: '2026-05-20',

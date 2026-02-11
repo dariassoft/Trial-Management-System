@@ -104,6 +104,7 @@
               :ensayo-id="ensayoId"
               :ensayo="props.ensayo"
               :bloque-id="bloque.id"
+              :bloque="bloque"
             />
           </div>
         </Transition>

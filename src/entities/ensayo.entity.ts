@@ -75,6 +75,13 @@ export class Ensayo {
   @Column({ name: 'dist_surcos_cm', type: 'decimal', precision: 5, scale: 2, nullable: true })
   distSurcosCm?: number | null;
 
+  // --- Matriz de Parcelas ---
+  @Column({ name: 'filas', type: 'int', unsigned: true, nullable: true })
+  filas?: number | null;
+
+  @Column({ name: 'columnas', type: 'int', unsigned: true, nullable: true })
+  columnas?: number | null;
+
   // --- Date Fields Updated ---
   @Column({ name: 'fecha_inicio', type: 'date', nullable: true })
   fechaInicio?: Date | null;

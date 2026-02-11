@@ -95,6 +95,29 @@
           </div>
         </div>
       </div>
+
+      <!-- Estructura de la Matriz de Parcelas -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">📊 Estructura de la Matriz de Parcelas</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Número de Filas</p>
+            <p class="text-lg font-medium text-gray-900 dark:text-white">{{ ensayo.filas || '-' }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Número de Columnas</p>
+            <p class="text-lg font-medium text-gray-900 dark:text-white">{{ ensayo.columnas || '-' }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Total de Parcelas Esperadas</p>
+            <p class="text-lg font-bold text-blue-600 dark:text-blue-400">
+              {{ ensayo.filas && ensayo.columnas ? ensayo.filas * ensayo.columnas : '-' }}
+              <span v-if="ensayo.filas && ensayo.columnas" class="text-sm text-gray-500">({{ ensayo.filas }}×{{ ensayo.columnas }})</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Fechas -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Fechas</h2>

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, ValidateNested, ValidateIf } from 'class-validator';
+import { IsDateString, IsInt, IsNumber, IsOptional, IsString, MaxLength, ValidateNested, ValidateIf, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
 // Helper DTOs to validate nested objects with an 'id' property
@@ -141,6 +141,22 @@ export class UpdateEnsayoDto {
   @IsOptional()
   @IsNumber()
   distSurcosCm?: number | null;
+
+  @ApiPropertyOptional({ description: 'Número de filas en la matriz de parcelas (define estructura NxM)', example: 3, type: Number, minimum: 1, maximum: 100 })
+  @IsOptional()
+  @ValidateIf(o => o.filas !== null && o.filas !== undefined && o.filas !== '')
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  filas?: number | null;
+
+  @ApiPropertyOptional({ description: 'Número de columnas en la matriz de parcelas (define estructura NxM)', example: 4, type: Number, minimum: 1, maximum: 100 })
+  @IsOptional()
+  @ValidateIf(o => o.columnas !== null && o.columnas !== undefined && o.columnas !== '')
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  columnas?: number | null;
 
   @ApiPropertyOptional({ description: 'Fecha de Inicio (YYYY-MM-DD)', example: '2025-10-15' })
   @IsOptional()

@@ -5,10 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/ensayos/dto/create-ensayo.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/dto/create-ensayo.dto.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/ensayos/dto/update-ensayo.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/dto/update-ensayo.dto.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/entities/ensayo.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/ensayo.entity.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/parcelas/parcelas.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/parcelas/parcelas.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/create-ensayo.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/dto/update-ensayo.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entities/ensayo.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/ensayo.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/parcelas/parcelas.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/parcelas/parcelas.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/bloques/BloquesList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/bloques/BloquesList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelaForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelaForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelasList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelasList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +41,7 @@
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="653" />
+    <option name="cachedIndexableFilesCount" value="514" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -183,7 +196,7 @@
       <workItem from="1769647214885" duration="1368000" />
       <workItem from="1769725057114" duration="16487000" />
       <workItem from="1769745345154" duration="2916000" />
-      <workItem from="1770826052820" duration="3190000" />
+      <workItem from="1770826052820" duration="7546000" />
     </task>
     <servers />
   </component>
