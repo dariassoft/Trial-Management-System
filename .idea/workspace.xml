@@ -6,13 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/.env.production" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.env.production" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/docker-compose.frontend.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/docker-entrypoint.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-frontend.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,8 +20,15 @@
       <entry key="_/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend" value="3552VZEOFyhqRToFMN0YkiDtUFY" />
     </persistenceIdMap>
   </component>
+  <component name="CopilotUserSelectedModel">
+    <selectedModels>
+      <entry key="chat-panel" value="Claude Haiku 4.5" />
+      <entry key="agent-panel" value="Claude Haiku 4.5" />
+      <entry key="edit-panel" value="GPT-5 mini" />
+    </selectedModels>
+  </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="565" />
+    <option name="cachedIndexableFilesCount" value="653" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -180,6 +183,7 @@
       <workItem from="1769647214885" duration="1368000" />
       <workItem from="1769725057114" duration="16487000" />
       <workItem from="1769745345154" duration="2916000" />
+      <workItem from="1770826052820" duration="3190000" />
     </task>
     <servers />
   </component>

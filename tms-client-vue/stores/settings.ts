@@ -36,6 +36,12 @@ export const useSettingsStore = defineStore('settings', () => {
   // Cargar settings desde localStorage
   function loadSettings() {
     try {
+      // Verificar si estamos en el cliente (no SSR)
+      if (typeof window === 'undefined') {
+        isLoaded.value = true
+        return
+      }
+
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored)
@@ -52,6 +58,11 @@ export const useSettingsStore = defineStore('settings', () => {
   // Guardar settings en localStorage
   function saveSettings() {
     try {
+      // Verificar si estamos en el cliente (no SSR)
+      if (typeof window === 'undefined') {
+        return
+      }
+
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings.value))
     } catch (err) {
       console.error('Error guardando settings:', err)

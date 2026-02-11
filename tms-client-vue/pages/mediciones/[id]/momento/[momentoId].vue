@@ -105,9 +105,9 @@
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
 
-          <!-- Escala visual si aplica -->
+          <!-- Escala visual si aplica (solo si tiene 10 o menos valores) -->
           <div
-            v-if="hasScale(variable)"
+            v-if="hasScale(variable) && getScaleRange(variable).length <= 10"
             class="mt-2 flex justify-between"
           >
             <button
