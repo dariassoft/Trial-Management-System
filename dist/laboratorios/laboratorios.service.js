@@ -41,8 +41,24 @@ let LaboratoriosService = class LaboratoriosService {
         return { isInvitado, labIds };
     }
     create(dto) {
-        const entity = this.repo.create({ nombre: dto.nombre });
-        return this.repo.save(entity);
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f;
+            // Validar nombre único
+            const existing = yield this.repo.findOne({ where: { nombre: dto.nombre } });
+            if (existing) {
+                throw new common_1.BadRequestException('Ya existe un laboratorio con ese nombre');
+            }
+            const entity = this.repo.create({
+                nombre: dto.nombre,
+                descripcion: (_a = dto.descripcion) !== null && _a !== void 0 ? _a : null,
+                direccion: (_b = dto.direccion) !== null && _b !== void 0 ? _b : null,
+                telefono: (_c = dto.telefono) !== null && _c !== void 0 ? _c : null,
+                email: (_d = dto.email) !== null && _d !== void 0 ? _d : null,
+                contacto: (_e = dto.contacto) !== null && _e !== void 0 ? _e : null,
+                esta_activo: (_f = dto.esta_activo) !== null && _f !== void 0 ? _f : true,
+            });
+            return this.repo.save(entity);
+        });
     }
     findAll(query) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -52,45 +68,88 @@ let LaboratoriosService = class LaboratoriosService {
             const sort = (_c = query === null || query === void 0 ? void 0 : query.sort) !== null && _c !== void 0 ? _c : 'id';
             const order = ((_d = query === null || query === void 0 ? void 0 : query.order) !== null && _d !== void 0 ? _d : 'ASC');
             const { isInvitado, labIds } = this.auth;
-            const qb = this.repo.createQueryBuilder('l');
-            if (query === null || query === void 0 ? void 0 : query.q)
-                qb.where('l.nombre LIKE :q', { q: `%${query.q}%` });
-            if (isInvitado)
+            const qb = this.repo
+                .createQueryBuilder('l')
+                .leftJoinAndSelect('l.usuariosAsignados', 'ua')
+                .leftJoinAndSelect('ua.usuario', 'u');
+            // Búsqueda por nombre, descripción, email o contacto
+            if (query === null || query === void 0 ? void 0 : query.q) {
+                qb.where('l.nombre LIKE :q OR l.descripcion LIKE :q OR l.email LIKE :q OR l.contacto LIKE :q', { q: `%${query.q}%` });
+            }
+            // Filtro de estado activo
+            if ((query === null || query === void 0 ? void 0 : query.activo) !== undefined) {
+                qb.andWhere('l.esta_activo = :activo', { activo: query.activo });
+            }
+            // Restricción para invitados
+            if (isInvitado && labIds.length > 0) {
                 qb.andWhere('l.id IN (:...labIds)', { labIds });
+            }
+            qb.orderBy(`l.${sort}`, order);
             const [data, total] = yield qb
-                .orderBy(`l.${sort}`, order)
                 .skip((page - 1) * limit)
                 .take(limit)
                 .getManyAndCount();
-            return { data, meta: { total, page, limit, pageCount: Math.max(1, Math.ceil(total / limit)) } };
+            return {
+                data,
+                meta: {
+                    total,
+                    page,
+                    limit,
+                    pageCount: Math.max(1, Math.ceil(total / limit))
+                }
+            };
         });
     }
     findOne(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const { isInvitado, labIds } = this.auth;
-            if (!isInvitado) {
-                const entity = yield this.repo.findOne({ where: { id } });
-                if (!entity)
-                    throw new common_1.NotFoundException(`Laboratorio ${id} no encontrado`);
-                return entity;
-            }
-            const entity = yield this.repo.findOne({ where: { id: id } });
-            if (!entity || !labIds.includes(entity.id))
+            const entity = yield this.repo
+                .createQueryBuilder('l')
+                .leftJoinAndSelect('l.usuariosAsignados', 'ua')
+                .leftJoinAndSelect('ua.usuario', 'u')
+                .where('l.id = :id', { id })
+                .getOne();
+            if (!entity) {
                 throw new common_1.NotFoundException(`Laboratorio ${id} no encontrado`);
+            }
+            // Validar acceso para invitados
+            if (isInvitado && !labIds.includes(entity.id)) {
+                throw new common_1.NotFoundException(`Laboratorio ${id} no encontrado`);
+            }
             return entity;
         });
     }
     update(id, dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.repo.update({ id }, dto);
-            return this.findOne(id);
+            const entity = yield this.repo.findOne({ where: { id } });
+            if (!entity) {
+                throw new common_1.NotFoundException(`Laboratorio ${id} no encontrado`);
+            }
+            // Validar unicidad de nombre si se intenta cambiar
+            if (dto.nombre && dto.nombre !== entity.nombre) {
+                const existing = yield this.repo.findOne({ where: { nombre: dto.nombre } });
+                if (existing) {
+                    throw new common_1.BadRequestException('Ya existe un laboratorio con ese nombre');
+                }
+            }
+            Object.assign(entity, dto);
+            return this.repo.save(entity);
         });
     }
     remove(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield this.repo.delete({ id });
-            if (!result.affected)
+            const entity = yield this.repo.findOne({
+                where: { id },
+                relations: ['usuariosAsignados']
+            });
+            if (!entity) {
                 throw new common_1.NotFoundException(`Laboratorio ${id} no encontrado`);
+            }
+            // Validar que no tenga usuarios asignados
+            if (entity.usuariosAsignados && entity.usuariosAsignados.length > 0) {
+                throw new common_1.BadRequestException(`No se puede eliminar el laboratorio que tiene ${entity.usuariosAsignados.length} usuario(s) asignado(s)`);
+            }
+            yield this.repo.delete(id);
             return { deleted: true };
         });
     }

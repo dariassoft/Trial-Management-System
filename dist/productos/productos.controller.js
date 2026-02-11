@@ -46,16 +46,41 @@ __decorate([
     (0, roles_decorator_1.Roles)(rol_entity_1.Role.MANAGER, rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN),
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Crear un producto' }),
-    (0, swagger_1.ApiCreatedResponse)({ type: producto_entity_1.Producto, description: 'Producto creado' }),
+    (0, swagger_1.ApiCreatedResponse)({
+        type: producto_entity_1.Producto,
+        description: 'Producto creado',
+        schema: { example: {
+                id: 1,
+                nombre_comercial: 'Herbicida X',
+                descripcion: 'Herbicida selectivo para maíz',
+                principio_activo: 'Glifosato 48%',
+                formulacion: 'SL',
+                tipo: 'Herbicida',
+                unidad: 'L/ha',
+                precio: 150.50,
+                laboratorio: { id: 1, nombre: 'Lab Principal' }
+            } }
+    }),
     (0, swagger_1.ApiBody)({
         type: create_producto_dto_1.CreateProductoDto,
         examples: {
             default: {
+                summary: 'Producto completo',
                 value: {
                     nombre_comercial: 'Herbicida X',
+                    descripcion: 'Herbicida selectivo para maíz post-emergencia',
                     principio_activo: 'Glifosato 48%',
                     formulacion: 'SL',
+                    tipo: 'Herbicida',
+                    unidad: 'L/ha',
+                    precio: 150.50,
                     laboratorioId: 1,
+                },
+            },
+            minimal: {
+                summary: 'Solo nombre requerido',
+                value: {
+                    nombre_comercial: 'Mi Producto',
                 },
             },
         },
@@ -68,13 +93,23 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar productos (paginado y filtrado)' }),
-    (0, swagger_1.ApiOkResponse)({ description: 'Lista paginada', schema: { example: { data: [], meta: { total: 0, page: 1, limit: 10, pageCount: 0 } } } }),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
-    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String }),
-    (0, swagger_1.ApiQuery)({ name: 'order', required: false, enum: ['ASC', 'DESC'] }),
-    (0, swagger_1.ApiQuery)({ name: 'laboratorioId', required: false, type: Number }),
-    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String, description: 'Buscar por nombre/principio activo' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Lista paginada de productos',
+        schema: {
+            example: {
+                data: [
+                    { id: 1, nombre_comercial: 'Herbicida X', tipo: 'Herbicida', precio: 150.50 }
+                ],
+                meta: { total: 1, page: 1, limit: 10, pageCount: 1 }
+            }
+        }
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Número de página' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Registros por página' }),
+    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String, description: 'Campo para ordenar' }),
+    (0, swagger_1.ApiQuery)({ name: 'order', required: false, enum: ['ASC', 'DESC'], description: 'Dirección de orden' }),
+    (0, swagger_1.ApiQuery)({ name: 'laboratorioId', required: false, type: Number, description: 'Filtrar por laboratorio' }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String, description: 'Buscar por nombre/tipo/principio activo' }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

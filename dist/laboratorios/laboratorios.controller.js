@@ -46,14 +46,41 @@ __decorate([
     (0, roles_decorator_1.Roles)(rol_entity_1.Role.MANAGER, rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN),
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Crear un laboratorio' }),
-    (0, swagger_1.ApiCreatedResponse)({ type: laboratorio_entity_1.Laboratorio, description: 'Laboratorio creado' }),
+    (0, swagger_1.ApiCreatedResponse)({
+        type: laboratorio_entity_1.Laboratorio,
+        description: 'Laboratorio creado',
+        schema: { example: {
+                id: 1,
+                nombre: 'ACME Agro Labs',
+                descripcion: 'Laboratorio de análisis de suelos',
+                direccion: 'Calle Principal 123',
+                telefono: '3875789133',
+                email: 'lab@acme.com',
+                contacto: 'Ing. Juan Pérez',
+                esta_activo: true,
+                createdAt: '2026-02-11T10:00:00Z',
+                updatedAt: '2026-02-11T10:00:00Z'
+            } }
+    }),
     (0, swagger_1.ApiBody)({
         type: create_laboratorio_dto_1.CreateLaboratorioDto,
         examples: {
             default: {
-                summary: 'Laboratorio básico',
+                summary: 'Laboratorio completo',
                 value: {
                     nombre: 'ACME Agro Labs',
+                    descripcion: 'Laboratorio de análisis de suelos',
+                    direccion: 'Calle Principal 123, Ciudad',
+                    telefono: '3875789133',
+                    email: 'lab@acme.com',
+                    contacto: 'Ing. Juan Pérez',
+                    esta_activo: true,
+                },
+            },
+            minimal: {
+                summary: 'Solo nombre requerido',
+                value: {
+                    nombre: 'Mi Laboratorio',
                 },
             },
         },
@@ -66,12 +93,23 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar laboratorios (paginado y filtrado)' }),
-    (0, swagger_1.ApiOkResponse)({ description: 'Lista paginada', schema: { example: { data: [], meta: { total: 0, page: 1, limit: 10, pageCount: 0 } } } }),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
-    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String }),
-    (0, swagger_1.ApiQuery)({ name: 'order', required: false, enum: ['ASC', 'DESC'] }),
-    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String, description: 'Buscar por nombre' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Lista paginada de laboratorios',
+        schema: {
+            example: {
+                data: [
+                    { id: 1, nombre: 'ACME Labs', descripcion: 'Lab principal', esta_activo: true }
+                ],
+                meta: { total: 1, page: 1, limit: 10, pageCount: 1 }
+            }
+        }
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Número de página (default: 1)' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Registros por página (default: 10)' }),
+    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String, description: 'Campo para ordenar (default: id)' }),
+    (0, swagger_1.ApiQuery)({ name: 'order', required: false, enum: ['ASC', 'DESC'], description: 'Dirección de orden (default: ASC)' }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String, description: 'Búsqueda por nombre, descripción, email o contacto' }),
+    (0, swagger_1.ApiQuery)({ name: 'activo', required: false, type: Boolean, description: 'Filtrar por estado activo' }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -81,7 +119,20 @@ __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Obtener laboratorio por ID' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: Number }),
-    (0, swagger_1.ApiOkResponse)({ type: laboratorio_entity_1.Laboratorio }),
+    (0, swagger_1.ApiOkResponse)({
+        type: laboratorio_entity_1.Laboratorio,
+        schema: { example: {
+                id: 1,
+                nombre: 'ACME Labs',
+                descripcion: 'Lab principal',
+                direccion: 'Calle Principal 123',
+                telefono: '3875789133',
+                email: 'lab@acme.com',
+                contacto: 'Ing. Juan Pérez',
+                esta_activo: true,
+                usuariosAsignados: []
+            } }
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -92,13 +143,24 @@ __decorate([
     (0, common_1.Patch)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Actualizar laboratorio' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: Number }),
-    (0, swagger_1.ApiOkResponse)({ type: laboratorio_entity_1.Laboratorio }),
+    (0, swagger_1.ApiOkResponse)({ type: laboratorio_entity_1.Laboratorio, description: 'Laboratorio actualizado' }),
     (0, swagger_1.ApiBody)({
         type: update_laboratorio_dto_1.UpdateLaboratorioDto,
         examples: {
             default: {
+                summary: 'Actualización completa',
                 value: {
-                    nombre: 'Nuevo nombre de laboratorio',
+                    nombre: 'ACME Labs Actualizado',
+                    descripcion: 'Descripción actualizada',
+                    telefono: '3875000000',
+                    email: 'newemail@acme.com',
+                    esta_activo: true,
+                },
+            },
+            partial: {
+                summary: 'Actualización parcial',
+                value: {
+                    esta_activo: false,
                 },
             },
         },
@@ -114,7 +176,10 @@ __decorate([
     (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Eliminar laboratorio' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: Number }),
-    (0, swagger_1.ApiOkResponse)({ schema: { example: { deleted: true } } }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Laboratorio eliminado',
+        schema: { example: { deleted: true } }
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

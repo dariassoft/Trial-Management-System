@@ -13,6 +13,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'nest_db',
   synchronize: false, // Nunca usar synchronize en producción
   entities: [__dirname + '/../**/*.entity{.ts,.js}'], // Ruta a tus entidades
-  migrations: [__dirname + '/migrations/*{.ts,.js}'], // Ruta a tus migraciones
+  migrations: [__dirname + '/../migrations/*{.ts,.js}'], // Ruta a tus migraciones
   migrationsTableName: 'migrations', // Nombre de la tabla de migraciones
 });

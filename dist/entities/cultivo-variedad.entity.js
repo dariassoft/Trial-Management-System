@@ -24,6 +24,26 @@ __decorate([
     __metadata("design:type", String)
 ], CultivoVariedad.prototype, "nombre", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", Object)
+], CultivoVariedad.prototype, "descripcion", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", Object)
+], CultivoVariedad.prototype, "caracteristicas", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'boolean', default: true }),
+    __metadata("design:type", Boolean)
+], CultivoVariedad.prototype, "esta_activo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], CultivoVariedad.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], CultivoVariedad.prototype, "updatedAt", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => cultivo_entity_1.Cultivo, (cultivo) => cultivo.variedades, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'cultivo_id_fk' }),
     __metadata("design:type", cultivo_entity_1.Cultivo)

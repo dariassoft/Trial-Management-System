@@ -16,27 +16,84 @@ class CreateProductoDto {
 }
 exports.CreateProductoDto = CreateProductoDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Herbicida X', maxLength: 100 }),
+    (0, swagger_1.ApiProperty)({
+        example: 'Herbicida X',
+        maxLength: 100,
+        description: 'Nombre comercial del producto'
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], CreateProductoDto.prototype, "nombre_comercial", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Glifosato 48%', maxLength: 255 }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Herbicida selectivo para maíz post-emergencia',
+        maxLength: 500,
+        description: 'Descripción detallada del producto'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(500),
+    __metadata("design:type", Object)
+], CreateProductoDto.prototype, "descripcion", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Glifosato 48%',
+        maxLength: 255,
+        description: 'Principio activo del producto'
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(255),
     __metadata("design:type", Object)
 ], CreateProductoDto.prototype, "principio_activo", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'SL', maxLength: 50 }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'SL',
+        maxLength: 50,
+        description: 'Formulación del producto (SL, WP, SC, etc)'
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(50),
     __metadata("design:type", Object)
 ], CreateProductoDto.prototype, "formulacion", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 1, description: 'ID del Laboratorio propietario' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Herbicida',
+        maxLength: 100,
+        description: 'Tipo de producto (Herbicida, Fungicida, Insecticida, etc)'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(100),
+    __metadata("design:type", Object)
+], CreateProductoDto.prototype, "tipo", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'L/ha',
+        maxLength: 50,
+        description: 'Unidad de medida (L/ha, cc/ha, kg/ha, etc)'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(50),
+    __metadata("design:type", Object)
+], CreateProductoDto.prototype, "unidad", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 150.50,
+        description: 'Precio unitario del producto'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateProductoDto.prototype, "precio", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 1,
+        description: 'ID del Laboratorio propietario'
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)

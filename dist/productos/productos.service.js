@@ -42,10 +42,15 @@ let ProductosService = class ProductosService {
     }
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f;
             const entity = this.repo.create({
                 nombre_comercial: dto.nombre_comercial,
-                principio_activo: dto.principio_activo,
-                formulacion: dto.formulacion,
+                descripcion: (_a = dto.descripcion) !== null && _a !== void 0 ? _a : null,
+                principio_activo: (_b = dto.principio_activo) !== null && _b !== void 0 ? _b : null,
+                formulacion: (_c = dto.formulacion) !== null && _c !== void 0 ? _c : null,
+                tipo: (_d = dto.tipo) !== null && _d !== void 0 ? _d : null,
+                unidad: (_e = dto.unidad) !== null && _e !== void 0 ? _e : null,
+                precio: (_f = dto.precio) !== null && _f !== void 0 ? _f : null,
                 laboratorio: dto.laboratorioId ? { id: dto.laboratorioId } : undefined,
             });
             return this.repo.save(entity);
@@ -64,7 +69,7 @@ let ProductosService = class ProductosService {
             if (query === null || query === void 0 ? void 0 : query.laboratorioId)
                 qb.andWhere('laboratorio.id = :laboratorioId', { laboratorioId: query.laboratorioId });
             if (query === null || query === void 0 ? void 0 : query.q)
-                qb.andWhere('(p.nombre_comercial LIKE :q OR p.principio_activo LIKE :q)', { q: `%${query.q}%` });
+                qb.andWhere('(p.nombre_comercial LIKE :q OR p.principio_activo LIKE :q OR p.tipo LIKE :q)', { q: `%${query.q}%` });
             if (isInvitado)
                 qb.andWhere('laboratorio.id IN (:...labIds)', { labIds });
             const [data, total] = yield qb
@@ -96,11 +101,21 @@ let ProductosService = class ProductosService {
     }
     update(id, dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const partial = {
-                nombre_comercial: dto.nombre_comercial,
-                principio_activo: dto.principio_activo,
-                formulacion: dto.formulacion,
-            };
+            const partial = {};
+            if (dto.nombre_comercial !== undefined)
+                partial.nombre_comercial = dto.nombre_comercial;
+            if (dto.descripcion !== undefined)
+                partial.descripcion = dto.descripcion;
+            if (dto.principio_activo !== undefined)
+                partial.principio_activo = dto.principio_activo;
+            if (dto.formulacion !== undefined)
+                partial.formulacion = dto.formulacion;
+            if (dto.tipo !== undefined)
+                partial.tipo = dto.tipo;
+            if (dto.unidad !== undefined)
+                partial.unidad = dto.unidad;
+            if (dto.precio !== undefined)
+                partial.precio = dto.precio;
             if (dto.laboratorioId !== undefined) {
                 partial.laboratorio = dto.laboratorioId === null ? null : { id: dto.laboratorioId };
             }

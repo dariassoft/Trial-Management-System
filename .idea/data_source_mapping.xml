@@ -3,6 +3,7 @@
   <component name="DataSourcePerFileMappings">
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8aba5371-9504-4571-bd3f-0cbf74d8e46e/console.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8aba5371-9504-4571-bd3f-0cbf74d8e46e/console_1.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8aba5371-9504-4571-bd3f-0cbf74d8e46e/console_2.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
     <file url="file://$PROJECT_DIR$/docs/11_alter_ensayo_add_tratamiento_fk.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
     <file url="file://$PROJECT_DIR$/docs/12_alter_tratamiento_add_protocolo_fk.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
     <file url="file://$PROJECT_DIR$/docs/13_alter_ensayo_add_protocolo_fk.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
@@ -12,5 +13,6 @@
     <file url="file://$PROJECT_DIR$/docs/21_seed_status_ensayo.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
     <file url="file://$PROJECT_DIR$/docs/auth_seed.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
     <file url="file://$PROJECT_DIR$/docs/tipo_ensayo.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
+    <file url="file://$PROJECT_DIR$/src/database/add-laboratorio-fields.sql" value="8aba5371-9504-4571-bd3f-0cbf74d8e46e" />
   </component>
 </project>

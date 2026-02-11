@@ -19,16 +19,41 @@ export class ProductosController {
   @Roles(Role.MANAGER, Role.ADMIN, Role.SUPERADMIN)
   @Post()
   @ApiOperation({ summary: 'Crear un producto' })
-  @ApiCreatedResponse({ type: Producto, description: 'Producto creado' })
+  @ApiCreatedResponse({
+    type: Producto,
+    description: 'Producto creado',
+    schema: { example: {
+      id: 1,
+      nombre_comercial: 'Herbicida X',
+      descripcion: 'Herbicida selectivo para maíz',
+      principio_activo: 'Glifosato 48%',
+      formulacion: 'SL',
+      tipo: 'Herbicida',
+      unidad: 'L/ha',
+      precio: 150.50,
+      laboratorio: { id: 1, nombre: 'Lab Principal' }
+    } }
+  })
   @ApiBody({
     type: CreateProductoDto,
     examples: {
       default: {
+        summary: 'Producto completo',
         value: {
           nombre_comercial: 'Herbicida X',
+          descripcion: 'Herbicida selectivo para maíz post-emergencia',
           principio_activo: 'Glifosato 48%',
           formulacion: 'SL',
+          tipo: 'Herbicida',
+          unidad: 'L/ha',
+          precio: 150.50,
           laboratorioId: 1,
+        },
+      },
+      minimal: {
+        summary: 'Solo nombre requerido',
+        value: {
+          nombre_comercial: 'Mi Producto',
         },
       },
     },
@@ -39,13 +64,23 @@ export class ProductosController {
 
   @Get()
   @ApiOperation({ summary: 'Listar productos (paginado y filtrado)' })
-  @ApiOkResponse({ description: 'Lista paginada', schema: { example: { data: [], meta: { total: 0, page: 1, limit: 10, pageCount: 0 } } } })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'sort', required: false, type: String })
-  @ApiQuery({ name: 'order', required: false, enum: ['ASC','DESC'] })
-  @ApiQuery({ name: 'laboratorioId', required: false, type: Number })
-  @ApiQuery({ name: 'q', required: false, type: String, description: 'Buscar por nombre/principio activo' })
+  @ApiOkResponse({
+    description: 'Lista paginada de productos',
+    schema: {
+      example: {
+        data: [
+          { id: 1, nombre_comercial: 'Herbicida X', tipo: 'Herbicida', precio: 150.50 }
+        ],
+        meta: { total: 1, page: 1, limit: 10, pageCount: 1 }
+      }
+    }
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Registros por página' })
+  @ApiQuery({ name: 'sort', required: false, type: String, description: 'Campo para ordenar' })
+  @ApiQuery({ name: 'order', required: false, enum: ['ASC','DESC'], description: 'Dirección de orden' })
+  @ApiQuery({ name: 'laboratorioId', required: false, type: Number, description: 'Filtrar por laboratorio' })
+  @ApiQuery({ name: 'q', required: false, type: String, description: 'Buscar por nombre/tipo/principio activo' })
   findAll(@Query() query: PageQueryDto & { laboratorioId?: number; q?: string }) {
     return this.service.findAll(query);
   }

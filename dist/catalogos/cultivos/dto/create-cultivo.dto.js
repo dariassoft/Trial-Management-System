@@ -16,9 +16,45 @@ class CreateCultivoDto {
 }
 exports.CreateCultivoDto = CreateCultivoDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Nombre del cultivo', example: 'Girasol' }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Nombre del cultivo',
+        example: 'Maíz',
+        maxLength: 100
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(3),
+    (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], CreateCultivoDto.prototype, "nombre", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Descripción del cultivo',
+        example: 'Cultivo de maíz para grano',
+        maxLength: 500
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(500),
+    __metadata("design:type", Object)
+], CreateCultivoDto.prototype, "descripcion", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Ciclo vegetativo del cultivo',
+        example: '120-140 días',
+        maxLength: 100
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(100),
+    __metadata("design:type", Object)
+], CreateCultivoDto.prototype, "ciclo_vegetativo", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Cultivo activo',
+        example: true,
+        default: true
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateCultivoDto.prototype, "esta_activo", void 0);

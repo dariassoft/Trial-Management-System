@@ -10,6 +10,30 @@ export class Laboratorio {
   @Column({ type: 'varchar', length: 100, unique: true })
   nombre: string;
 
+  @Column({ type: 'text', nullable: true })
+  descripcion: string | null;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  direccion: string | null;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  telefono: string | null;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  email: string | null;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  contacto: string | null;
+
+  @Column({ type: 'boolean', default: true })
+  esta_activo: boolean;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  updatedAt: Date;
+
   // Relación: Un Laboratorio tiene muchos Productos
   @OneToMany(() => Producto, (producto) => producto.laboratorio)
   productos: Producto[];

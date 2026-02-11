@@ -22,6 +22,22 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 100, unique: true }),
     __metadata("design:type", String)
 ], TipoSiembra.prototype, "nombre", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", Object)
+], TipoSiembra.prototype, "descripcion", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'boolean', default: true }),
+    __metadata("design:type", Boolean)
+], TipoSiembra.prototype, "esta_activo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], TipoSiembra.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], TipoSiembra.prototype, "updatedAt", void 0);
 exports.TipoSiembra = TipoSiembra = __decorate([
     (0, typeorm_1.Entity)('TipoSiembra')
 ], TipoSiembra);

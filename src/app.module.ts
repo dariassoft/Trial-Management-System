@@ -28,6 +28,7 @@ import { LocationsModule } from './locations/locations.module';
 import { TiposSiembraModule } from './catalogos/tipos-siembra/tipos-siembra.module';
 import { ProtocolosModule } from './protocolos/protocolos.module'; // Importar ProtocolosModule
 import { StatusEnsayoModule } from './status-ensayo/status-ensayo.module';
+import { RolesModule } from './roles/roles.module';
 
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
   ? []
@@ -44,6 +45,8 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
         entities: [__dirname + '/**/*.entity{.ts,.js}'], // Path to your TypeORM entities
         synchronize: false, // Desactivado para producción y control manual
         autoLoadEntities: true,
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        migrationsRun: true, // Ejecutar migraciones automáticamente
       }),
     })];
 
@@ -87,6 +90,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     TiposSiembraModule,
     ProtocolosModule, // Añadido
     StatusEnsayoModule, // Nuevo
+    RolesModule, // Nuevo - ABM de Roles
     FotosModule, // Para subir/servir fotos y videos
   ],
   controllers: [AppController],

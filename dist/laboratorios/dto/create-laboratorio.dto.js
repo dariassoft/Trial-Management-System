@@ -16,8 +16,76 @@ class CreateLaboratorioDto {
 }
 exports.CreateLaboratorioDto = CreateLaboratorioDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'ACME Agro Labs', maxLength: 100 }),
+    (0, swagger_1.ApiProperty)({
+        example: 'ACME Agro Labs',
+        maxLength: 100,
+        description: 'Nombre único del laboratorio'
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], CreateLaboratorioDto.prototype, "nombre", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Laboratorio de análisis de suelos',
+        maxLength: 500,
+        description: 'Descripción del laboratorio'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(500),
+    __metadata("design:type", Object)
+], CreateLaboratorioDto.prototype, "descripcion", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Calle Principal 123, Ciudad',
+        maxLength: 255,
+        description: 'Dirección física del laboratorio'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(255),
+    __metadata("design:type", Object)
+], CreateLaboratorioDto.prototype, "direccion", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: '3875789133',
+        maxLength: 50,
+        description: 'Teléfono de contacto'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(50),
+    __metadata("design:type", Object)
+], CreateLaboratorioDto.prototype, "telefono", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'lab@acme.com',
+        maxLength: 100,
+        description: 'Email del laboratorio'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", Object)
+], CreateLaboratorioDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Ing. Juan Pérez',
+        maxLength: 100,
+        description: 'Nombre del contacto responsable'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(100),
+    __metadata("design:type", Object)
+], CreateLaboratorioDto.prototype, "contacto", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: true,
+        default: true,
+        description: 'Laboratorio activo'
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateLaboratorioDto.prototype, "esta_activo", void 0);

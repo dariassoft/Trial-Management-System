@@ -37,6 +37,7 @@ const locations_module_1 = require("./locations/locations.module");
 const tipos_siembra_module_1 = require("./catalogos/tipos-siembra/tipos-siembra.module");
 const protocolos_module_1 = require("./protocolos/protocolos.module"); // Importar ProtocolosModule
 const status_ensayo_module_1 = require("./status-ensayo/status-ensayo.module");
+const roles_module_1 = require("./roles/roles.module");
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     ? []
     : [typeorm_1.TypeOrmModule.forRootAsync({
@@ -52,6 +53,8 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
                 entities: [__dirname + '/**/*.entity{.ts,.js}'], // Path to your TypeORM entities
                 synchronize: false, // Desactivado para producción y control manual
                 autoLoadEntities: true,
+                migrations: [__dirname + '/migrations/*{.ts,.js}'],
+                migrationsRun: true, // Ejecutar migraciones automáticamente
             }),
         })];
 let AppModule = class AppModule {
@@ -95,6 +98,7 @@ exports.AppModule = AppModule = __decorate([
             tipos_siembra_module_1.TiposSiembraModule,
             protocolos_module_1.ProtocolosModule, // Añadido
             status_ensayo_module_1.StatusEnsayoModule, // Nuevo
+            roles_module_1.RolesModule, // Nuevo - ABM de Roles
             fotos_module_1.FotosModule, // Para subir/servir fotos y videos
         ],
         controllers: [app_controller_1.AppController],

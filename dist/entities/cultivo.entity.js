@@ -24,6 +24,26 @@ __decorate([
     __metadata("design:type", String)
 ], Cultivo.prototype, "nombre", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", Object)
+], Cultivo.prototype, "descripcion", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", Object)
+], Cultivo.prototype, "ciclo_vegetativo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'boolean', default: true }),
+    __metadata("design:type", Boolean)
+], Cultivo.prototype, "esta_activo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], Cultivo.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], Cultivo.prototype, "updatedAt", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => cultivo_variedad_entity_1.CultivoVariedad, (variedad) => variedad.cultivo),
     __metadata("design:type", Array)
 ], Cultivo.prototype, "variedades", void 0);

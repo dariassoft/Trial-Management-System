@@ -10,6 +10,9 @@ export class TipoEnsayo {
   @Column({ type: 'varchar', length: 120, unique: true })
   nombre: string;
 
+  @Column({ type: 'text', nullable: true })
+  descripcion: string | null;
+
   @Column({ name: 'evaluacion_csv', type: 'varchar', length: 255, nullable: true })
   evaluacionCsv?: string | null;
 

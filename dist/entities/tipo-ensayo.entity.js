@@ -25,6 +25,10 @@ __decorate([
     __metadata("design:type", String)
 ], TipoEnsayo.prototype, "nombre", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", Object)
+], TipoEnsayo.prototype, "descripcion", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'evaluacion_csv', type: 'varchar', length: 255, nullable: true }),
     __metadata("design:type", Object)
 ], TipoEnsayo.prototype, "evaluacionCsv", void 0);

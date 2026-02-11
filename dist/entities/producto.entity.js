@@ -21,14 +21,13 @@ __decorate([
     __metadata("design:type", Number)
 ], Producto.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => laboratorio_entity_1.Laboratorio, (laboratorio) => laboratorio.productos, { nullable: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'lab_id_fk' }),
-    __metadata("design:type", Object)
-], Producto.prototype, "laboratorio", void 0);
-__decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
     __metadata("design:type", String)
 ], Producto.prototype, "nombre_comercial", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", Object)
+], Producto.prototype, "descripcion", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 255, nullable: true }),
     __metadata("design:type", Object)
@@ -37,6 +36,31 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
     __metadata("design:type", Object)
 ], Producto.prototype, "formulacion", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", Object)
+], Producto.prototype, "tipo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", Object)
+], Producto.prototype, "unidad", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Object)
+], Producto.prototype, "precio", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => laboratorio_entity_1.Laboratorio, (laboratorio) => laboratorio.productos, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'lab_id_fk' }),
+    __metadata("design:type", Object)
+], Producto.prototype, "laboratorio", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], Producto.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], Producto.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => tratamiento_producto_entity_1.TratamientoProducto, (tp) => tp.producto),
     __metadata("design:type", Array)
