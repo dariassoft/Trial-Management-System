@@ -38,9 +38,9 @@
 
     <!-- Contenido principal -->
     <div v-else-if="parcelaActual" class="pb-24">
-      <!-- Info de la parcela -->
+      <!-- Info de la parcela y filtros de navegación -->
       <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mb-4">
           <div>
             <h2 class="text-lg font-bold text-gray-900 dark:text-white">
               📍 {{ parcelaActual.nombreParcela }}
@@ -57,6 +57,75 @@
             <p class="text-xs text-gray-500 dark:text-gray-400">
               {{ parcelaActual.tratamiento?.descripcion || 'Sin tratamiento' }}
             </p>
+          </div>
+        </div>
+
+        <!-- Selectores para filtrar parcelas -->
+        <div class="grid grid-cols-4 gap-2">
+          <!-- Selector Bloque -->
+          <div>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Bloque
+            </label>
+            <select
+              v-model="bloqueSeleccionado"
+              class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+            >
+              <option value="">Seleccionar</option>
+              <option v-for="bloque in bloquesUnicos" :key="bloque" :value="bloque">
+                {{ bloque }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Selector Posición X -->
+          <div>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Pos. X
+            </label>
+            <select
+              v-model="posXSeleccionada"
+              class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+            >
+              <option value="">Seleccionar</option>
+              <option v-for="posX in posXUnicos" :key="posX" :value="posX">
+                {{ posX }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Selector Posición Y -->
+          <div>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Pos. Y
+            </label>
+            <select
+              v-model="posYSeleccionada"
+              class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+            >
+              <option value="">Seleccionar</option>
+              <option v-for="posY in posYUnicos" :key="posY" :value="posY">
+                {{ posY }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Botón Ir -->
+          <div>
+            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              &nbsp;
+            </label>
+            <button
+              @click="irAParcela"
+              :disabled="!bloqueSeleccionado || !posXSeleccionada || !posYSeleccionada"
+              class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
+                     font-medium text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              🔍 Ir
+            </button>
           </div>
         </div>
       </div>
@@ -231,11 +300,43 @@ const mediaCaptureRef = ref<any>(null)
 const capturedMedia = ref<any[]>([])
 const existingPhotos = ref<any[]>([])
 
+// Filtros para navegación rápida
+const bloqueSeleccionado = ref('')
+const posXSeleccionada = ref('')
+const posYSeleccionada = ref('')
+
 const parcelaActual = computed(() => parcelas.value[parcelaActualIndex.value])
 const esUltimaParcela = computed(() => parcelaActualIndex.value >= parcelas.value.length - 1)
 const progresoPorcentaje = computed(() => {
   if (parcelas.value.length === 0) return 0
   return Math.round(((parcelaActualIndex.value + 1) / parcelas.value.length) * 100)
+})
+
+// Propiedades computadas para obtener opciones únicas de filtros
+const bloquesUnicos = computed(() => {
+  const bloques = parcelas.value
+    .map(p => p.bloque?.nombreBloque)
+    .filter((bloque, index, arr) => bloque && arr.indexOf(bloque) === index)
+  return bloques.sort()
+})
+
+const posXUnicos = computed(() => {
+  let posiciones = parcelas.value
+    .filter(p => !bloqueSeleccionado.value || p.bloque?.nombreBloque === bloqueSeleccionado.value)
+    .map(p => p.posXGrid)
+    .filter((pos, index, arr) => pos !== undefined && pos !== null && arr.indexOf(pos) === index)
+  return posiciones.sort((a, b) => (a || 0) - (b || 0))
+})
+
+const posYUnicos = computed(() => {
+  let posiciones = parcelas.value
+    .filter(p =>
+      (!bloqueSeleccionado.value || p.bloque?.nombreBloque === bloqueSeleccionado.value) &&
+      (!posXSeleccionada.value || p.posXGrid === parseInt(posXSeleccionada.value))
+    )
+    .map(p => p.posYGrid)
+    .filter((pos, index, arr) => pos !== undefined && pos !== null && arr.indexOf(pos) === index)
+  return posiciones.sort((a, b) => (a || 0) - (b || 0))
 })
 
 // Manejo de media capturada
@@ -257,6 +358,25 @@ async function handleDeleteExistingPhoto(photoId: number) {
   } catch (err: any) {
     console.error('Error eliminando foto:', err)
     alert('Error al eliminar: ' + (err.message || 'Error desconocido'))
+  }
+}
+
+// Navegar a una parcela específica según los filtros seleccionados
+function irAParcela() {
+  const parcelaEncontrada = parcelas.value.find(p =>
+    p.bloque?.nombreBloque === bloqueSeleccionado.value &&
+    p.posXGrid === parseInt(posXSeleccionada.value) &&
+    p.posYGrid === parseInt(posYSeleccionada.value)
+  )
+
+  if (parcelaEncontrada) {
+    const indice = parcelas.value.indexOf(parcelaEncontrada)
+    if (indice !== -1) {
+      parcelaActualIndex.value = indice
+      cargarDatosParcela()
+      // Scroll hacia arriba para ver la parcela
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 }
 
