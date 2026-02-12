@@ -131,6 +131,13 @@ const allModules = [
     roles: ['Superadministrador'],
   },
   {
+    id: 'permisos',
+    name: 'Permisos',
+    icon: '🔑',
+    href: '/admin/permisos',
+    roles: ['Superadministrador'],
+  },
+  {
     id: 'reportes',
     name: 'Reportes',
     icon: '📈',

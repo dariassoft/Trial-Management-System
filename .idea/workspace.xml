@@ -5,43 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/catalogos/cultivo-variedades/dto/create-cultivo-variedad.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/cultivo-variedades/dto/create-cultivo-variedad.dto.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/catalogos/cultivos/dto/create-cultivo.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/cultivos/dto/create-cultivo.dto.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/database/data-source.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/database/data-source.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/entities/cultivo-variedad.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/cultivo-variedad.entity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/entities/cultivo.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/cultivo.entity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/entities/laboratorio.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/laboratorio.entity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/entities/producto.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/producto.entity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/entities/tipo-ensayo.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/tipo-ensayo.entity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/entities/tipo-siembra.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/tipo-siembra.entity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/laboratorios/dto/create-laboratorio.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/laboratorios/dto/create-laboratorio.dto.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/laboratorios/laboratorios.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/laboratorios/laboratorios.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/laboratorios/laboratorios.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/laboratorios/laboratorios.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/productos/dto/create-producto.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/productos/dto/create-producto.dto.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/productos/productos.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/productos/productos.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/productos/productos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/productos/productos.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/auth/auth.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/auth/auth.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/catalogos/cultivo-variedades/dto/create-cultivo-variedad.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/catalogos/cultivo-variedades/dto/create-cultivo-variedad.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/catalogos/cultivos/dto/create-cultivo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/catalogos/cultivos/dto/create-cultivo.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/database/data-source.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/data-source.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/cultivo-variedad.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/cultivo-variedad.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/cultivo.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/cultivo.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/laboratorio.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/laboratorio.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/producto.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/producto.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/tipo-ensayo.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/tipo-ensayo.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/tipo-siembra.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/tipo-siembra.entity.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/laboratorios/dto/create-laboratorio.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/laboratorios/dto/create-laboratorio.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/laboratorios/dto/update-laboratorio.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/laboratorios/dto/update-laboratorio.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/laboratorios/laboratorios.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/laboratorios/laboratorios.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/laboratorios/laboratorios.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/laboratorios/laboratorios.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/productos/dto/create-producto.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/productos/dto/create-producto.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/productos/productos.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/productos/productos.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/productos/productos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/productos/productos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/.output.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.output.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/jwt-payload.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/jwt-payload.interface.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -222,7 +192,7 @@
       <workItem from="1769647214885" duration="1368000" />
       <workItem from="1769725057114" duration="16487000" />
       <workItem from="1769745345154" duration="2916000" />
-      <workItem from="1770826052820" duration="14949000" />
+      <workItem from="1770826052820" duration="16072000" />
     </task>
     <servers />
   </component>

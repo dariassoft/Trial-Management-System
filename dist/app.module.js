@@ -38,6 +38,7 @@ const tipos_siembra_module_1 = require("./catalogos/tipos-siembra/tipos-siembra.
 const protocolos_module_1 = require("./protocolos/protocolos.module"); // Importar ProtocolosModule
 const status_ensayo_module_1 = require("./status-ensayo/status-ensayo.module");
 const roles_module_1 = require("./roles/roles.module");
+const permisos_module_1 = require("./permisos/permisos.module");
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     ? []
     : [typeorm_1.TypeOrmModule.forRootAsync({
@@ -99,6 +100,7 @@ exports.AppModule = AppModule = __decorate([
             protocolos_module_1.ProtocolosModule, // Añadido
             status_ensayo_module_1.StatusEnsayoModule, // Nuevo
             roles_module_1.RolesModule, // Nuevo - ABM de Roles
+            permisos_module_1.PermisosModule, // Nuevo - ABM de Permisos
             fotos_module_1.FotosModule, // Para subir/servir fotos y videos
         ],
         controllers: [app_controller_1.AppController],

@@ -29,6 +29,7 @@ import { TiposSiembraModule } from './catalogos/tipos-siembra/tipos-siembra.modu
 import { ProtocolosModule } from './protocolos/protocolos.module'; // Importar ProtocolosModule
 import { StatusEnsayoModule } from './status-ensayo/status-ensayo.module';
 import { RolesModule } from './roles/roles.module';
+import { PermisosModule } from './permisos/permisos.module';
 
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
   ? []
@@ -91,6 +92,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     ProtocolosModule, // Añadido
     StatusEnsayoModule, // Nuevo
     RolesModule, // Nuevo - ABM de Roles
+    PermisosModule, // Nuevo - ABM de Permisos
     FotosModule, // Para subir/servir fotos y videos
   ],
   controllers: [AppController],

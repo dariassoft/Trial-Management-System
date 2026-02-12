@@ -91,13 +91,14 @@ let AuthService = class AuthService {
     }
     login(loginDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             const u = yield this.validateUser(loginDto);
             const payload = {
                 sub: u.id,
                 username: u.username,
                 rol: (_a = u.rol) === null || _a === void 0 ? void 0 : _a.nombre,
-                lab_ids: (((_b = u.rol) === null || _b === void 0 ? void 0 : _b.nombre) === rol_entity_1.Role.INVITADO ? (u.laboratoriosAsignados || []).map((ul) => ul.laboratorio.id) : []),
+                rol_id: (_b = u.rol) === null || _b === void 0 ? void 0 : _b.id,
+                lab_ids: (((_c = u.rol) === null || _c === void 0 ? void 0 : _c.nombre) === rol_entity_1.Role.INVITADO ? (u.laboratoriosAsignados || []).map((ul) => ul.laboratorio.id) : []),
             };
             const accessToken = yield this.jwtService.signAsync(payload);
             return { accessToken, user: u };

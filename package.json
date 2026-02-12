@@ -13,6 +13,7 @@
     "docs:gen": "npm run openapi:gen && npm run postman:gen",
     "db:seed:auth": "mysql -h 127.0.0.1 -P 3306 -umyuser -pmypassword nest_db < docs/auth_seed.sql",
     "db:seed:auth:env": "sh -lc 'mysql -h ${DB_HOST:-127.0.0.1} -P ${DB_PORT:-3306} -u${DB_USER:-myuser} -p${DB_PASSWORD:-mypassword} ${DB_NAME:-nest_db} < docs/auth_seed.sql'",
+    "seed:permisos": "ts-node -r tsconfig-paths/register src/scripts/seed-permisos.ts",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --dataSource src/database/data-source.ts",
     "migration:gen": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",

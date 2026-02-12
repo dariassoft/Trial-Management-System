@@ -44,6 +44,7 @@ export class AuthService {
       sub: u.id,
       username: u.username,
       rol: u.rol?.nombre as Role,
+      rol_id: u.rol?.id as number,
       lab_ids: (u.rol?.nombre === Role.INVITADO ? (u.laboratoriosAsignados || []).map((ul) => ul.laboratorio.id) : []) as number[],
     };
     const accessToken = await this.jwtService.signAsync(payload);
