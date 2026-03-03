@@ -3,9 +3,6 @@ import { useAuthStore } from '~/stores/auth'
 import { useTheme } from '~/composables/useTheme'
 import { onMounted } from 'vue'
 
-definePageMeta({
-  layout: 'blank',
-})
 
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()

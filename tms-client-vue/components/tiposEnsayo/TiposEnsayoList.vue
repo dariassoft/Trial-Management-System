@@ -109,7 +109,7 @@
       <template v-else>
         <!-- Sin resultados -->
         <div
-          v-if="tiposEnsayoStore.items.length === 0"
+          v-if="!tiposEnsayoStore.tiposEnsayo || tiposEnsayoStore.tiposEnsayo.length === 0"
           class="bg-white dark:bg-gray-800 rounded-lg p-8 text-center"
         >
           <p class="text-gray-600 dark:text-gray-400 mb-4">No hay tipos de ensayo disponibles</p>
@@ -125,13 +125,13 @@
         <div v-else class="space-y-3 md:space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div
-              v-for="tipo in tiposEnsayoStore.items"
+              v-for="tipo in tiposEnsayoStore.tiposEnsayo"
               :key="tipo.id"
               class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition overflow-hidden"
             >
               <!-- Header de la tarjeta -->
               <div
-                @click="abrirDetalleTipoEnsayo(tipo.id)"
+                @click="abrirDetalleTipoEnsayo(tipo.id as number)"
                 class="cursor-pointer p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 <div class="flex justify-between items-start gap-3">
@@ -166,7 +166,7 @@
                   Editar
                 </button>
                 <button
-                  @click="eliminarTipoEnsayo(tipo.id)"
+                  @click="eliminarTipoEnsayo(tipo.id as number)"
                   class="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-medium transition"
                 >
                   Eliminar
@@ -175,13 +175,15 @@
 
               <!-- Detalle expandible: Variables y Días -->
               <Transition
+                v-if="expandedTipoEnsayoId === tipo.id"
+                :key="`detail-${tipo.id}`"
                 enter-active-class="transition duration-200 ease-out"
                 leave-active-class="transition duration-200 ease-in"
                 enter-from-class="opacity-0 -translate-y-2"
                 leave-to-class="opacity-0 -translate-y-2"
               >
                 <div
-                  v-if="expandedTipoEnsayoId === tipo.id && tiposEnsayoStore.current?.id === tipo.id"
+                  v-if="(tiposEnsayoStore.currentTipo as any)?.id === tipo.id"
                   class="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-700 space-y-4"
                 >
                   <!-- Sección: Días de Evaluación -->
@@ -191,16 +193,16 @@
                         Días de Evaluación (DDA)
                       </h4>
                       <button
-                        @click="abrirFormDias(tipo.id)"
+                        @click="abrirFormDias(tipo.id as number)"
                         class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-medium transition"
                       >
                         Configurar
                       </button>
                     </div>
 
-                    <div v-if="tiposEnsayoStore.current?.evaluacionCsv" class="bg-white dark:bg-gray-800 rounded p-3">
+                    <div v-if="(tiposEnsayoStore.currentTipo as any)?.evaluacionCsv" class="bg-white dark:bg-gray-800 rounded p-3">
                       <p class="text-sm text-gray-700 dark:text-gray-300 break-all">
-                        {{ tiposEnsayoStore.current.evaluacionCsv }}
+                        {{ (tiposEnsayoStore.currentTipo as any).evaluacionCsv }}
                       </p>
                     </div>
                     <div v-else class="bg-white dark:bg-gray-800 rounded p-3 text-center">
@@ -214,10 +216,10 @@
                   <div>
                     <div class="flex justify-between items-center mb-3">
                       <h4 class="font-semibold text-gray-900 dark:text-white text-sm md:text-base">
-                        Variables ({{ tiposEnsayoStore.current?.variables?.length || 0 }})
+                        Variables ({{ (tiposEnsayoStore.currentTipo as any)?.variables?.length || 0 }})
                       </h4>
                       <button
-                        @click="abrirNuevaVariable(tipo.id)"
+                        @click="abrirNuevaVariable(tipo.id as number)"
                         class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition"
                       >
                         + Agregar
@@ -225,10 +227,10 @@
                     </div>
 
                     <!-- Lista de Variables o vacío -->
-                    <template v-if="tiposEnsayoStore.current?.variables?.length">
+                    <template v-if="(tiposEnsayoStore.currentTipo as any)?.variables?.length">
                       <div class="space-y-2">
                         <div
-                          v-for="var_ in tiposEnsayoStore.current.variables"
+                          v-for="var_ in (tiposEnsayoStore.currentTipo as any).variables"
                           :key="var_.id"
                           class="bg-white dark:bg-gray-800 rounded p-3 border-l-4 border-green-500"
                         >
@@ -277,22 +279,22 @@
 
         <!-- Paginación -->
         <div
-          v-if="tiposEnsayoStore.paginacion.pageCount > 1"
+          v-if="Math.ceil(tiposEnsayoStore.total / tiposEnsayoStore.pageSize) > 1"
           class="flex justify-center items-center gap-2 mt-6"
         >
           <button
-            :disabled="tiposEnsayoStore.paginacion.page === 1"
-            @click="irAPagina(tiposEnsayoStore.paginacion.page - 1)"
+            :disabled="tiposEnsayoStore.currentPage === 1"
+            @click="irAPagina(tiposEnsayoStore.currentPage - 1)"
             class="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded disabled:opacity-50"
           >
             ◀
           </button>
           <span class="text-sm text-gray-600 dark:text-gray-400">
-            Página {{ tiposEnsayoStore.paginacion.page }} de {{ tiposEnsayoStore.paginacion.pageCount }}
+            Página {{ tiposEnsayoStore.currentPage }} de {{ Math.ceil(tiposEnsayoStore.total / tiposEnsayoStore.pageSize) }}
           </span>
           <button
-            :disabled="tiposEnsayoStore.paginacion.page === tiposEnsayoStore.paginacion.pageCount"
-            @click="irAPagina(tiposEnsayoStore.paginacion.page + 1)"
+            :disabled="tiposEnsayoStore.currentPage === Math.ceil(tiposEnsayoStore.total / tiposEnsayoStore.pageSize)"
+            @click="irAPagina(tiposEnsayoStore.currentPage + 1)"
             class="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded disabled:opacity-50"
           >
             ▶
@@ -406,7 +408,7 @@ function limpiarFiltros() {
 }
 
 function irAPagina(page: number) {
-  tiposEnsayoStore.paginacion.page = page
+  tiposEnsayoStore.setCurrentPage(page)
   cargarTiposEnsayo({ page })
 }
 </script>

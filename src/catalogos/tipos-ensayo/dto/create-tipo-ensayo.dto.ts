@@ -1,11 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 export class CreateTipoEnsayoDto {
   @ApiProperty({ description: 'Nombre del tipo de ensayo', example: 'FUNGICIDA' })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(120)
   nombre: string;
+
+  @ApiPropertyOptional({ description: 'Descripción del tipo de ensayo', example: 'Fungicida para control de enfermedades fúngicas' })
+  @IsOptional()
+  @IsString()
+  descripcion?: string | null;
 
   @ApiPropertyOptional({ description: 'Días de evaluación separados por coma (DDA)', example: '3,7,14,21,28' })
   @IsOptional()

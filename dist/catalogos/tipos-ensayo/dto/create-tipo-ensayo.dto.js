@@ -19,8 +19,15 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Nombre del tipo de ensayo', example: 'FUNGICIDA' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MaxLength)(120),
     __metadata("design:type", String)
 ], CreateTipoEnsayoDto.prototype, "nombre", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Descripción del tipo de ensayo', example: 'Fungicida para control de enfermedades fúngicas' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", Object)
+], CreateTipoEnsayoDto.prototype, "descripcion", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: 'Días de evaluación separados por coma (DDA)', example: '3,7,14,21,28' }),
     (0, class_validator_1.IsOptional)(),

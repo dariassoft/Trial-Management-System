@@ -30,6 +30,7 @@ import { ProtocolosModule } from './protocolos/protocolos.module'; // Importar P
 import { StatusEnsayoModule } from './status-ensayo/status-ensayo.module';
 import { RolesModule } from './roles/roles.module';
 import { PermisosModule } from './permisos/permisos.module';
+import { ReportesModule } from './reportes/reportes.module';
 
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
   ? []
@@ -93,6 +94,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     StatusEnsayoModule, // Nuevo
     RolesModule, // Nuevo - ABM de Roles
     PermisosModule, // Nuevo - ABM de Permisos
+    ReportesModule, // Nuevo - Generación de reportes
     FotosModule, // Para subir/servir fotos y videos
   ],
   controllers: [AppController],

@@ -30,6 +30,19 @@
           />
         </div>
 
+        <!-- Descripción -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Descripción
+          </label>
+          <textarea
+            v-model="form.descripcion"
+            placeholder="Descripción del tipo de ensayo..."
+            rows="2"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          ></textarea>
+        </div>
+
         <!-- Activo -->
         <div class="flex items-center gap-2">
           <input
@@ -69,7 +82,7 @@
 import { reactive, watch } from 'vue'
 
 interface Props {
-  tipoEnsayo?: { id: number; nombre: string; activo?: boolean } | null
+  tipoEnsayo?: { id: number; nombre: string; descripcion?: string | null; activo?: boolean } | null
 }
 
 interface Emits {
@@ -82,6 +95,7 @@ const emit = defineEmits<Emits>()
 
 const form = reactive({
   nombre: '',
+  descripcion: null as string | null,
   activo: true,
 })
 
@@ -90,9 +104,11 @@ watch(
   (newVal) => {
     if (newVal) {
       form.nombre = newVal.nombre
+      form.descripcion = newVal.descripcion ?? null
       form.activo = newVal.activo !== false
     } else {
       form.nombre = ''
+      form.descripcion = null
       form.activo = true
     }
   },
@@ -102,6 +118,7 @@ watch(
 function enviar() {
   emit('save', {
     nombre: form.nombre.trim(),
+    descripcion: form.descripcion || null,
     activo: form.activo,
   })
 }

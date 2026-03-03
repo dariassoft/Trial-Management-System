@@ -2,12 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useApi } from '~/composables/useApi'
 import { extractArrayFromResponse, extractTotalFromResponse, extractErrorMessage } from '~/utils/apiHelpers'
-
-export interface Usuario {
-  id: number;
-  nombre: string;
-  apellido: string;
-}
+import type { Usuario } from '~/stores/usuarios'
 
 export interface Ensayo {
   id?: string | number

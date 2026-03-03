@@ -6,10 +6,6 @@ import ModuleMenu from '~/components/navigation/ModuleMenu.vue'
 import TheToast from '~/components/common/TheToast.vue'
 import OfflineIndicator from '~/components/common/OfflineIndicator.vue'
 
-definePageMeta({
-  layout: 'default',
-  middleware: 'auth',
-})
 
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()

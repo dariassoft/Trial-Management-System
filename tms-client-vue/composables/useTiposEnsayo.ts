@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useTiposEnsayoStore } from '~/stores/tiposEnsayo'
+import { useTiposEnsayoStore } from '~/stores/tipos-ensayo'
 
 export function useTiposEnsayo() {
   const tiposEnsayoStore = useTiposEnsayoStore()
@@ -24,11 +24,12 @@ export function useTiposEnsayo() {
   async function crearTipoEnsayo(datos: any) {
     const payload = {
       nombre: datos.nombre,
+      descripcion: datos.descripcion || null,
       evaluacionCsv: datos.evaluacionCsv || null,
       activo: datos.activo !== false,
     }
 
-    const resultado = await tiposEnsayoStore.createTipoEnsayo(payload)
+    const resultado = await tiposEnsayoStore.createTipo(payload)
     showFormTipoEnsayo.value = false
     editingTipoEnsayo.value = null
     return resultado
@@ -37,10 +38,12 @@ export function useTiposEnsayo() {
   async function actualizarTipoEnsayo(id: number, datos: any) {
     const payload = {
       nombre: datos.nombre,
+      descripcion: datos.descripcion || null,
+      evaluacionCsv: datos.evaluacionCsv || null,
       activo: datos.activo !== false,
     }
 
-    const resultado = await tiposEnsayoStore.updateTipoEnsayo(id, payload)
+    const resultado = await tiposEnsayoStore.updateTipo(id, payload)
     showFormTipoEnsayo.value = false
     editingTipoEnsayo.value = null
     return resultado
@@ -48,17 +51,26 @@ export function useTiposEnsayo() {
 
   async function eliminarTipoEnsayo(id: number) {
     if (confirm('¿Estás seguro de que deseas eliminar este tipo de ensayo? Se eliminarán también sus variables y días de evaluación.')) {
-      await tiposEnsayoStore.deleteTipoEnsayo(id)
+      await tiposEnsayoStore.deleteTipo(id)
     }
   }
 
   // Detalle
   async function abrirDetalleTipoEnsayo(id: number) {
-    expandedTipoEnsayoId.value = id === expandedTipoEnsayoId.value ? null : id
+    // Si ya está expandido, lo colapsamos
     if (expandedTipoEnsayoId.value === id) {
-      await tiposEnsayoStore.fetchTipoEnsayoById(id)
-    } else {
+      expandedTipoEnsayoId.value = null
       tiposEnsayoStore.clearCurrent()
+    } else {
+      // Si queremos expandir un tipo diferente, cargamos sus datos primero
+      expandedTipoEnsayoId.value = id
+      try {
+        await tiposEnsayoStore.fetchTipoById(id)
+      } catch (err) {
+        console.error('Error al cargar detalle del tipo de ensayo:', err)
+        // Si hay error al cargar, colapsamos
+        expandedTipoEnsayoId.value = null
+      }
     }
   }
 
@@ -85,7 +97,7 @@ export function useTiposEnsayo() {
       if (tipoEnsayoSeleccionado.value) {
         if (editingVariable.value?.id) {
           // Modo edición
-          await tiposEnsayoStore.updateVariable(editingVariable.value.id, datos)
+          await tiposEnsayoStore.updateVariable(tipoEnsayoSeleccionado.value, editingVariable.value.id, datos)
         } else {
           // Modo creación
           await tiposEnsayoStore.addVariable(tipoEnsayoSeleccionado.value, datos)
@@ -93,7 +105,7 @@ export function useTiposEnsayo() {
 
         // Recargar el tipo de ensayo actual
         if (expandedTipoEnsayoId.value) {
-          await abrirDetalleTipoEnsayo(expandedTipoEnsayoId.value)
+          await tiposEnsayoStore.fetchTipoById(expandedTipoEnsayoId.value)
         }
       }
       showFormVariable.value = false
@@ -114,11 +126,9 @@ export function useTiposEnsayo() {
       try {
         if (expandedTipoEnsayoId.value) {
           await tiposEnsayoStore.removeVariable(expandedTipoEnsayoId.value, variableId)
-        }
 
-        // Recargar el tipo de ensayo actual
-        if (expandedTipoEnsayoId.value) {
-          await abrirDetalleTipoEnsayo(expandedTipoEnsayoId.value)
+          // Recargar el tipo de ensayo actual
+          await tiposEnsayoStore.fetchTipoById(expandedTipoEnsayoId.value)
         }
       } catch (err) {
         console.error('Error al eliminar variable:', err)
@@ -136,8 +146,9 @@ export function useTiposEnsayo() {
     tipoEnsayoSeleccionado.value = tipoEnsayoId
     diasInput.value = ''
 
-    if (tiposEnsayoStore.current?.id === tipoEnsayoId && tiposEnsayoStore.current.evaluacionCsv) {
-      diasInput.value = tiposEnsayoStore.current.evaluacionCsv
+    const currentType = tiposEnsayoStore.currentTipo as any
+    if (currentType && currentType.id === tipoEnsayoId && currentType.evaluacionCsv) {
+      diasInput.value = currentType.evaluacionCsv || ''
     }
 
     showFormDias.value = true
@@ -163,7 +174,7 @@ export function useTiposEnsayo() {
 
         // Recargar el tipo de ensayo actual
         if (expandedTipoEnsayoId.value) {
-          await abrirDetalleTipoEnsayo(expandedTipoEnsayoId.value)
+          await tiposEnsayoStore.fetchTipoById(expandedTipoEnsayoId.value)
         }
       }
       showFormDias.value = false

@@ -39,6 +39,7 @@ const protocolos_module_1 = require("./protocolos/protocolos.module"); // Import
 const status_ensayo_module_1 = require("./status-ensayo/status-ensayo.module");
 const roles_module_1 = require("./roles/roles.module");
 const permisos_module_1 = require("./permisos/permisos.module");
+const reportes_module_1 = require("./reportes/reportes.module");
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     ? []
     : [typeorm_1.TypeOrmModule.forRootAsync({
@@ -101,6 +102,7 @@ exports.AppModule = AppModule = __decorate([
             status_ensayo_module_1.StatusEnsayoModule, // Nuevo
             roles_module_1.RolesModule, // Nuevo - ABM de Roles
             permisos_module_1.PermisosModule, // Nuevo - ABM de Permisos
+            reportes_module_1.ReportesModule, // Nuevo - Generación de reportes
             fotos_module_1.FotosModule, // Para subir/servir fotos y videos
         ],
         controllers: [app_controller_1.AppController],

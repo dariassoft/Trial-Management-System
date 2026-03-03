@@ -7,12 +7,201 @@
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/auth/auth.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/auth/auth.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/dto/create-tipo-ensayo.dto.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/tipos-ensayo/dto/create-tipo-ensayo.dto.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/jwt-payload.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/jwt-payload.interface.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/dto/create-tipo-ensayo.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/catalogos/tipos-ensayo/dto/create-tipo-ensayo.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/productos/productos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/productos/productos.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/.env.development" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.env.development" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/.env.production" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.env.production" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/.output.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/.output.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/app.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/app.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/assets/css/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/assets/css/main.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/.gitkeep" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/.gitkeep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/AppUpdateNotification.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/AppUpdateNotification.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/NotificationContainer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/NotificationContainer.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/bloques/BloqueForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/bloques/BloqueForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/bloques/BloquesList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/bloques/BloquesList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/cultivos/CultivoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/cultivos/CultivoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/cultivos/CultivosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/cultivos/CultivosList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-ensayo/TipoEnsayoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-ensayo/TipoEnsayoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-ensayo/TiposEnsayoList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-ensayo/TiposEnsayoList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-siembra/TipoSiembraForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-siembra/TipoSiembraForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-siembra/TiposSiembraList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-siembra/TiposSiembraList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/variedades/VariedadForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/variedades/VariedadForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/variedades/VariedadesList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/variedades/VariedadesList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/common/ConfirmDeleteModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/common/ConfirmDeleteModal.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/common/OfflineIndicator.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/common/OfflineIndicator.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/common/TheToast.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/common/TheToast.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/dashboard/RecentEnsayos.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/dashboard/StatsWidgets.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/dashboard/StatsWidgets.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/DeleteConfirm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/DeleteConfirm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoDetail.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/ensayos/EnsayoTable.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/laboratorios/LaboratorioForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/laboratorios/LaboratorioForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/laboratorios/LaboratoriosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/laboratorios/LaboratoriosList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/media/MediaCapture.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/media/MediaCapture.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/media/QRScanner.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/media/QRScanner.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/media/QRScannerModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/media/QRScannerModal.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/parcelas/MatrizVisual.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/parcelas/MatrizVisual.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelaForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelaForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelasList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/parcelas/ParcelasList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/permisos/PermisoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/permisos/PermisoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/permisos/PermisosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/permisos/PermisosList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/productos/ProductoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/productos/ProductoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/productos/ProductosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/productos/ProductosList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/protocolos/ProtocoloForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/protocolos/ProtocoloForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/protocolos/ProtocoloList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/protocolos/ProtocoloList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/protocolos/TratamientoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/protocolos/TratamientoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/roles/RoleForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/roles/RoleForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/roles/RolesList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/roles/RolesList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/DiasForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/DiasForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/TipoEnsayoForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/TipoEnsayoForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/TiposEnsayoList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/TiposEnsayoList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/VariableForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/tiposEnsayo/VariableForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/usuarios/UsuarioForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/usuarios/UsuarioForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/usuarios/UsuariosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/usuarios/UsuariosList.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useBloques.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useBloques.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useEnsayos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useEnsayos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useLoginDebug.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useLoginDebug.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useNotifications.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useNotifications.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useParcelas.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useParcelas.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/usePermisos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/usePermisos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useProtocolos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useProtocolos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useTheme.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useTheme.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useTiposEnsayo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useTiposEnsayo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useTratamientos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useTratamientos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/composables/useVersionCheck.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/composables/useVersionCheck.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/00_COMIENZA_AQUI_ACTUALIZADO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/00_COMIENZA_AQUI_ACTUALIZADO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/00_ESTADO_FINAL_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/00_ESTADO_FINAL_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/00_PUNTO_ENTRADA_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/00_PUNTO_ENTRADA_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/ANALISIS_COMPLETO_TMS.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/ANALISIS_COMPLETO_TMS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/CHECKLIST_PRESESION_3.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/CHECKLIST_PRESESION_3.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/CHECKLIST_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/CHECKLIST_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/COMIENZA_AQUI.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/COMIENZA_AQUI.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/CONFIRMACION_ENTREGA.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/CONFIRMACION_ENTREGA.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/CORS_CONFIGURATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/CORS_CONFIGURATION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/DECISIONES_ARQUITECTONICAS.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/DECISIONES_ARQUITECTONICAS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/ENTREGA_MEJORAS_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/ENTREGA_MEJORAS_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/ESTRUCTURA_CRUDS_ESTANDAR.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/ESTRUCTURA_CRUDS_ESTANDAR.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/ESTRUCTURA_SIN_CARACTERES_ESPECIALES.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/ESTRUCTURA_SIN_CARACTERES_ESPECIALES.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/FIXEOS_MENU_Y_DATOS.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/FIXEOS_MENU_Y_DATOS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/FIX_EDIT_FORMULARIO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/FIX_EDIT_FORMULARIO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/FIX_PARAMETROS_ID.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/FIX_PARAMETROS_ID.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_DEPLOYMENT.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_DEPLOYMENT.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_DESARROLLO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_DESARROLLO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_ENSAYOS_CRUD.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_ENSAYOS_CRUD.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_LECTURA_RAPIDA.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_LECTURA_RAPIDA.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_TESTING.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/GUIA_TESTING.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INDEX.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INDEX.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INDEX_MAESTRO_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INDEX_MAESTRO_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_DOCUMENTACION_POST.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_DOCUMENTACION_POST.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_FINAL.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_FINAL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_FINAL_DOCUMENTACION.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_FINAL_DOCUMENTACION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_SESION_2_2_1.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INDICE_SESION_2_2_1.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/INVENTARIO_FINAL_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/INVENTARIO_FINAL_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/MEJORAS_DASHBOARD_NAVEGACION.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/MEJORAS_DASHBOARD_NAVEGACION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_MAESTRO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_MAESTRO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_SESION_3.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/PLAN_SESION_3.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/QUICK_REFERENCE.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/QUICK_REFERENCE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/QUICK_REFERENCE_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/QUICK_REFERENCE_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/README_PROYECTO_COMPLETO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/README_PROYECTO_COMPLETO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/README_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/README_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/REPORTE_FINAL_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/REPORTE_FINAL_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_EJECUTIVO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_EJECUTIVO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_EJECUTIVO_FINAL.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_EJECUTIVO_FINAL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_FINAL_FUNCIONAL.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_FINAL_FUNCIONAL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_FINAL_SESION_2_1.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_FINAL_SESION_2_1.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_VISUAL_TMS.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/RESUMEN_VISUAL_TMS.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_1_ACTUALIZACIONES.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_1_ACTUALIZACIONES.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_2_COMPLETADA.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_2_COMPLETADA.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_3_COMPLETADA.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_3_COMPLETADA.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_COMPLETA.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_COMPLETA.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_FINAL_VERIFICADO.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/SESION_2_FINAL_VERIFICADO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/SESION_4_BLOQUES_PARCELAS.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/SESION_4_BLOQUES_PARCELAS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_FRONTEND_SESION_1.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_FRONTEND_SESION_1.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_POST_MEJORAS.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_POST_MEJORAS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_PROYECTO.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_PROYECTO.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/STATUS_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/SUMMARY_CAMBIOS.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/SUMMARY_CAMBIOS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/TABLA_ENSAYOS_REPARADA.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/TABLA_ENSAYOS_REPARADA.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/TESTING_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/TESTING_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/UNA_PAGINA_RESUMEN.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/UNA_PAGINA_RESUMEN.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/docs/VERIFICACION_SESION_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/docs/VERIFICACION_SESION_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/layouts/blank.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/layouts/blank.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/middleware/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/middleware/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/middleware/ensayos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/middleware/ensayos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/admin/laboratorios.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/admin/laboratorios.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/admin/permisos.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/admin/permisos.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/admin/productos.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/admin/productos.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/admin/roles.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/admin/roles.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/admin/usuarios.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/admin/usuarios.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/bloques.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/bloques.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/cultivos.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/cultivos.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/tipos-ensayo.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/tipos-ensayo.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/tipos-siembra.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/tipos-siembra.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/variedades.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/catalogos/variedades.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id].vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/edit.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/edit.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/[id]/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/new.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/ensayos/new.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/parcelas.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/parcelas.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/protocolos/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/protocolos/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/reset-password.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/reset-password.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/settings.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/settings.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/tipos-ensayo/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/tipos-ensayo/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/plugins/version-check.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/plugins/version-check.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/public/version.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/public/version.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/scripts/load-env-production.js" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/scripts/load-env-production.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/scripts/update-version.js" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/scripts/update-version.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/server.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/server.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/aplicaciones.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/aplicaciones.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/bloques.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/bloques.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/catalogos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/catalogos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/cultivos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/cultivos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/datos-campo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/datos-campo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/laboratorios.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/laboratorios.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/momentos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/momentos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/offline.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/offline.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/parcelas.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/parcelas.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/permisos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/permisos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/productos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/productos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/protocolos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/protocolos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/roles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/roles.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/tipos-ensayo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/tipos-ensayo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/tipos-siembra.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/tipos-siembra.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/tiposEnsayo.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/tratamientos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/tratamientos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/usuarios.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/usuarios.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/variedades.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/variedades.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tailwind.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/utils/apiHelpers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/utils/apiHelpers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/validation/cache-policy-check.js" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/validation/cache-policy-check.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,13 +215,13 @@
   </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
+      <entry key="edit-panel" value="GPT-5 mini" />
       <entry key="chat-panel" value="Claude Haiku 4.5" />
       <entry key="agent-panel" value="Claude Haiku 4.5" />
-      <entry key="edit-panel" value="GPT-5 mini" />
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="514" />
+    <option name="cachedIndexableFilesCount" value="622" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -56,39 +245,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.docker-compose.yml.client-vue: Compose Deployment.executor": "Run",
-    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "database.data.extractors.current.export.id": "Comma-separated (CSV)_id",
-    "disable.download.node.interpreter.editor.notification": "true",
-    "git-widget-placeholder": "master",
-    "javascript.preferred.runtime.type.id": "node",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/docs/20_create_status_ensayo.sql",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.android.studio.ml.bot.mainConfigurable",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.docker-compose.yml.client-vue: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;database.data.extractors.current.export.id&quot;: &quot;Comma-separated (CSV)_id&quot;,
+    &quot;disable.download.node.interpreter.editor.notification&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/docs/20_create_status_ensayo.sql&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.android.studio.ml.bot.mainConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
-      "MySQL"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/&quot;: [
+      &quot;MySQL&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="ReactDesignerToolWindowState">
     <option name="myId2Visible">
       <map>
@@ -192,7 +381,11 @@
       <workItem from="1769647214885" duration="1368000" />
       <workItem from="1769725057114" duration="16487000" />
       <workItem from="1769745345154" duration="2916000" />
-      <workItem from="1770826052820" duration="16072000" />
+      <workItem from="1770826052820" duration="19004000" />
+      <workItem from="1770859036640" duration="1200000" />
+      <workItem from="1771864275050" duration="673000" />
+      <workItem from="1772493454602" duration="1041000" />
+      <workItem from="1772544827445" duration="10283000" />
     </task>
     <servers />
   </component>

@@ -5,19 +5,28 @@ export default defineNuxtRouteMiddleware((to) => {
   const authStore = useAuthStore()
   const offlineStore = useOfflineStore()
 
-  // Rutas públicas
+  // Rutas públicas (no requieren autenticación)
   const publicRoutes = ['/login', '/reset-password', '/']
 
-  // Intentar inicializar offline store si no lo está
+  // Inicializar autenticación desde localStorage si no lo está
+  if (process.client && !authStore.token) {
+    authStore.initializeAuth()
+  }
+
+  // Intentar inicializar offline store de forma segura
+  // (sin bloquear el flujo de autenticación si hay errores)
   if (process.client) {
     try {
-      offlineStore.init().catch(err => console.warn('No se pudo inicializar offline store:', err))
-    } catch (e) {
-      console.warn('Error inicializando offline store:', e)
+      offlineStore.init().catch((err: any) => {
+        console.warn('Advertencia: No se pudo inicializar offline store:', err?.message || err)
+      })
+    } catch (e: any) {
+      console.warn('Advertencia: Error inicializando offline store:', e?.message || e)
     }
   }
 
-  if (!authStore.isAuthenticated && !publicRoutes.includes(to.path)) {
+  // Proteger rutas: redirigir a login si no está autenticado
+  if (!publicRoutes.includes(to.path) && !authStore.isAuthenticated) {
     return navigateTo('/login')
   }
 

@@ -170,7 +170,8 @@ export const useCatalogosStore = defineStore('catalogos', () => {
 
   const fetchProductos = async () => {
     try {
-      const response = await api.get('/productos');
+      // Traer todos los productos sin límite (limit=999 asegura que traerá todos)
+      const response = await api.get('/productos?limit=999');
       if (response && response.data) {
         productos.value = response.data;
       } else if (Array.isArray(response)) {

@@ -74,10 +74,12 @@ let ProductosService = class ProductosService {
                 qb.andWhere('laboratorio.id IN (:...labIds)', { labIds });
             const [data, total] = yield qb
                 .orderBy(`p.${sort}`, order)
-                .skip((page - 1) * limit)
-                .take(limit)
+                .skip(limit >= 999 ? 0 : (page - 1) * limit) // Si limit es muy alto (>= 999), no paginar
+                .take(limit >= 999 ? 999999 : limit) // Si limit >= 999, traer todos (up to 999999)
                 .getManyAndCount();
-            return { data, meta: { total, page, limit, pageCount: Math.max(1, Math.ceil(total / limit)) } };
+            // Si limit >= 999, ajustar meta para reflejar que no hay paginación
+            const actualLimit = limit >= 999 ? total : limit;
+            return { data, meta: { total, page: limit >= 999 ? 1 : page, limit: actualLimit, pageCount: 1 } };
         });
     }
     findOne(id) {

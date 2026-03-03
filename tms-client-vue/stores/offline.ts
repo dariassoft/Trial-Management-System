@@ -266,8 +266,13 @@ export const useOfflineStore = defineStore('offline', () => {
         const transaction = database.transaction([STORE_MEDICIONES], 'readonly')
         const store = transaction.objectStore(STORE_MEDICIONES)
         const index = store.index('synced')
-        const request = (index.count as any)(false)
-        request.onsuccess = () => resolve(request.result)
+        // Usar getAll() para obtener todos los registros y luego filtrar
+        const request = index.getAll()
+        request.onsuccess = () => {
+          // Filtrar manualmente los registros donde synced === false
+          const unsynced = (request.result as any[]).filter(item => item.synced === false)
+          resolve(unsynced.length)
+        }
         request.onerror = () => {
           console.error('Error contando mediciones:', request.error)
           reject(request.error)
@@ -279,8 +284,13 @@ export const useOfflineStore = defineStore('offline', () => {
         const transaction = database.transaction([STORE_MEDIA], 'readonly')
         const store = transaction.objectStore(STORE_MEDIA)
         const index = store.index('synced')
-        const request = (index.count as any)(false)
-        request.onsuccess = () => resolve(request.result)
+        // Usar getAll() para obtener todos los registros y luego filtrar
+        const request = index.getAll()
+        request.onsuccess = () => {
+          // Filtrar manualmente los registros donde synced === false
+          const unsynced = (request.result as any[]).filter(item => item.synced === false)
+          resolve(unsynced.length)
+        }
         request.onerror = () => {
           console.error('Error contando media:', request.error)
           reject(request.error)
