@@ -25,10 +25,16 @@
       </div>
     </div>
 
-    <!-- Matriz Grid -->
+    <!-- Matriz Grid con orden descendente -->
     <div
       class="inline-block p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600"
-      :style="{ display: 'grid', gridTemplateColumns: `repeat(${columnasTotal}, 1fr)`, gap: '4px' }"
+      :style="{
+        display: 'flex',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        gap: '4px',
+        width: `${columnasTotal * 54}px`
+      }"
     >
       <button
         v-for="celda in celdas"
@@ -97,8 +103,11 @@ const celdas = computed(() => {
   console.log('   - posX seleccionada:', props.posXSeleccionada)
   console.log('   - posY seleccionada:', props.posYSeleccionada)
 
-  for (let y = 1; y <= filasTotal.value; y++) {
-    for (let x = 1; x <= columnasTotal.value; x++) {
+  // Iterar filas en orden DESCENDENTE para ambas X e Y
+  // Y va de filasTotal a 1 (arriba a abajo)
+  // X va de columnasTotal a 1 (derecha a izquierda)
+  for (let y = filasTotal.value; y >= 1; y--) {
+    for (let x = columnasTotal.value; x >= 1; x--) {
       const ocupada = (props.parcelasOcupadas || []).some(p => p.x === x && p.y === y)
       const seleccionada = x === props.posXSeleccionada && y === props.posYSeleccionada
 
@@ -116,6 +125,7 @@ const celdas = computed(() => {
   }
 
   console.log('   → Celdas calculadas:', resultado.length)
+  console.log('   → Orden visual: X descendente (derecha a izquierda), Y descendente (arriba a abajo)')
   return resultado
 })
 
