@@ -40,17 +40,23 @@
         v-for="celda in celdas"
         :key="`${celda.x}-${celda.y}`"
         type="button"
-        @click="!celda.ocupada && seleccionarCelda(celda.x, celda.y)"
-        :disabled="celda.ocupada"
-        :title="celda.ocupada ? `Posición (${celda.x}, ${celda.y}) - OCUPADA` : `Posición (${celda.x}, ${celda.y})`"
+        @click="seleccionarCelda(celda.x, celda.y)"
+        :disabled="props.permitirSelecccionarOcupadas ? false : celda.ocupada"
+        :title="`Posición (${celda.x}, ${celda.y})`"
         :class="[
           'w-10 h-10 rounded text-xs font-semibold transition',
           'border-2',
-          celda.ocupada
-            ? 'bg-red-600 text-white border-red-700 cursor-not-allowed'
-            : celda.seleccionada
-            ? 'bg-blue-500 text-white border-blue-600 font-bold cursor-pointer'
-            : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 border-gray-400 dark:border-gray-500 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-pointer'
+          props.permitirSelecccionarOcupadas
+            ? (celda.seleccionada
+              ? 'bg-blue-500 text-white border-blue-600 font-bold cursor-pointer'
+              : (celda.ocupada
+                ? 'bg-red-500 text-white border-red-600 cursor-pointer'
+                : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 border-gray-400 dark:border-gray-500 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-pointer'))
+            : (celda.ocupada
+              ? 'bg-red-600 text-white border-red-700 cursor-not-allowed'
+              : (celda.seleccionada
+                ? 'bg-blue-500 text-white border-blue-600 font-bold cursor-pointer'
+                : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 border-gray-400 dark:border-gray-500 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-pointer'))
         ]"
       >
         <span class="text-xs">{{ celda.x }}</span>
@@ -77,6 +83,7 @@ interface Props {
   posXSeleccionada: number | null | undefined
   posYSeleccionada: number | null | undefined
   parcelasOcupadas?: Array<{ x: number; y: number }> | null
+  permitirSelecccionarOcupadas?: boolean  // Si true, permite clickear celdas ocupadas (para mediciones)
 }
 
 interface Emits {
@@ -85,6 +92,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   parcelasOcupadas: () => [],
+  permitirSelecccionarOcupadas: false,
 })
 
 const emit = defineEmits<Emits>()
@@ -100,6 +108,7 @@ const celdas = computed(() => {
   console.log('   - filas:', filasTotal.value)
   console.log('   - columnas:', columnasTotal.value)
   console.log('   - parcelasOcupadas recibidas:', props.parcelasOcupadas)
+  console.log('   - permitirSelecccionarOcupadas:', props.permitirSelecccionarOcupadas)
   console.log('   - posX seleccionada:', props.posXSeleccionada)
   console.log('   - posY seleccionada:', props.posYSeleccionada)
 
@@ -130,7 +139,10 @@ const celdas = computed(() => {
 })
 
 function seleccionarCelda(x: number, y: number) {
+  console.log(`🎯 MatrizVisual: Click en celda (${x}, ${y})`)
+  console.log(`   - permitirSelecccionarOcupadas: ${props.permitirSelecccionarOcupadas}`)
   emit('select', x, y)
+  console.log(`   - Evento 'select' emitido con (${x}, ${y})`)
 }
 </script>
 

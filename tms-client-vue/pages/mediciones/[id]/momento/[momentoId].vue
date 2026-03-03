@@ -61,72 +61,18 @@
         </div>
 
         <!-- Selectores para filtrar parcelas -->
-        <div class="grid grid-cols-4 gap-2">
-          <!-- Selector Bloque -->
-          <div>
-            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Bloque
-            </label>
-            <select
-              v-model="bloqueSeleccionado"
-              class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-            >
-              <option value="">Seleccionar</option>
-              <option v-for="bloque in bloquesUnicos" :key="bloque" :value="bloque">
-                {{ bloque }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Selector Posición X -->
-          <div>
-            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Pos. X
-            </label>
-            <select
-              v-model="posXSeleccionada"
-              class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-            >
-              <option value="">Seleccionar</option>
-              <option v-for="posX in posXUnicos" :key="posX" :value="posX">
-                {{ posX }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Selector Posición Y -->
-          <div>
-            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Pos. Y
-            </label>
-            <select
-              v-model="posYSeleccionada"
-              class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-            >
-              <option value="">Seleccionar</option>
-              <option v-for="posY in posYUnicos" :key="posY" :value="posY">
-                {{ posY }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Botón Ir -->
-          <div>
-            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-              &nbsp;
-            </label>
-            <button
-              @click="irAParcela"
-              :disabled="!bloqueSeleccionado || !posXSeleccionada || !posYSeleccionada"
-              class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
-                     font-medium text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              🔍 Ir
-            </button>
-          </div>
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <!-- Matriz Visual para seleccionar parcela -->
+          <MatrizVisual
+            v-if="ensayoActual"
+            :filas="ensayoActual.filas"
+            :columnas="ensayoActual.columnas"
+            :posXSeleccionada="parcelaActual?.posXGrid"
+            :posYSeleccionada="parcelaActual?.posYGrid"
+            :parcelasOcupadas="parcelasOcupadasEnMatriz"
+            :permitirSelecccionarOcupadas="true"
+            @select="irAParcelaDesdeMatriz"
+          />
         </div>
       </div>
 
@@ -274,6 +220,7 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
 import { useDatosCampoStore } from '~/stores/datos-campo'
+import MatrizVisual from '~/components/parcelas/MatrizVisual.vue'
 
 definePageMeta({
   middleware: 'auth',
@@ -338,6 +285,49 @@ const posYUnicos = computed(() => {
     .filter((pos, index, arr) => pos !== undefined && pos !== null && arr.indexOf(pos) === index)
   return posiciones.sort((a, b) => (a || 0) - (b || 0))
 })
+
+// Ensayo actual para la matriz visual
+const ensayoActual = computed(() => {
+  if (parcelas.value.length === 0) return null
+  // Obtener el ensayo de la primera parcela
+  return parcelas.value[0]?.ensayo
+})
+
+// Parcelas ocupadas para la matriz visual
+const parcelasOcupadasEnMatriz = computed(() => {
+  return parcelas.value.map(p => ({
+    x: p.posXGrid,
+    y: p.posYGrid
+  }))
+})
+
+// Función para navegar a una parcela desde la matriz visual
+function irAParcelaDesdeMatriz(x: number, y: number) {
+  console.log(`🎯 irAParcelaDesdeMatriz: Intentando navegar a (${x}, ${y})`)
+  console.log(`   - Buscando entre ${parcelas.value.length} parcelas`)
+
+  const parcelaEncontrada = parcelas.value.find(p => {
+    const match = p.posXGrid === x && p.posYGrid === y
+    if (match) {
+      console.log(`   ✓ Parcela encontrada: ID=${p.id}, ${p.nombreParcela}`)
+    }
+    return match
+  })
+
+  if (parcelaEncontrada) {
+    const indice = parcelas.value.indexOf(parcelaEncontrada)
+    console.log(`   - Índice en array: ${indice}`)
+    if (indice !== -1) {
+      parcelaActualIndex.value = indice
+      console.log(`   ✅ Parcela seleccionada: ${parcelaEncontrada.nombreParcela}`)
+      cargarDatosParcela()
+      // Scroll hacia arriba para ver la parcela
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  } else {
+    console.log(`   ❌ No se encontró parcela en (${x}, ${y})`)
+  }
+}
 
 // Manejo de media capturada
 function handleMediaCaptured(files: any[]) {
