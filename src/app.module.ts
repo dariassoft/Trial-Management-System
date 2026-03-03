@@ -14,6 +14,7 @@ import { AplicacionesModule } from './aplicaciones/aplicaciones.module';
 import { MomentosModule } from './momentos/momentos.module';
 import { DatosCampoModule } from './datos-campo/datos-campo.module';
 import { DatosCosechaModule } from './datos-cosecha/datos-cosecha.module';
+import { DatosSiembraModule } from './datos-siembra/datos-siembra.module';
 import { TratamientosProductoModule } from './tratamientos-producto/tratamientos-producto.module';
 import { ProtocoloVariablesModule } from './protocolo-variables/protocolo-variables.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -81,6 +82,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     MomentosModule,
     DatosCampoModule,
     DatosCosechaModule,
+    DatosSiembraModule,
     TratamientosProductoModule,
     ProtocoloVariablesModule,
     AuthModule,

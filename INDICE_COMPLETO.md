@@ -1,6 +1,7 @@
-# 📑 ÍNDICE COMPLETO DE DOCUMENTACIÓN
+# 📑 ÍNDICE COMPLETO DE DOCUMENTACIÓN - ACTUALIZADO 2026-03-03
 
 **Acceso centralizado a todos los documentos del proyecto TMS**
+**Última actualización:** 2026-03-03 (Expansión de mediciones y reportes)
 
 ---
 
@@ -11,94 +12,333 @@
 → /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/INICIO_RAPIDO.md
 ```
 
-### 📖 Para leer todo en orden
+### 📖 Para leer todo en orden RECOMENDADO
 ```
-1. INICIO_RAPIDO.md
-2. gemini-rules.md
-3. DOCUMENTACION_REFERENCIA.md
-4. REFERENCIA_RUTAS.md
-5. TEMPLATE_PROMPTS.md
-6. PLAN_MAESTRO.md
+1. INICIO_RAPIDO.md                           (2 min - Setup)
+2. gemini-rules.md                             (20 min - Estructura)
+3. DOCUMENTACION_REFERENCIA.md                 (10 min - Cómo usar)
+4. 00_INDICE_FINAL_EMPIEZA_AQUI.md           (5 min - Índice principal)
+5. ESPECIFICACIONES_MEDICIONES_REPORTES.md   (15 min - Mediciones)
+6. GUIA_USO_PARCELAS_COMPLETA.md             (10 min - Usar sistema)
 ```
 
 ---
 
-## 📚 DOCUMENTOS PRINCIPALES
+## 📚 DOCUMENTOS PRINCIPALES POR CATEGORÍA
 
-### 1. **INICIO_RAPIDO.md** ⭐ LEE ESTO PRIMERO
-**Para**: Empezar rápido  
-**Ruta**: `/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/INICIO_RAPIDO.md`  
-**Contenido**:
-- Rutas absolutas (copiar/pegar)
-- Docker commands
-- 30 segundos de resumen
-- Qué quiero hacer → Dónde ir
-- Checklist inicial
+### 🔧 CONFIGURACIÓN Y SETUP
 
-**Tiempo lectura**: 2-3 minutos
+#### 1. **INICIO_RAPIDO.md** ⭐ LEE ESTO PRIMERO
+**Para**: Empezar rápido
+**Contenido**: Setup, docker, 30 seg resumen, checklist
+**Tiempo**: 2-3 min
 
----
+#### 2. **gemini-rules.md** - Reglas Técnicas
+**Para**: Estructura, Docker, convenciones
+**Contenido**: Rutas, Docker, 24 tablas, 50+ endpoints, roles
+**Tiempo**: 15-20 min
 
-### 2. **README.md** - Documentación del Proyecto
-**Para**: Visión general del proyecto  
-**Ruta**: `/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/README.md`  
-**Contenido**:
-- Descripción general
-- Stack tecnológico
-- Estado actual (sesiones completadas)
-- Características por sesión
-- Comandos comunes
-- Estructura de carpetas
+#### 3. **DOCUMENTACION_REFERENCIA.md** - Guía IA
+**Para**: Usar eficientemente con AI Assistants
+**Contenido**: Primeros documentos, búsqueda rápida, flujo trabajo
+**Tiempo**: 10-15 min
 
-**Tiempo lectura**: 5-10 minutos
+#### 4. **REFERENCIA_RUTAS.md** - Consulta Rápida
+**Para**: Encontrar rutas rápidamente
+**Contenido**: Rutas base, tabla documentos, comandos Docker
+**Tiempo**: 5 min (referencia)
 
----
-
-### 3. **gemini-rules.md** - Reglas Técnicas y Estructura
-**Para**: Entender estructura, Docker, convenciones  
-**Ruta**: `/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/gemini-rules.md`  
-**Contenido**:
-- Rutas absolutas del proyecto
-- Docker en detalle (Backend, Frontend)
-- Estructura carpetas (src/, docs/, etc.)
-- Entidades TypeORM (24 tablas)
-- Endpoints API (50+)
-- Convenciones código (TypeScript, NestJS, Vue 3)
-- Roles y permisos
-- Estado sesiones
-
-**Tiempo lectura**: 15-20 minutos
+#### 5. **README.md** - Overview Proyecto
+**Para**: Visión general
+**Contenido**: Descripción, stack, características, comandos
+**Tiempo**: 5-10 min
 
 ---
 
-### 4. **DOCUMENTACION_REFERENCIA.md** - Guía para Usar con IA
-**Para**: Cómo usar eficientemente con AI Assistants  
-**Ruta**: `/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/DOCUMENTACION_REFERENCIA.md`  
-**Contenido**:
-- Primeros 4 documentos a leer (en orden)
-- Estructura de carpetas (Backend/Frontend)
-- Búsqueda rápida por tema
-- Cómo usar con IA (Step by step)
-- Flujo típico de trabajo
-- Referencias cruzadas
-- Tips de uso
+### 🌾 MÓDULO PARCELAS (NUEVO 2026-03-03)
 
-**Tiempo lectura**: 10-15 minutos
+#### 6. **ESPECIFICACIONES_MEDICIONES_REPORTES.md** ⭐ NUEVO
+**Para**: Entender campos de medición y reportes
+**Contenido**:
+- 23 campos de medición (5 básicos + 18 nuevos)
+- Cálculos derivados (8+ métricas)
+- 6 tipos de reportes
+- Validación de datos
+- Estructura BD ampliada
+- Casos de uso para análisis
+
+**Campos capturados**:
+- Básicos: Fecha, humedad, rendimiento, GIE
+- Gramaje: Gramaje/grano, granos/m², peso grano, defectos
+- Parcela: Hojas/m², larvas/m², insectos benéficos, espiga, altura, plantas/m²
+- Cálculos: Grano puro, calidad final, eficiencia, índice plagas, vigor
+
+**Reportes**: Rendimiento, sanidad, desarrollo, composición, eficiencia, resumen ejecutivo
+
+**Tiempo**: 15-20 min
+**Importancia**: ⭐⭐⭐ (Core para reportes)
+
+#### 7. **FIX_PARCELAS_Y_NAVEGACION.md**
+**Para**: Entender cambios técnicos
+**Contenido**: Problemas, soluciones, código
+**Tiempo**: 10 min
+
+#### 8. **GUIA_USO_PARCELAS_COMPLETA.md**
+**Para**: Cómo usar parcelas en sistema
+**Contenido**: Paso a paso, casos uso, troubleshooting
+**Tiempo**: 15 min
+
+#### 9. **QUICK_REFERENCE_PARCELAS.md**
+**Para**: Referencia rápida
+**Contenido**: Acceso rápido, atajos, FAQ
+**Tiempo**: 3 min (referencia)
+
+#### 10. **DIAGRAMA_NAVEGACION_ACTUALIZADO.md**
+**Para**: Ver diagramas y flujos
+**Contenido**: Árboles navegación, flujos, comparativas
+**Tiempo**: 10-15 min
+
+#### 11. **DEPLOYMENT_INSTRUCTIONS.md**
+**Para**: Desplegar cambios
+**Contenido**: Pasos deployment, rollback
+**Tiempo**: 10 min
 
 ---
 
-### 5. **REFERENCIA_RUTAS.md** - Consulta Rápida
-**Para**: Encontrar rutas rápidamente  
-**Ruta**: `/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/REFERENCIA_RUTAS.md`  
-**Contenido**:
-- Rutas base (Backend, Frontend, Proyecto)
-- Tabla de documentos con rutas
-- Comandos Docker frecuentes
-- Directorios clave
-- Tareas rápidas
-- Copiar/Pegar útiles para IA
+### 📋 CHECKLISTS Y VERIFICACIÓN
 
-**Tiempo lectura**: 2-3 minutos (referencia rápida)
+#### 12. **CHECKLIST_IMPLEMENTACION_PARCELAS.md**
+**Para**: Verificar implementación
+**Contenido**: Objetivos, testing, criterios aceptación
+**Tiempo**: 10 min (referencia)
+
+#### 13. **INDICE_SOLUCION_PARCELAS.md**
+**Para**: Índice soluciones parcelas
+**Contenido**: Guía navegación, estadísticas, resúmenes
+**Tiempo**: 10 min
+
+---
+
+### 📊 DOCUMENTACIÓN ANTIGUA (Sesiones Previas)
+
+#### Sesión 1-4: ABM Laboratorios, Usuarios, Roles
+```
+→ Documentación disponible en raíz del proyecto
+→ Ver gemini-rules.md sección de sesiones
+```
+
+#### Reportes System (Sesión)
+```
+→ ESPECIFICACIONES_REPORTES.md (antiguo)
+→ Ver nuevo documento: ESPECIFICACIONES_MEDICIONES_REPORTES.md
+```
+
+---
+
+## 🔍 BÚSQUEDA RÁPIDA POR TEMA
+
+### "Necesito usar Parcelas"
+1. GUIA_USO_PARCELAS_COMPLETA.md (instrucciones)
+2. QUICK_REFERENCE_PARCELAS.md (referencia)
+
+### "Necesito entender mediciones para reportes"
+1. ESPECIFICACIONES_MEDICIONES_REPORTES.md (core)
+2. DIAGRAMA_NAVEGACION_ACTUALIZADO.md (flujos)
+
+### "Necesito ver código"
+1. FIX_PARCELAS_Y_NAVEGACION.md (explicación)
+2. Revisar archivo: tms-client-vue/pages/parcelas.vue (788 líneas)
+
+### "Necesito desplegar"
+1. DEPLOYMENT_INSTRUCTIONS.md
+2. INICIO_RAPIDO.md (commands)
+
+### "Necesito estructura del proyecto"
+1. gemini-rules.md (todo)
+2. REFERENCIA_RUTAS.md (rutas)
+
+### "Necesito aprender a usar con IA"
+1. DOCUMENTACION_REFERENCIA.md
+
+### "Necesito overview del proyecto"
+1. README.md (general)
+2. 00_INDICE_FINAL_EMPIEZA_AQUI.md (por rol)
+
+---
+
+## 📊 TABLA RÁPIDA DE DOCUMENTOS
+
+| Documento | Sesión | Tema | Tiempo | Importancia |
+|-----------|--------|------|--------|-------------|
+| INICIO_RAPIDO.md | Setup | Setup/Docker | 3 min | ⭐⭐⭐ |
+| gemini-rules.md | Setup | Estructura | 20 min | ⭐⭐⭐ |
+| ESPECIFICACIONES_MEDICIONES_REPORTES.md | 5 | Mediciones | 20 min | ⭐⭐⭐ |
+| GUIA_USO_PARCELAS_COMPLETA.md | 5 | Usuario | 15 min | ⭐⭐ |
+| FIX_PARCELAS_Y_NAVEGACION.md | 5 | Técnica | 10 min | ⭐⭐ |
+| DEPLOYMENT_INSTRUCTIONS.md | 5 | DevOps | 10 min | ⭐⭐ |
+| QUICK_REFERENCE_PARCELAS.md | 5 | Ref Rápida | 3 min | ⭐ |
+| DIAGRAMA_NAVEGACION_ACTUALIZADO.md | 5 | Diagramas | 15 min | ⭐⭐ |
+| CHECKLIST_IMPLEMENTACION_PARCELAS.md | 5 | QA | 10 min | ⭐ |
+| INDICE_SOLUCION_PARCELAS.md | 5 | Índice | 10 min | ⭐ |
+| README.md | Setup | General | 10 min | ⭐⭐ |
+| DOCUMENTACION_REFERENCIA.md | Setup | IA | 15 min | ⭐⭐ |
+| REFERENCIA_RUTAS.md | Setup | Rutas | 5 min | ⭐ |
+| 00_INDICE_FINAL_EMPIEZA_AQUI.md | 5 | Índice | 5 min | ⭐⭐ |
+
+---
+
+## ⚡ ACCIONES RÁPIDAS
+
+### Quiero empezar YA
+```
+1. Abre: INICIO_RAPIDO.md
+2. Copia rutas del proyecto
+3. Ejecuta comandos Docker
+4. ¡Listo!
+```
+
+### Quiero entender mediciones
+```
+1. Lee: ESPECIFICACIONES_MEDICIONES_REPORTES.md
+2. Secciones clave:
+   - CAMPOS DE MEDICIÓN CAPTURADOS
+   - CÁLCULOS Y MÉTRICAS DERIVADAS
+   - REPORTES A GENERAR
+3. ¡Listo!
+```
+
+### Quiero usar parcelas
+```
+1. Lee: GUIA_USO_PARCELAS_COMPLETA.md
+2. Sigue: Paso a paso
+3. ¡Listo!
+```
+
+### Quiero desplegar
+```
+1. Lee: DEPLOYMENT_INSTRUCTIONS.md
+2. Ejecuta pasos
+3. Verifica en navegador
+```
+
+---
+
+## 🔄 FLUJO DE TRABAJO TÍPICO
+
+```
+START
+  ↓
+¿Primer vez?
+  ├─ SÍ → INICIO_RAPIDO.md → gemini-rules.md → START
+  └─ NO → ¿Qué necesito?
+         ├─ Usar sistema → GUIA_USO_PARCELAS_COMPLETA.md
+         ├─ Entender código → FIX_PARCELAS_Y_NAVEGACION.md
+         ├─ Mediciones/Reportes → ESPECIFICACIONES_MEDICIONES_REPORTES.md
+         ├─ Desplegar → DEPLOYMENT_INSTRUCTIONS.md
+         ├─ Testing → CHECKLIST_IMPLEMENTACION_PARCELAS.md
+         └─ Referencia → QUICK_REFERENCE_PARCELAS.md
+```
+
+---
+
+## 📈 NOVEDADES SESIÓN 2026-03-03
+
+### ✨ Nuevo: Expansión de Mediciones
+- 18 nuevos campos de medición
+- 8+ métricas derivadas
+- 6 tipos de reportes
+- Validación de datos
+- Cálculos automáticos
+
+### ✨ Nuevo: Documento Central
+- **ESPECIFICACIONES_MEDICIONES_REPORTES.md**
+- Guía completa para reportes
+- Estructura BD ampliada
+- Fórmulas de cálculo
+- Ejemplos de datos
+
+### ✨ Actualizado: parcelas.vue
+- Modal expandido (330+ campos)
+- Nuevas funciones
+- Integración API completa
+- UI/UX mejorada
+
+### ✨ Actualizado: INDICE_COMPLETO.md
+- Este documento
+- Nuevas referencias
+- Tabla de documentos
+- Búsqueda rápida
+
+---
+
+## 🎯 PRÓXIMAS SESIONES
+
+### Sesión 6: Implementar Reportes (Recomendado)
+**Base**: ESPECIFICACIONES_MEDICIONES_REPORTES.md
+**Tareas**:
+- Crear endpoint generador de reportes
+- Implementar cálculos derivados
+- Diseñar plantillas (PDF/Excel)
+- Agregar gráficos
+
+### Sesión 7: Mejorar Validación
+**Base**: ESPECIFICACIONES_MEDICIONES_REPORTES.md (sección Validación)
+**Tareas**:
+- Backend: Validar coherencia
+- Frontend: Mensajes de error
+- BD: Constraints adicionales
+
+### Sesión 8: Training y Documentación
+**Base**: GUIA_USO_PARCELAS_COMPLETA.md
+**Tareas**:
+- Capacitar usuarios
+- Crear videos tutoriales
+- Documentar procesos
+
+---
+
+## 🔗 RUTAS IMPORTANTES
+
+```
+Proyecto:     /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend
+Backend:      /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/src
+Frontend:     /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/tms-client-vue
+Parcelas:     /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/tms-client-vue/pages/parcelas.vue
+Docs:         /media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/*.md
+```
+
+---
+
+## ✅ VERIFICACIÓN
+
+### Para empezar:
+- [ ] Leo INICIO_RAPIDO.md (2 min)
+- [ ] Leo gemini-rules.md (20 min)
+- [ ] Tengo Docker funcionando
+
+### Para mediciones:
+- [ ] Leo ESPECIFICACIONES_MEDICIONES_REPORTES.md (20 min)
+- [ ] Entiendo 23 campos de medición
+- [ ] Entiendo 6 tipos de reportes
+
+### Para usar parcelas:
+- [ ] Leo GUIA_USO_PARCELAS_COMPLETA.md (15 min)
+- [ ] Puedo editar parcelas
+- [ ] Puedo guardar mediciones
+
+---
+
+## 📞 CONTACTO
+
+- **Documentación**: Todos los .md en raíz del proyecto
+- **Código**: Ver rutas en gemini-rules.md
+- **Support**: Ver secciones Troubleshooting en cada doc
+
+---
+
+**Última actualización**: 2026-03-03
+**Versión**: 2.0 (Mediciones expandidas)
+**Status**: ✅ COMPLETO**Tiempo lectura**: 2-3 minutos (referencia rápida)
 
 ---
 

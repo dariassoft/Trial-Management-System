@@ -4,6 +4,7 @@ import { Bloque } from './bloque.entity';
 import { Tratamiento } from './tratamiento.entity';
 import { DatosCampo } from './datos-campo.entity';
 import { DatosCosecha } from './datos-cosecha.entity';
+import { DatosSiembra } from './datos-siembra.entity';
 
 @Entity('Parcela')
 // Eliminado: @Unique(['bloque', 'tratamiento']) - Un tratamiento puede repetirse en diferentes parcelas del mismo bloque
@@ -37,6 +38,10 @@ export class Parcela {
   // Relación con datos de campo
   @OneToMany(() => DatosCampo, (dc) => dc.parcela)
   datosCampo: DatosCampo[];
+
+  // Relación uno a uno con siembra (lado inverso; el dueño es DatosSiembra)
+  @OneToOne(() => DatosSiembra, (siembra) => siembra.parcela)
+  siembra?: DatosSiembra | null;
 
   // Relación uno a uno con cosecha (lado inverso; el dueño es DatosCosecha)
   @OneToOne(() => DatosCosecha, (cosecha) => cosecha.parcela)

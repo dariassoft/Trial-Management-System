@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, ParseIntPipe } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiParam } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { DatosCosechaService } from './datos-cosecha.service';
 import { CreateDatosCosechaDto } from './dto/create-datos-cosecha.dto';
 import { UpdateDatosCosechaDto } from './dto/update-datos-cosecha.dto';
@@ -39,9 +39,13 @@ export class DatosCosechaController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar datos de cosecha' })
+  @ApiOperation({ summary: 'Listar datos de cosecha (opcionalmente filtrar por parcelaId)' })
+  @ApiQuery({ name: 'parcelaId', type: Number, required: false })
   @ApiOkResponse({ type: DatosCosecha, isArray: true })
-  findAll() {
+  findAll(@Query('parcelaId') parcelaId?: string) {
+    if (parcelaId) {
+      return this.service.findByParcelaId(parseInt(parcelaId, 10));
+    }
     return this.service.findAll();
   }
 

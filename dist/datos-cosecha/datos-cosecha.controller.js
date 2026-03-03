@@ -28,7 +28,10 @@ let DatosCosechaController = class DatosCosechaController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
+    findAll(parcelaId) {
+        if (parcelaId) {
+            return this.service.findByParcelaId(parseInt(parcelaId, 10));
+        }
         return this.service.findAll();
     }
     findOne(id) {
@@ -69,10 +72,12 @@ __decorate([
 ], DatosCosechaController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Listar datos de cosecha' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar datos de cosecha (opcionalmente filtrar por parcelaId)' }),
+    (0, swagger_1.ApiQuery)({ name: 'parcelaId', type: Number, required: false }),
     (0, swagger_1.ApiOkResponse)({ type: datos_cosecha_entity_1.DatosCosecha, isArray: true }),
+    __param(0, (0, common_1.Query)('parcelaId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DatosCosechaController.prototype, "findAll", null);
 __decorate([

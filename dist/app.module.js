@@ -23,6 +23,7 @@ const aplicaciones_module_1 = require("./aplicaciones/aplicaciones.module");
 const momentos_module_1 = require("./momentos/momentos.module");
 const datos_campo_module_1 = require("./datos-campo/datos-campo.module");
 const datos_cosecha_module_1 = require("./datos-cosecha/datos-cosecha.module");
+const datos_siembra_module_1 = require("./datos-siembra/datos-siembra.module");
 const tratamientos_producto_module_1 = require("./tratamientos-producto/tratamientos-producto.module");
 const protocolo_variables_module_1 = require("./protocolo-variables/protocolo-variables.module");
 const serve_static_1 = require("@nestjs/serve-static");
@@ -89,6 +90,7 @@ exports.AppModule = AppModule = __decorate([
             momentos_module_1.MomentosModule,
             datos_campo_module_1.DatosCampoModule,
             datos_cosecha_module_1.DatosCosechaModule,
+            datos_siembra_module_1.DatosSiembraModule,
             tratamientos_producto_module_1.TratamientosProductoModule,
             protocolo_variables_module_1.ProtocoloVariablesModule,
             auth_module_1.AuthModule,

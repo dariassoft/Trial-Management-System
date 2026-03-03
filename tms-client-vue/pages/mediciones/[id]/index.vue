@@ -62,6 +62,180 @@
         </div>
       </div>
 
+      <!-- Tabs de Mediciones: Siembra, Momentos, Cosecha -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="border-b border-gray-200 dark:border-gray-700">
+          <div class="px-4 flex gap-2 overflow-x-auto">
+            <button
+              @click="tabActivo = 'siembra'"
+              :class="[
+                'px-4 py-3 font-medium border-b-2 transition whitespace-nowrap',
+                tabActivo === 'siembra'
+                  ? 'border-green-500 text-green-600 dark:text-green-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400'
+              ]"
+            >
+              🌱 Siembra
+            </button>
+            <button
+              @click="tabActivo = 'momentos'"
+              :class="[
+                'px-4 py-3 font-medium border-b-2 transition whitespace-nowrap',
+                tabActivo === 'momentos'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400'
+              ]"
+            >
+              📋 Momentos
+            </button>
+            <button
+              @click="tabActivo = 'cosecha'"
+              :class="[
+                'px-4 py-3 font-medium border-b-2 transition whitespace-nowrap',
+                tabActivo === 'cosecha'
+                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400'
+              ]"
+            >
+              🌾 Cosecha
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenido de tabs -->
+        <div class="p-4">
+          <!-- TAB: SIEMBRA -->
+          <div v-if="tabActivo === 'siembra'" class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">🌱 Datos de Siembra</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Registra los datos de siembra para el ensayo completo (aplica a todas las parcelas)
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Fecha de Siembra
+                </label>
+                <input
+                  v-model="formSiembra.fechaSiembra"
+                  type="date"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Semillas/m²
+                </label>
+                <input
+                  v-model.number="formSiembra.semillasPorMetro"
+                  type="number"
+                  step="0.01"
+                  placeholder="150"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Densidad (plantas/ha)
+                </label>
+                <input
+                  v-model.number="formSiembra.densidadSiembra"
+                  type="number"
+                  step="1"
+                  placeholder="300000"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Germinación (%)
+                </label>
+                <input
+                  v-model.number="formSiembra.germinacionPct"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="100"
+                  placeholder="85.5"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Vigor Plantas (1-10)
+                </label>
+                <input
+                  v-model.number="formSiembra.vigorPlantasEscala"
+                  type="number"
+                  step="1"
+                  min="1"
+                  max="10"
+                  placeholder="8"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Observaciones
+              </label>
+              <textarea
+                v-model="formSiembra.observaciones"
+                rows="3"
+                placeholder="Observaciones sobre la siembra..."
+                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              ></textarea>
+            </div>
+            <button
+              @click="guardarSiembra"
+              :disabled="guardandoSiembra"
+              class="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg
+                     font-medium transition disabled:opacity-50"
+            >
+              {{ guardandoSiembra ? 'Guardando...' : '✓ Guardar Siembra' }}
+            </button>
+          </div>
+
+          <!-- TAB: MOMENTOS -->
+          <div v-else-if="tabActivo === 'momentos'" class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">📋 Momentos de Evaluación</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Los momentos se crean automáticamente desde las aplicaciones. Haz clic en uno para registrar mediciones por parcela.
+            </p>
+            <div v-if="aplicaciones.length === 0" class="text-center py-8 text-gray-500">
+              <p>No hay aplicaciones aún. Crea una aplicación para poder registrar momentos de evaluación.</p>
+            </div>
+          </div>
+
+          <!-- TAB: COSECHA -->
+          <div v-else-if="tabActivo === 'cosecha'" class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">🌾 Datos de Cosecha</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Registra los datos de cosecha (se capturan por parcela). Variables como gramaje, humedad, calidad de grano, etc.
+            </p>
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm text-blue-800 dark:text-blue-200">
+              💡 Los datos de cosecha se registran desde la página de <strong>Parcelas → Cosecha</strong> o desde aquí editando cada parcela.
+            </div>
+            <div class="space-y-4">
+              <p class="text-gray-600 dark:text-gray-400">
+                Para registrar cosecha por parcela, navega a la sección de parcelas y haz clic en "Editar Cosecha".
+              </p>
+              <button
+                @click="router.push(`/parcelas?ensayoId=${ensayoId}`)"
+                class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition"
+              >
+                → Ir a Parcelas
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Aplicaciones -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -134,6 +308,7 @@
                   <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {{ formatDate(momento.fechaEvaluacion) }}
                   </p>
+
 
                   <!-- Barra de progreso -->
                   <div v-if="momentoProgreso[momento.id]" class="mt-2">
@@ -294,8 +469,11 @@ const api = useApi()
 const ensayoId = computed(() => Number(route.params.id))
 const loading = ref(false)
 const guardando = ref(false)
+const guardandoSiembra = ref(false)
+const guardandoCosecha = ref(false)
 const showNuevaAplicacion = ref(false)
 const editingAplicacionId = ref<number | null>(null)
+const tabActivo = ref<'siembra' | 'momentos' | 'cosecha'>('siembra')
 
 const ensayo = ref<any>(null)
 const aplicaciones = computed(() => aplicacionesStore.items || [])
@@ -308,6 +486,23 @@ const formAplicacion = ref({
   tempC: null as number | null,
   humedadPct: null as number | null,
   vientoKmh: null as number | null,
+})
+
+const formSiembra = ref({
+  fechaSiembra: '',
+  semillasPorMetro: null as number | null,
+  densidadSiembra: null as number | null,
+  germinacionPct: null as number | null,
+  vigorPlantasEscala: null as number | null,
+  observaciones: '',
+})
+
+const formCosecha = ref({
+  fechaCosecha: '',
+  humedadPct: null as number | null,
+  kgHaCorregido: null as number | null,
+  gie: null as number | null,
+  observaciones: '',
 })
 
 function editarAplicacion(aplicacion: any) {
@@ -459,6 +654,97 @@ async function guardarAplicacion() {
     alert('Error al guardar la aplicación')
   } finally {
     guardando.value = false
+  }
+}
+
+async function guardarSiembra() {
+  try {
+    guardandoSiembra.value = true
+    const dto = {
+      ensayoId: ensayoId.value,
+      fechaSiembra: formSiembra.value.fechaSiembra || null,
+      semillasPorMetro: formSiembra.value.semillasPorMetro,
+      densidadSiembra: formSiembra.value.densidadSiembra,
+      germinacionPct: formSiembra.value.germinacionPct,
+      vigorPlantasEscala: formSiembra.value.vigorPlantasEscala,
+      observaciones: formSiembra.value.observaciones || null,
+    }
+
+    // Guardar para cada parcela del ensayo
+    const parcelasRes = await api.get('/parcelas', {
+      params: { ensayoId: ensayoId.value, limit: 500 }
+    })
+    const parcelas = Array.isArray(parcelasRes) ? parcelasRes : (parcelasRes?.data || [])
+
+    for (const parcela of parcelas) {
+      const siembraDto = {
+        parcelaId: parcela.id,
+        ...dto
+      }
+      delete (siembraDto as any).ensayoId
+
+      // Buscar si ya existe siembra para esta parcela
+      const existentes = await api.get('/datos-siembra?parcelaId=' + parcela.id)
+      const siembras = Array.isArray(existentes) ? existentes : (existentes?.data || [])
+
+      if (siembras.length > 0) {
+        // Actualizar
+        await api.patch(`/datos-siembra/${siembras[0].id}`, siembraDto)
+      } else {
+        // Crear
+        await api.post('/datos-siembra', siembraDto)
+      }
+    }
+
+    alert('✅ Siembra guardada correctamente para todas las parcelas')
+  } catch (err: any) {
+    console.error('Error guardando siembra:', err)
+    alert('Error al guardar: ' + (err.message || 'Error desconocido'))
+  } finally {
+    guardandoSiembra.value = false
+  }
+}
+
+async function guardarCosecha() {
+  try {
+    guardandoCosecha.value = true
+    const dto = {
+      ensayoId: ensayoId.value,
+      fechaCosecha: formCosecha.value.fechaCosecha || null,
+      humedadPct: formCosecha.value.humedadPct,
+      kgHaCorregido: formCosecha.value.kgHaCorregido,
+      gie: formCosecha.value.gie,
+      observaciones: formCosecha.value.observaciones || null,
+    }
+
+    // Guardar para cada parcela del ensayo
+    const parcelasRes = await api.get('/parcelas', {
+      params: { ensayoId: ensayoId.value, limit: 500 }
+    })
+    const parcelas = Array.isArray(parcelasRes) ? parcelasRes : (parcelasRes?.data || [])
+
+    for (const parcela of parcelas) {
+      const cosechaDto = {
+        parcelaId: parcela.id,
+        ...dto
+      }
+      delete (cosechaDto as any).ensayoId
+
+      if (parcela.cosecha?.id) {
+        // Actualizar
+        await api.patch(`/datos-cosecha/${parcela.cosecha.id}`, cosechaDto)
+      } else {
+        // Crear
+        await api.post('/datos-cosecha', cosechaDto)
+      }
+    }
+
+    alert('✅ Cosecha guardada correctamente para todas las parcelas')
+  } catch (err: any) {
+    console.error('Error guardando cosecha:', err)
+    alert('Error al guardar: ' + (err.message || 'Error desconocido'))
+  } finally {
+    guardandoCosecha.value = false
   }
 }
 

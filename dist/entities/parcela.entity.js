@@ -16,6 +16,7 @@ const bloque_entity_1 = require("./bloque.entity");
 const tratamiento_entity_1 = require("./tratamiento.entity");
 const datos_campo_entity_1 = require("./datos-campo.entity");
 const datos_cosecha_entity_1 = require("./datos-cosecha.entity");
+const datos_siembra_entity_1 = require("./datos-siembra.entity");
 let Parcela = class Parcela {
 };
 exports.Parcela = Parcela;
@@ -54,6 +55,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => datos_campo_entity_1.DatosCampo, (dc) => dc.parcela),
     __metadata("design:type", Array)
 ], Parcela.prototype, "datosCampo", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => datos_siembra_entity_1.DatosSiembra, (siembra) => siembra.parcela),
+    __metadata("design:type", Object)
+], Parcela.prototype, "siembra", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => datos_cosecha_entity_1.DatosCosecha, (cosecha) => cosecha.parcela),
     __metadata("design:type", Object)

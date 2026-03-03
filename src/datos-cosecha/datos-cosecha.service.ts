@@ -52,6 +52,26 @@ export class DatosCosechaService {
     return qb.getMany();
   }
 
+  async findByParcelaId(parcelaId: number) {
+    const { isInvitado, labIds } = this.auth;
+    if (!isInvitado) {
+      return this.repo.find({
+        where: { parcela: { id: parcelaId } },
+        relations: { parcela: true }
+      });
+    }
+    const qb = this.repo.createQueryBuilder('dc')
+      .leftJoinAndSelect('dc.parcela', 'parcela')
+      .leftJoin('parcela.tratamiento', 'trat')
+      .leftJoin('trat.productos', 'tp')
+      .leftJoin('tp.producto', 'prod')
+      .leftJoin('prod.laboratorio', 'lab')
+      .where('parcela.id = :parcelaId', { parcelaId })
+      .andWhere('lab.id IN (:...labIds)', { labIds })
+      .distinct(true);
+    return qb.getMany();
+  }
+
   async findOne(id: number) {
     const { isInvitado, labIds } = this.auth;
     if (!isInvitado) {

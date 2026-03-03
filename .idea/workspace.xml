@@ -4,10 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="cambio en el orden de la matriz de parcelas">
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="selector de parcela en mediciones.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/parcelas/MatrizVisual.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/parcelas/MatrizVisual.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/INDICE_COMPLETO.md" beforeDir="false" afterPath="$PROJECT_DIR$/INDICE_COMPLETO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/datos-cosecha/datos-cosecha.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/datos-cosecha/datos-cosecha.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/datos-cosecha/datos-cosecha.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/datos-cosecha/datos-cosecha.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/entities/parcela.entity.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/entities/parcela.entity.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/datos-cosecha/datos-cosecha.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/datos-cosecha/datos-cosecha.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/datos-cosecha/datos-cosecha.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/datos-cosecha/datos-cosecha.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entities/parcela.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/parcela.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/parcelas.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/parcelas.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,7 +201,7 @@
       <workItem from="1770859036640" duration="1200000" />
       <workItem from="1771864275050" duration="673000" />
       <workItem from="1772493454602" duration="1041000" />
-      <workItem from="1772544827445" duration="11616000" />
+      <workItem from="1772544827445" duration="15513000" />
     </task>
     <task id="LOCAL-00001" summary="resueltos algunos errores grales">
       <option name="closed" value="true" />
@@ -209,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772561505758</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="selector de parcela en mediciones.">
+      <option name="closed" value="true" />
+      <created>1772562295013</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1772562295013</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,7 +247,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="resueltos algunos errores grales" />
     <MESSAGE value="cambio en el orden de la matriz de parcelas" />
-    <option name="LAST_COMMIT_MESSAGE" value="cambio en el orden de la matriz de parcelas" />
+    <MESSAGE value="selector de parcela en mediciones." />
+    <option name="LAST_COMMIT_MESSAGE" value="selector de parcela en mediciones." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
