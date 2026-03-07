@@ -16,6 +16,7 @@ export class Tratamiento {
   @Column({ name: 'numero_trat', type: 'int' })
   numeroTrat: number;
 
+
   @Column({ type: 'text', nullable: true })
   descripcion?: string | null;
 

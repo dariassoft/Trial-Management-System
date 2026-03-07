@@ -10,6 +10,7 @@ export class CreateTratamientoDto {
   @IsInt()
   numeroTrat: number;
 
+
   @ApiPropertyOptional({ example: 'Descripción del tratamiento' })
   @IsOptional()
   @IsString()

@@ -38,12 +38,24 @@
                 <option v-for="r in catalogosStore.usuarios" :key="r.id" :value="r.id">{{ r.nombre }} {{ r.apellido }}</option>
               </select>
             </div>
-            <div>
-              <label class="block font-medium mb-1">Protocolo</label>
-              <select v-model="form.protocoloId" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200">
-                <option :value="null">Seleccionar</option>
-                <option v-for="p in catalogosStore.protocolos" :key="p.id" :value="p.id">{{ p.nombre }}</option>
-              </select>
+            <div class="flex items-end gap-2">
+              <div class="flex-grow">
+                <label class="block font-medium mb-1">Protocolo</label>
+                <select v-model="form.protocoloId" class="w-full border p-2 rounded dark:text-black dark:bg-gray-200">
+                  <option :value="null">Seleccionar</option>
+                  <option v-for="p in catalogosStore.protocolos" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+                </select>
+              </div>
+              <button
+                v-if="selectedProtocolo"
+                @click.stop="showProtocoloInfo"
+                type="button"
+                class="p-2 border rounded h-10 w-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                title="Ver información del protocolo"
+                ref="protocoloButton"
+              >
+                ℹ️
+              </button>
             </div>
             <div class="flex items-end gap-2">
               <div class="flex-grow">
@@ -87,6 +99,31 @@
               </div>
             </div>
             <button @click="showInfo = false" class="mt-4 w-full bg-blue-600 text-white py-1 text-sm rounded hover:bg-blue-700">
+              Cerrar
+            </button>
+          </div>
+
+          <!-- Popover para Info de Protocolo -->
+          <div v-if="showProtocoloPopover" ref="protocoloPopover"
+               class="fixed z-50 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 max-w-sm"
+               :style="protocoloPopoverStyle">
+            <h4 class="font-semibold mb-2">{{ selectedProtocolo?.nombre }}</h4>
+            <div class="space-y-2 text-sm">
+              <div v-if="selectedProtocolo?.descripcion">
+                <h5 class="font-medium">Descripción:</h5>
+                <p class="text-gray-700 dark:text-gray-300">{{ selectedProtocolo?.descripcion }}</p>
+              </div>
+              <div v-if="protocoloTratamientos.length">
+                <h5 class="font-medium">Tratamientos:</h5>
+                <ul class="list-disc list-inside space-y-1 mt-1">
+                  <li v-for="t in protocoloTratamientos" :key="t.id">
+                    T{{ t.numeroTrat }} - {{ t.descripcion || 'Sin descripción' }}
+                  </li>
+                </ul>
+              </div>
+              <p v-else class="text-gray-500 mt-1">No hay tratamientos definidos para este protocolo.</p>
+            </div>
+            <button @click="showProtocoloPopover = false" class="mt-4 w-full bg-blue-600 text-white py-1 text-sm rounded hover:bg-blue-700">
               Cerrar
             </button>
           </div>
@@ -332,9 +369,20 @@ const tipoEnsayoButton = ref<HTMLElement | null>(null);
 const popover = ref<HTMLElement | null>(null);
 const popoverStyle = ref({});
 
+const protocoloButton = ref<HTMLElement | null>(null);
+const protocoloPopover = ref<HTMLElement | null>(null);
+const protocoloPopoverStyle = ref({});
+const showProtocoloPopover = ref(false);
+const protocoloTratamientos = ref([]);
+
 const selectedTipoEnsayo = computed(() => {
   if (!form.value.tipoEnsayoId) return null;
   return catalogosStore.tiposEnsayo.find(t => t.id === form.value.tipoEnsayoId);
+});
+
+const selectedProtocolo = computed(() => {
+  if (!form.value.protocoloId) return null;
+  return catalogosStore.protocolos.find(p => p.id === form.value.protocoloId);
 });
 
 const totalParcelasEsperadas = computed(() => {
@@ -370,6 +418,19 @@ const showTipoEnsayoInfo = async () => {
   showInfo.value = true;
   await nextTick(); // Ensure popover is rendered before calculating position
   positionPopover();
+}
+
+const showProtocoloInfo = async () => {
+  if (!selectedProtocolo.value) return;
+  // Obtener tratamientos del protocolo seleccionado
+  if (selectedProtocolo.value.tratamientos) {
+    protocoloTratamientos.value = selectedProtocolo.value.tratamientos;
+  } else {
+    protocoloTratamientos.value = [];
+  }
+  showProtocoloPopover.value = true;
+  await nextTick(); // Ensure popover is rendered before calculating position
+  positionProtocoloPopover();
 }
 
 const positionPopover = () => {
@@ -412,10 +473,57 @@ const positionPopover = () => {
   }
 };
 
+const positionProtocoloPopover = () => {
+  if (protocoloButton.value && protocoloPopover.value) {
+    const buttonRect = protocoloButton.value.getBoundingClientRect();
+    const popoverRect = protocoloPopover.value.getBoundingClientRect();
+    const formElement = protocoloButton.value.closest('form');
+    const formRect = formElement ? formElement.getBoundingClientRect() : null;
+
+    if (!formRect) return;
+
+    // Calculate position relative to the form container
+    let top = buttonRect.top - formRect.top;
+    let left = buttonRect.right - formRect.left + 10; // 10px padding from button
+
+    // Check for overflow on the right
+    if (left + popoverRect.width > formRect.width) {
+      // Try positioning to the left of the button
+      left = buttonRect.left - formRect.left - popoverRect.width - 10;
+    }
+
+    // If still overflowing or positioned off-screen left, position below
+    if (left < 0 || left + popoverRect.width > formRect.width) {
+      top = buttonRect.bottom - formRect.top + 10; // Position below the button
+      left = buttonRect.left - formRect.left; // Align with button's left edge
+
+      // Adjust if positioning below overflows right
+      if (left + popoverRect.width > formRect.width) {
+        left = formRect.width - popoverRect.width - 10; // 10px from right edge of form
+      }
+      // Ensure it's not off screen left
+      if (left < 0) left = 10;
+    }
+
+    protocoloPopoverStyle.value = {
+      top: `${top}px`,
+      left: `${left}px`,
+      position: 'absolute',
+    };
+  }
+};
+
 const handleClickOutside = (event: MouseEvent) => {
+  // Cerrar popover de Tipo de Ensayo si existe y se hace click fuera
   if (showInfo.value && popover.value && !popover.value.contains(event.target as Node) &&
       tipoEnsayoButton.value && !tipoEnsayoButton.value.contains(event.target as Node)) {
     showInfo.value = false;
+  }
+
+  // Cerrar popover de Protocolo si existe y se hace click fuera
+  if (showProtocoloPopover.value && protocoloPopover.value && !protocoloPopover.value.contains(event.target as Node) &&
+      protocoloButton.value && !protocoloButton.value.contains(event.target as Node)) {
+    showProtocoloPopover.value = false;
   }
 };
 

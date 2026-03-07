@@ -219,17 +219,17 @@
               Registra los datos de cosecha (se capturan por parcela). Variables como gramaje, humedad, calidad de grano, etc.
             </p>
             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm text-blue-800 dark:text-blue-200">
-              💡 Los datos de cosecha se registran desde la página de <strong>Parcelas → Cosecha</strong> o desde aquí editando cada parcela.
+              💡 Los datos de cosecha se registran desde la página de <strong>Cosecha</strong> o desde aquí editando cada parcela.
             </div>
             <div class="space-y-4">
               <p class="text-gray-600 dark:text-gray-400">
                 Para registrar cosecha por parcela, navega a la sección de parcelas y haz clic en "Editar Cosecha".
               </p>
               <button
-                @click="router.push(`/parcelas?ensayoId=${ensayoId}`)"
+                @click="router.push(`/cosecha?ensayoId=${ensayoId}`)"
                 class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition"
               >
-                → Ir a Parcelas
+                → Ir a Cosecha
               </button>
             </div>
           </div>

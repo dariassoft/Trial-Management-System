@@ -82,6 +82,6 @@ __decorate([
 exports.DatosSiembraController = DatosSiembraController = __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiTags)('Datos de Siembra'),
-    (0, common_1.Controller)('api/v1/datos-siembra'),
+    (0, common_1.Controller)('datos-siembra'),
     __metadata("design:paramtypes", [datos_siembra_service_1.DatosSiembraService])
 ], DatosSiembraController);

@@ -6,7 +6,7 @@ import { UpdateDatosSiembraDto } from './dto/update-datos-siembra.dto';
 
 @ApiBearerAuth()
 @ApiTags('Datos de Siembra')
-@Controller('api/v1/datos-siembra')
+@Controller('datos-siembra')
 export class DatosSiembraController {
   constructor(private readonly service: DatosSiembraService) {}
 

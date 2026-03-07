@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useApi } from '~/composables/useApi'
 import { extractArrayFromResponse, extractTotalFromResponse, extractErrorMessage } from '~/utils/apiHelpers'
 import type { Usuario } from '~/stores/usuarios'
@@ -149,8 +149,12 @@ export const useEnsayosStore = defineStore('ensayos', () => {
     }
   }
 
+  // Computed para acceso consistente con otros stores
+  const items = computed(() => ensayos.value)
+
   return {
     ensayos,
+    items,
     currentEnsayo,
     loading,
     error,
