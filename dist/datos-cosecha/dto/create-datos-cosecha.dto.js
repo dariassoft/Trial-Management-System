@@ -45,6 +45,78 @@ __decorate([
     __metadata("design:type", Object)
 ], CreateDatosCosechaDto.prototype, "gie", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 0.045, description: 'Peso individual del grano (g)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "gramajePorGrano", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 48500, description: 'Cantidad de granos por m²' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "granosPorurf", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 2182.5, description: 'Peso total de granos por m² (g)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "pesoGranosPorUrf", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 4.2, description: '% de granos dañados' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "granosDanados", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 2.1, description: '% de granos verdes' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "granosVerdes", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 1.8, description: '% de granos vanos' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "granosVanos", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 4850, description: 'Hojas por m²' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "hojasPorUrf", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 12, description: 'Larvas por m²' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "larvasPorUrf", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 28, description: 'Insectos benéficos por m²' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "insectosBeneficiosPorUrf", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 8.5, description: 'Diámetro de espiga (mm)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "diametroEspiga", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 75.5, description: 'Altura de la parcela (cm)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "alturaParcela", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 8.2, description: 'Densidad final de plantas (plantas/m²)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "densidadPlantasFinal", void 0);
+__decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: 'Observaciones de la trilla', maxLength: 65535 }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),

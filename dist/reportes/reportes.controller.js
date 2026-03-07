@@ -33,12 +33,11 @@ let ReportesController = class ReportesController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log(`📄 Generando PDF para ensayo ${ensayoId}`);
-                // Obtener datos del ensayo desde la BD
-                const { datosCampo, datosTrilla, metadadatos } = yield this.reportesService.obtenerDatosEnsayo(ensayoId);
-                console.log(`  ✅ Datos de campo: ${datosCampo.length} registros`);
-                console.log(`  ✅ Datos de trilla: ${datosTrilla.length} registros`);
-                console.log(`  ✅ Metadata: ${JSON.stringify(metadadatos).substring(0, 100)}...`);
-                const buffer = yield this.reportesService.generarPDF(datosCampo, datosTrilla, metadadatos);
+                // Usar generarPDFEnsayo que obtiene TODOS los datos incluyendo larvas_porurf
+                const buffer = yield this.reportesService.generarPDFEnsayo(ensayoId);
+                if (!buffer) {
+                    return res.status(404).json({ error: 'No se pudo generar el PDF' });
+                }
                 console.log(`  ✅ PDF generado: ${buffer.length} bytes`);
                 res.setHeader('Content-Type', 'application/pdf');
                 res.setHeader('Content-Disposition', `attachment; filename="ensayo_${ensayoId}_${new Date().toISOString().split('T')[0]}.pdf"`);
@@ -58,11 +57,13 @@ let ReportesController = class ReportesController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log(`📊 Generando Excel para ensayo ${ensayoId}`);
-                // Obtener datos del ensayo desde la BD
-                const { datosCampo, datosTrilla, metadadatos } = yield this.reportesService.obtenerDatosEnsayo(ensayoId);
-                console.log(`  ✅ Datos de campo: ${datosCampo.length} registros`);
-                console.log(`  ✅ Datos de trilla: ${datosTrilla.length} registros`);
-                const buffer = yield this.reportesService.generarExcel(datosCampo, datosTrilla, metadadatos);
+                // Usar el método RAW que funciona con SQL nativo
+                const datosCompletos = yield this.reportesService.obtenerDatosEnsayoRaw(ensayoId);
+                if (!datosCompletos) {
+                    return res.status(404).json({ error: 'Ensayo no encontrado' });
+                }
+                console.log(`  ✅ Datos obtenidos: ${datosCompletos.datosTrilla.length} cosecha, ${datosCompletos.datosCampo.length} campo`);
+                const buffer = yield this.reportesService.generarExcel(datosCompletos.datosCampo, datosCompletos.datosTrilla, datosCompletos.metadadatos);
                 console.log(`  ✅ Excel generado: ${buffer.length} bytes`);
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
                 res.setHeader('Content-Disposition', `attachment; filename="ensayo_${ensayoId}_${new Date().toISOString().split('T')[0]}.xlsx"`);
@@ -108,7 +109,7 @@ let ReportesController = class ReportesController {
 exports.ReportesController = ReportesController;
 __decorate([
     (0, common_1.Get)('ensayo/:ensayoId/pdf'),
-    (0, swagger_1.ApiOperation)({ summary: 'Generar reporte PDF de un ensayo' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Generar reporte PDF completo de un ensayo' }),
     (0, swagger_1.ApiParam)({ name: 'ensayoId', type: Number }),
     __param(0, (0, common_1.Param)('ensayoId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Res)()),
@@ -118,7 +119,7 @@ __decorate([
 ], ReportesController.prototype, "generarReportePdf", null);
 __decorate([
     (0, common_1.Get)('ensayo/:ensayoId/xls'),
-    (0, swagger_1.ApiOperation)({ summary: 'Generar reporte Excel de un ensayo' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Generar reporte Excel completo de un ensayo' }),
     (0, swagger_1.ApiParam)({ name: 'ensayoId', type: Number }),
     __param(0, (0, common_1.Param)('ensayoId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Res)()),

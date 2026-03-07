@@ -27,6 +27,9 @@ export class ExcelReportGenerator {
     // Hoja 4: Estadísticas
     this.crearHojaEstadisticas(workbook, datos.estadisticas);
 
+    // Hoja 5: Gráficos
+    this.crearHojaGraficos(workbook, datos.estadisticas);
+
     // Generar buffer
     const buffer: any = await workbook.xlsx.writeBuffer();
     return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
@@ -55,20 +58,22 @@ export class ExcelReportGenerator {
     let row = 3;
     const metadata = [
       ['DATOS DEL ENSAYO', ''],
-      ['Ensayo ID', datos.metadatos?.ensayoId || 'N/A'],
-      ['Fecha Siembra', datos.metadatos?.fechaSiembra || 'N/A'],
-      ['Provincia', datos.metadatos?.provincia || 'N/A'],
-      ['Departamento', datos.metadatos?.departamento || 'N/A'],
-      ['Cultivo', datos.metadatos?.cultivo || 'N/A'],
-      ['Tipo de Siembra', datos.metadatos?.tipoSiembra || 'N/A'],
-      ['Estadío', datos.metadatos?.estadio || 'N/A'],
-      ['Temperatura', `${datos.metadatos?.temperatura || 'N/A'}°C`],
-      ['Humedad Relativa', `${datos.metadatos?.humedad || 'N/A'}%`],
+      ['Ensayo ID', datos.metadatos?.ensayoId || ''],
+      ['Fecha Siembra', datos.metadatos?.fechaSiembra || ''],
+      ['Provincia', datos.metadatos?.provincia || ''],
+      ['Departamento', datos.metadatos?.departamento || ''],
+      ['Cultivo', datos.metadatos?.cultivo || ''],
+      ['Tipo de Siembra', datos.metadatos?.tipoSiembra || ''],
+      ['Estadío', datos.metadatos?.estadio || ''],
+      ['Temperatura', datos.metadatos?.temperatura ? `${datos.metadatos.temperatura}°C` : ''],
+      ['Humedad Relativa', datos.metadatos?.humedad ? `${datos.metadatos.humedad}%` : ''],
     ];
 
     for (const [label, value] of metadata) {
       ws.getCell(`A${row}`).value = label;
-      ws.getCell(`B${row}`).value = value;
+      if (value) {
+        ws.getCell(`B${row}`).value = value;
+      }
       if (label === 'DATOS DEL ENSAYO') {
         ws.getCell(`A${row}`).font = { bold: true, size: 12 };
       } else {
@@ -177,4 +182,127 @@ export class ExcelReportGenerator {
       column.width = 15;
     });
   }
+
+  private static crearHojaGraficos(workbook: any, estadisticas: any) {
+    const ws = workbook.addWorksheet('Gráficos');
+
+    if (!estadisticas || Object.keys(estadisticas).length === 0) {
+      ws.addRow(['No hay datos para gráficos']);
+      return;
+    }
+
+    // Título
+    const titleCell = ws.getCell('A1');
+    titleCell.value = 'GRÁFICOS Y VISUALIZACIONES';
+    titleCell.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1F4E78' },
+    };
+    ws.getRow(1).height = 25;
+
+    // Tabla 1: Rendimiento promedio
+    let row = 3;
+    ws.getCell(`A${row}`).value = 'Rendimiento Promedio por Tratamiento';
+    ws.getCell(`A${row}`).font = { bold: true, size: 12 };
+    row++;
+
+    ws.getCell(`A${row}`).value = 'Tratamiento';
+    ws.getCell(`B${row}`).value = 'Rendimiento (kg/ha)';
+    const headerRow1 = ws.getRow(row);
+    headerRow1.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    headerRow1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3b82f6' } };
+    row++;
+
+    Object.keys(estadisticas).sort().forEach((trat, idx) => {
+      const stats = estadisticas[trat] as any;
+      ws.getCell(`A${row}`).value = `T${idx + 1}`;
+      ws.getCell(`B${row}`).value = stats.promedio ? Number(stats.promedio.toFixed(2)) : 0;
+      ws.getCell(`B${row}`).numFmt = '0.00';
+      row++;
+    });
+
+    // Crear gráfico de barras para rendimiento
+    try {
+      const chartRend: any = workbook.addChart('bar');
+      chartRend.title = { richText: [{ font: { bold: true, size: 14 }, text: 'Rendimiento por Tratamiento' }] };
+      chartRend.series[0].title = { v: 'Rendimiento (kg/ha)', t: 's' };
+      chartRend.series[0].val = `'Gráficos'!B5:B${row - 1}`;
+      chartRend.xAxis.val = `'Gráficos'!A5:A${row - 1}`;
+      chartRend.xAxis.type = 'cat';
+      chartRend.yAxis.type = 'val';
+      chartRend.plotArea = { layout: { x: 0.13, y: 0.13, w: 0.75, h: 0.75 } };
+      ws.addChart(chartRend, `A${row + 3}:H${row + 13}`);
+    } catch (e) {
+      // Si falla, continuar sin gráfico
+    }
+
+    row += 16;
+
+    // Tabla 2: GIE promedio
+    ws.getCell(`A${row}`).value = 'GIE Promedio por Tratamiento';
+    ws.getCell(`A${row}`).font = { bold: true, size: 12 };
+    row++;
+
+    ws.getCell(`A${row}`).value = 'Tratamiento';
+    ws.getCell(`B${row}`).value = 'GIE (%)';
+    const headerRow2 = ws.getRow(row);
+    headerRow2.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    headerRow2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10b981' } };
+    row++;
+
+    let dataStartRow = row;
+    Object.keys(estadisticas).sort().forEach((trat, idx) => {
+      const stats = estadisticas[trat] as any;
+      ws.getCell(`A${row}`).value = `T${idx + 1}`;
+      ws.getCell(`B${row}`).value = stats.gie ? Number(stats.gie.toFixed(2)) : 0;
+      ws.getCell(`B${row}`).numFmt = '0.00';
+      row++;
+    });
+
+    // Crear gráfico de barras para GIE
+    try {
+      const chartGie: any = workbook.addChart('bar');
+      chartGie.title = { richText: [{ font: { bold: true, size: 14 }, text: 'GIE por Tratamiento' }] };
+      chartGie.series[0].title = { v: 'GIE (%)', t: 's' };
+      chartGie.series[0].val = `'Gráficos'!B${dataStartRow}:B${row - 1}`;
+      chartGie.xAxis.val = `'Gráficos'!A${dataStartRow}:A${row - 1}`;
+      chartGie.xAxis.type = 'cat';
+      chartGie.yAxis.type = 'val';
+      chartGie.plotArea = { layout: { x: 0.13, y: 0.13, w: 0.75, h: 0.75 } };
+      ws.addChart(chartGie, `A${row + 3}:H${row + 13}`);
+    } catch (e) {
+      // Si falla, continuar sin gráfico
+    }
+
+    row += 16;
+
+    // Tabla 3: Plagas vs Benéficos
+    ws.getCell(`A${row}`).value = 'Comparativa: Plagas vs Benéficos';
+    ws.getCell(`A${row}`).font = { bold: true, size: 12 };
+    row++;
+
+    ws.getCell(`A${row}`).value = 'Tratamiento';
+    ws.getCell(`B${row}`).value = 'Larvas/m²';
+    ws.getCell(`C${row}`).value = 'Benéficos/m²';
+    const headerRow3 = ws.getRow(row);
+    headerRow3.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    headerRow3.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFf59e0b' } };
+    row++;
+
+    dataStartRow = row;
+    Object.keys(estadisticas).sort().forEach((trat, idx) => {
+      const stats = estadisticas[trat] as any;
+      ws.getCell(`A${row}`).value = `T${idx + 1}`;
+      ws.getCell(`B${row}`).value = stats.larvas_porurf || stats.larvasPorurf || 0;
+      ws.getCell(`C${row}`).value = stats.insectos_beneficios_porurf || stats.insectosBeneficiosPorurf || 0;
+      row++;
+    });
+
+    ws.getColumn('A').width = 20;
+    ws.getColumn('B').width = 20;
+    ws.getColumn('C').width = 20;
+  }
 }
+

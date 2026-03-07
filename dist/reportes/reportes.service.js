@@ -27,6 +27,9 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const excel_generator_1 = require("./excel-generator");
 const pdf_generator_1 = require("./pdf-generator");
+const calculos_reportes_service_1 = require("./calculos-reportes.service");
+const reportes_especializados_service_1 = require("./reportes-especializados.service");
+const svg_charts_service_1 = require("./svg-charts.service");
 const ensayo_entity_1 = require("../entities/ensayo.entity");
 const parcela_entity_1 = require("../entities/parcela.entity");
 const datos_campo_entity_1 = require("../entities/datos-campo.entity");
@@ -34,8 +37,11 @@ const datos_campo_medicion_entity_1 = require("../entities/datos-campo-medicion.
 const datos_cosecha_entity_1 = require("../entities/datos-cosecha.entity");
 const tratamiento_entity_1 = require("../entities/tratamiento.entity");
 const bloque_entity_1 = require("../entities/bloque.entity");
+const aplicacion_entity_1 = require("../entities/aplicacion.entity");
 let ReportesService = class ReportesService {
-    constructor(ensayoRepository, parcelaRepository, datosCampoRepository, datosCampoMedicionRepository, datosCosechaRepository, tratamientoRepository, bloqueRepository) {
+    constructor(ensayoRepository, parcelaRepository, datosCampoRepository, datosCampoMedicionRepository, datosCosechaRepository, tratamientoRepository, bloqueRepository, aplicacionRepository, 
+    // NUEVOS SERVICIOS
+    calculosService, reportesEspecializadosService) {
         this.ensayoRepository = ensayoRepository;
         this.parcelaRepository = parcelaRepository;
         this.datosCampoRepository = datosCampoRepository;
@@ -43,23 +49,26 @@ let ReportesService = class ReportesService {
         this.datosCosechaRepository = datosCosechaRepository;
         this.tratamientoRepository = tratamientoRepository;
         this.bloqueRepository = bloqueRepository;
+        this.aplicacionRepository = aplicacionRepository;
+        this.calculosService = calculosService;
+        this.reportesEspecializadosService = reportesEspecializadosService;
     }
     /**
      * Obtiene todos los datos de un ensayo desde la BD
      */
     obtenerDatosEnsayo(ensayoId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
             try {
                 console.log(`📥 Obteniendo datos para ensayo ${ensayoId}...`);
-                // 1. Obtener ensayo base
+                // 1. Obtener ensayo base CON TODAS LAS RELACIONES
                 const ensayo = yield this.ensayoRepository.findOne({
                     where: { id: ensayoId },
                     relations: [
                         'laboratorio',
-                        'cultivo',
-                        'variedad',
-                        'tipoSiembra',
+                        'cultivo', // ← IMPORTANTE: Cargar relación cultivo
+                        'variedad', // ← IMPORTANTE: Cargar relación variedad
+                        'tipoSiembra', // ← IMPORTANTE: Cargar relación tipoSiembra
                         'protocolo',
                         'responsable',
                         'parcelas',
@@ -72,6 +81,8 @@ let ReportesService = class ReportesService {
                     return { ensayo: null, datosCampo: [], datosTrilla: [], metadadatos: {} };
                 }
                 console.log(`✅ Ensayo: ${ensayo.nombreEnsayo}, ${((_a = ensayo.parcelas) === null || _a === void 0 ? void 0 : _a.length) || 0} parcelas`);
+                console.log(`   Cultivo: ${((_b = ensayo.cultivo) === null || _b === void 0 ? void 0 : _b.nombre) || 'NO CARGADO'}`);
+                console.log(`   TipoSiembra: ${((_c = ensayo.tipoSiembra) === null || _c === void 0 ? void 0 : _c.nombre) || 'NO CARGADO'}`);
                 // 2. Obtener datos de campo
                 const datosCampoRaw = yield this.datosCampoRepository
                     .createQueryBuilder('dc')
@@ -87,17 +98,17 @@ let ReportesService = class ReportesService {
                 const datosCampo = [];
                 const parcelaMap = new Map();
                 for (const dato of datosCampoRaw) {
-                    const parcelaId = (_b = dato.parcela) === null || _b === void 0 ? void 0 : _b.id;
+                    const parcelaId = ((_d = dato.parcela) === null || _d === void 0 ? void 0 : _d.id) || 0;
                     if (!parcelaMap.has(parcelaId)) {
                         parcelaMap.set(parcelaId, {
-                            tratamiento: ((_d = (_c = dato.parcela) === null || _c === void 0 ? void 0 : _c.tratamiento) === null || _d === void 0 ? void 0 : _d.id) || 1,
-                            bloque: ((_f = (_e = dato.parcela) === null || _e === void 0 ? void 0 : _e.bloque) === null || _f === void 0 ? void 0 : _f.nombreBloque) || 'B',
-                            parcela: ((_g = dato.parcela) === null || _g === void 0 ? void 0 : _g.nombreParcela) || `P${parcelaId}`,
+                            tratamiento: ((_f = (_e = dato.parcela) === null || _e === void 0 ? void 0 : _e.tratamiento) === null || _f === void 0 ? void 0 : _f.id) || 1,
+                            bloque: ((_h = (_g = dato.parcela) === null || _g === void 0 ? void 0 : _g.bloque) === null || _h === void 0 ? void 0 : _h.nombreBloque) || 'B',
+                            parcela: ((_j = dato.parcela) === null || _j === void 0 ? void 0 : _j.nombreParcela) || `P${parcelaId}`,
                         });
                     }
                     const fila = parcelaMap.get(parcelaId);
                     for (const m of dato.mediciones || []) {
-                        if ((_h = m.variable) === null || _h === void 0 ? void 0 : _h.nombre_variable) {
+                        if (((_k = m.variable) === null || _k === void 0 ? void 0 : _k.nombre_variable) && fila) {
                             fila[m.variable.nombre_variable] = this.parseNumerico(m.valor);
                         }
                     }
@@ -112,6 +123,13 @@ let ReportesService = class ReportesService {
                     .where('p.ensayo_id_fk = :ensayoId', { ensayoId })
                     .getMany();
                 console.log(`✅ Datos cosecha: ${datosCosechaRaw.length} registros`);
+                // OBTENER DATOS DE APLICACION PARA EL ENSAYO
+                const aplicacion = yield this.aplicacionRepository
+                    .createQueryBuilder('a')
+                    .where('a.ensayo_id_fk = :ensayoId', { ensayoId })
+                    .orderBy('a.aplicacion_id', 'ASC')
+                    .getOne();
+                console.log(`✅ Aplicación: ${aplicacion ? 'Encontrada' : 'No encontrada'}`);
                 // 5. Procesar datos de trilla
                 const datosTrilla = datosCosechaRaw.map(c => {
                     var _a, _b, _c, _d, _e, _f;
@@ -124,36 +142,33 @@ let ReportesService = class ReportesService {
                         gje: this.parseNumerico(c.gie),
                     });
                 });
-                if (datosTrilla.length === 0 && ensayo.parcelas) {
-                    datosTrilla.push(...ensayo.parcelas.map(p => {
-                        var _a, _b;
-                        return ({
-                            tratamiento: ((_a = p.tratamiento) === null || _a === void 0 ? void 0 : _a.id) || 1,
-                            bloque: ((_b = p.bloque) === null || _b === void 0 ? void 0 : _b.nombreBloque) || 'B',
-                            parcela: p.nombreParcela || `P${p.id}`,
-                            humedad: 0, kgHa: 0, gje: 0,
-                        });
-                    }));
-                }
-                // 6. Metadatos
+                // 6. Metadatos - USAR VALORES DIRECTAMENTE DE ENSAYO QUE YA TIENE RELACIONES CARGADAS
                 const metadadatos = {
                     ensayoId: ensayo.id,
                     nombreEnsayo: ensayo.nombreEnsayo || 'Sin nombre',
-                    cultivo: ((_j = ensayo.cultivo) === null || _j === void 0 ? void 0 : _j.nombre) || 'N/A',
-                    variedad: ((_k = ensayo.variedad) === null || _k === void 0 ? void 0 : _k.nombre) || 'N/A',
+                    cultivo: ((_l = ensayo.cultivo) === null || _l === void 0 ? void 0 : _l.nombre) || 'N/A',
+                    variedad: ((_m = ensayo.variedad) === null || _m === void 0 ? void 0 : _m.nombre) || 'N/A',
                     provincia: ensayo.provincia || 'N/A',
                     departamento: ensayo.departamento || 'N/A',
                     establecimiento: ensayo.establecimiento || 'N/A',
                     lote: ensayo.lote || 'N/A',
-                    tipoSiembra: ((_l = ensayo.tipoSiembra) === null || _l === void 0 ? void 0 : _l.nombre) || 'N/A',
+                    tipoSiembra: ((_o = ensayo.tipoSiembra) === null || _o === void 0 ? void 0 : _o.nombre) || 'N/A',
                     fechaSiembra: ensayo.fechaSiembra
                         ? new Date(ensayo.fechaSiembra).toLocaleDateString('es-ES')
                         : 'N/A',
                     fechaCosecha: ensayo.fechaCosecha
                         ? new Date(ensayo.fechaCosecha).toLocaleDateString('es-ES')
                         : 'N/A',
-                    responsable: ((_m = ensayo.responsable) === null || _m === void 0 ? void 0 : _m.nombre) || 'N/A',
-                    laboratorio: ((_o = ensayo.laboratorio) === null || _o === void 0 ? void 0 : _o.nombre) || 'N/A',
+                    // DATOS DE APLICACION
+                    fechaAplicacion: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.fechaHora)
+                        ? new Date(aplicacion.fechaHora).toLocaleDateString('es-ES')
+                        : 'N/A',
+                    estadio: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.estadioCultivo) || 'N/A',
+                    temperatura: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.tempC) ? `${aplicacion.tempC}°C` : 'N/A',
+                    humedad: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.humedadPct) ? `${aplicacion.humedadPct}%` : 'N/A',
+                    equipo: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.equipoInfo) || 'N/A',
+                    responsable: ((_p = ensayo.responsable) === null || _p === void 0 ? void 0 : _p.nombre) || 'N/A',
+                    laboratorio: ((_q = ensayo.laboratorio) === null || _q === void 0 ? void 0 : _q.nombre) || 'N/A',
                     numeroTratamientos: [...new Set((ensayo.parcelas || []).map(p => { var _a; return (_a = p.tratamiento) === null || _a === void 0 ? void 0 : _a.id; }))].length,
                     numeroBloques: [...new Set((ensayo.parcelas || []).map(p => { var _a; return (_a = p.bloque) === null || _a === void 0 ? void 0 : _a.id; }))].length,
                 };
@@ -162,6 +177,180 @@ let ReportesService = class ReportesService {
             }
             catch (error) {
                 console.error(`❌ Error obtenerDatosEnsayo:`, error);
+                throw error;
+            }
+        });
+    }
+    /**
+     * NUEVO MÉTODO: Obtiene datos del ensayo usando SQL nativo con nombres EXACTOS
+     */
+    obtenerDatosEnsayoRaw(ensayoId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const manager = this.ensayoRepository.manager;
+                // 1. ENSAYO COMPLETO
+                const ensayoRaw = yield manager.query(`
+        SELECT e.*, c.nombre as cultivo_nombre, ts.nombre as tipo_siembra_nombre
+        FROM Ensayo e
+        LEFT JOIN Cultivo c ON e.cultivo_id = c.cultivo_id
+        LEFT JOIN TipoSiembra ts ON e.tipo_siembra_id = ts.id
+        WHERE e.ensayo_id = ?
+      `, [ensayoId]);
+                if (!ensayoRaw.length)
+                    return null;
+                const ensayo = ensayoRaw[0];
+                // 2. APLICACION COMPLETA
+                const aplicacionRaw = yield manager.query(`
+        SELECT * FROM Aplicacion WHERE ensayo_id_fk = ? LIMIT 1
+      `, [ensayoId]);
+                const aplicacion = aplicacionRaw.length ? aplicacionRaw[0] : {};
+                // 3. DATOS COSECHA TODOS LOS CAMPOS
+                const datosTrilla = yield manager.query(`
+        SELECT 
+          p.nombre_parcela, t.numero_trat, b.nombre_bloque,
+          dc.humedad_pct, dc.kg_ha_corregido, dc.gie, dc.gramaje_por_grano,
+          dc.granos_porurf, dc.peso_granos_porurf, dc.granos_danados,
+          dc.granos_verdes, dc.granos_vanos, dc.hojas_porurf,
+          dc.larvas_porurf, dc.insectos_beneficios_porurf,
+          dc.diametro_espiga, dc.altura_parcela, dc.densidad_plantas_final
+        FROM Datos_Cosecha dc
+        INNER JOIN Parcela p ON dc.parcela_id_fk = p.parcela_id
+        INNER JOIN Tratamiento t ON p.tratamiento_id_fk = t.tratamiento_id
+        INNER JOIN Bloque b ON p.bloque_id_fk = b.bloque_id
+        WHERE p.ensayo_id_fk = ?
+      `, [ensayoId]);
+                // 4. DATOS CAMPO CON VARIABLES
+                const datosCampoRaw = yield manager.query(`
+        SELECT 
+          dc.dato_campo_id, p.nombre_parcela, t.numero_trat, b.nombre_bloque,
+          me.nombre_momento, pv.nombre_variable, dcm.valor
+        FROM Datos_Campo dc
+        INNER JOIN Parcela p ON dc.parcela_id_fk = p.parcela_id
+        INNER JOIN Tratamiento t ON p.tratamiento_id_fk = t.tratamiento_id
+        INNER JOIN Bloque b ON p.bloque_id_fk = b.bloque_id
+        INNER JOIN Momento_Evaluacion me ON dc.momento_id_fk = me.momento_id
+        LEFT JOIN Datos_Campo_Medicion dcm ON dc.dato_campo_id = dcm.dato_campo_id_fk
+        LEFT JOIN Protocolo_Variable pv ON dcm.variable_id_fk = pv.variable_id
+        WHERE p.ensayo_id_fk = ?
+      `, [ensayoId]);
+                // 5. FOTOS Y ARCHIVOS
+                const fotosRaw = yield manager.query(`
+        SELECT 
+          fr.foto_id, fr.file_name, fr.file_path, fr.mime_type, fr.fecha_subida,
+          p.nombre_parcela, t.numero_trat, b.nombre_bloque
+        FROM Foto_Registro fr
+        INNER JOIN Datos_Campo dc ON fr.dato_campo_id_fk = dc.dato_campo_id
+        INNER JOIN Parcela p ON dc.parcela_id_fk = p.parcela_id
+        INNER JOIN Tratamiento t ON p.tratamiento_id_fk = t.tratamiento_id
+        INNER JOIN Bloque b ON p.bloque_id_fk = b.bloque_id
+        WHERE p.ensayo_id_fk = ?
+      `, [ensayoId]);
+                // 6. ESTADÍSTICAS
+                const estadisticasRaw = yield manager.query(`
+        SELECT
+          t.numero_trat,
+          COUNT(*) as n,
+          ROUND(AVG(dc.kg_ha_corregido), 2) as promedio,
+          ROUND(STDDEV(dc.kg_ha_corregido), 2) as desviacion,
+          ROUND(MIN(dc.kg_ha_corregido), 2) as minimo,
+          ROUND(MAX(dc.kg_ha_corregido), 2) as maximo,
+          ROUND(AVG(dc.gie), 2) as gie,
+          ROUND(AVG(dc.larvas_porurf), 2) as larvas_porurf,
+          ROUND(AVG(dc.insectos_beneficios_porurf), 2) as insectos_beneficios_porurf
+        FROM Datos_Cosecha dc
+        INNER JOIN Parcela p ON dc.parcela_id_fk = p.parcela_id
+        INNER JOIN Tratamiento t ON p.tratamiento_id_fk = t.tratamiento_id
+        WHERE p.ensayo_id_fk = ?
+        GROUP BY t.numero_trat
+      `, [ensayoId]);
+                // Convertir estadísticas a map
+                const estadisticas = {};
+                for (const stat of estadisticasRaw) {
+                    estadisticas[`T${stat.numero_trat}`] = {
+                        n: stat.n,
+                        promedio: stat.promedio,
+                        desviacion: stat.desviacion,
+                        minimo: stat.minimo,
+                        maximo: stat.maximo,
+                        gie: stat.gie,
+                        larvas_porurf: stat.larvas_porurf || 0,
+                        insectos_beneficios_porurf: stat.insectos_beneficios_porurf || 0,
+                    };
+                }
+                // PROCESAR DATOS COSECHA - SIN undefined
+                const datosTrillaProcessed = datosTrilla.map((dt) => ({
+                    parcela: dt.nombre_parcela,
+                    tratamiento: dt.numero_trat,
+                    bloque: dt.nombre_bloque,
+                    humedad: dt.humedad_pct !== null ? `${dt.humedad_pct}%` : '',
+                    kgHa: dt.kg_ha_corregido !== null ? `${Math.round(dt.kg_ha_corregido)}` : '',
+                    gie: dt.gie !== null ? `${parseFloat(dt.gie).toFixed(1)}%` : '',
+                    gramaje: dt.gramaje_por_grano !== null ? `${dt.gramaje_por_grano}` : '',
+                    granosUrf: dt.granos_porurf !== null ? `${Math.round(dt.granos_porurf)}` : '',
+                    pesoGranos: dt.peso_granos_porurf !== null ? `${dt.peso_granos_porurf}` : '',
+                    dañados: dt.granos_danados !== null ? `${dt.granos_danados}%` : '',
+                    verdes: dt.granos_verdes !== null ? `${dt.granos_verdes}%` : '',
+                    vanos: dt.granos_vanos !== null ? `${dt.granos_vanos}%` : '',
+                    hojas: dt.hojas_porurf !== null ? `${Math.round(dt.hojas_porurf)}` : '',
+                    larvas: dt.larvas_porurf !== null ? `${dt.larvas_porurf}` : '',
+                    beneficos: dt.insectos_beneficios_porurf !== null ? `${dt.insectos_beneficios_porurf}` : '',
+                    diametro: dt.diametro_espiga !== null ? `${dt.diametro_espiga}mm` : '',
+                    altura: dt.altura_parcela !== null ? `${dt.altura_parcela}cm` : '',
+                    densidad: dt.densidad_plantas_final !== null ? `${dt.densidad_plantas_final}` : '',
+                }));
+                // PROCESAR DATOS CAMPO - SIN undefined
+                const datosCampoProcessed = datosCampoRaw.map((dc) => ({
+                    parcela: dc.nombre_parcela,
+                    tratamiento: dc.numero_trat,
+                    bloque: dc.nombre_bloque,
+                    momento: dc.nombre_momento,
+                    variable: dc.nombre_variable,
+                    valor: dc.valor !== null ? `${parseFloat(dc.valor).toFixed(1)}` : '',
+                }));
+                // PROCESAR FOTOS - SIN undefined
+                const fotosProcessed = fotosRaw.map((f) => ({
+                    id: f.foto_id,
+                    nombre: f.file_name,
+                    ruta: f.file_path,
+                    tipo: f.mime_type,
+                    fecha: f.fecha_subida ? new Date(f.fecha_subida).toLocaleDateString('es-ES') : '',
+                    parcela: f.nombre_parcela,
+                    tratamiento: f.numero_trat,
+                    bloque: f.nombre_bloque,
+                }));
+                // METADADATOS - SIN N/A - CON UTF-8 LIMPIO
+                const metadadatos = {
+                    ensayoId: ensayo.ensayo_id,
+                    nombreEnsayo: this.limpiarUTF8(ensayo.nombre_ensayo || ''),
+                    cultivo: this.limpiarUTF8(ensayo.cultivo_nombre || ''),
+                    tipoSiembra: this.limpiarUTF8(ensayo.tipo_siembra_nombre || ''),
+                    provincia: this.limpiarUTF8(ensayo.provincia || ''),
+                    departamento: this.limpiarUTF8(ensayo.departamento || ''),
+                    establecimiento: this.limpiarUTF8(ensayo.establecimiento || ''),
+                    lote: this.limpiarUTF8(ensayo.lote || ''),
+                    fechaSiembra: ensayo.fecha_siembra ? new Date(ensayo.fecha_siembra).toLocaleDateString('es-ES') : '',
+                    fechaCosecha: ensayo.fecha_cosecha ? new Date(ensayo.fecha_cosecha).toLocaleDateString('es-ES') : '',
+                    // APLICACION
+                    fechaAplicacion: aplicacion.fecha_hora ? new Date(aplicacion.fecha_hora).toLocaleDateString('es-ES') : '',
+                    estadio: this.limpiarUTF8(aplicacion.estadio_cultivo || ''),
+                    temperatura: aplicacion.temp_c ? `${aplicacion.temp_c}°C` : '',
+                    humedad: aplicacion.humedad_pct ? `${aplicacion.humedad_pct}%` : '',
+                    equipo: this.limpiarUTF8(aplicacion.equipo_info || ''),
+                    viento: aplicacion.viento_kmh ? `${aplicacion.viento_kmh}` : '',
+                    pico: this.limpiarUTF8(aplicacion.pico_info || ''),
+                    presion: aplicacion.presion_bar ? `${aplicacion.presion_bar}` : '',
+                };
+                console.log(`✅ Datos obtenidos: ${datosTrillaProcessed.length} cosecha, ${datosCampoProcessed.length} campo, ${fotosProcessed.length} fotos`);
+                return {
+                    datosCampo: datosCampoProcessed,
+                    datosTrilla: datosTrillaProcessed,
+                    metadadatos,
+                    fotos: fotosProcessed,
+                    estadisticas,
+                };
+            }
+            catch (error) {
+                console.error(`❌ Error obtenerDatosEnsayoRaw:`, error);
                 throw error;
             }
         });
@@ -329,28 +518,37 @@ let ReportesService = class ReportesService {
         }
     }
     /**
-     * Genera PDF del reporte
+     * Genera PDF del reporte - AHORA USA obtenerDatosEnsayoRaw
      */
-    generarPDF(datosCampo, datosTrilla, metadadatos) {
+    generarPDFEnsayo(ensayoId) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             try {
-                console.log('🔄 Iniciando generación de PDF...');
-                console.log(`   - Datos de campo: ${(datosCampo === null || datosCampo === void 0 ? void 0 : datosCampo.length) || 0} registros`);
-                console.log(`   - Datos de trilla: ${(datosTrilla === null || datosTrilla === void 0 ? void 0 : datosTrilla.length) || 0} registros`);
-                const estadisticas = this.calcularEstadisticasPorTratamiento(datosTrilla || [], 'kgHa');
-                console.log(`   - Estadísticas calculadas: ${Object.keys(estadisticas).length} tratamientos`);
-                const resumen = this.generarResumenEjecutivo(datosCampo || [], datosTrilla || [], metadadatos);
-                console.log(`   - Resumen generado: ${resumen.tratamientoRecomendado}`);
+                console.log(`🔄 Generando PDF para ensayo ${ensayoId}...`);
+                // USAR obtenerDatosEnsayoRaw que trae TODOS los campos incluyendo larvas_porurf
+                const datosRaw = yield this.obtenerDatosEnsayoRaw(ensayoId);
+                if (!datosRaw) {
+                    throw new Error(`Ensayo ${ensayoId} no encontrado`);
+                }
+                console.log(`   - Datos de campo: ${((_a = datosRaw.datosCampo) === null || _a === void 0 ? void 0 : _a.length) || 0} registros`);
+                console.log(`   - Datos de trilla: ${((_b = datosRaw.datosTrilla) === null || _b === void 0 ? void 0 : _b.length) || 0} registros`);
+                console.log(`   - Estadísticas: ${Object.keys(datosRaw.estadisticas).length} tratamientos`);
+                // DEBUG: Verificar que larvas_porurf está en estadísticas
+                for (const [trat, stats] of Object.entries(datosRaw.estadisticas)) {
+                    console.log(`   ${trat}: larvas=${stats.larvas_porurf}, beneficos=${stats.insectos_beneficios_porurf}`);
+                }
+                const resumen = this.generarResumenEjecutivo(datosRaw.datosCampo || [], datosRaw.datosTrilla || [], datosRaw.metadadatos);
                 const pdfData = {
-                    metadatos: metadadatos,
-                    datosCampo: datosCampo || [],
-                    datosTrilla: datosTrilla || [],
-                    estadisticas,
+                    metadatos: datosRaw.metadadatos,
+                    datosCampo: datosRaw.datosCampo || [],
+                    datosTrilla: datosRaw.datosTrilla || [],
+                    estadisticas: datosRaw.estadisticas,
                     resumen,
+                    fotos: datosRaw.fotos || [],
                 };
                 console.log('   - Llamando a PdfReportGenerator...');
                 const buffer = yield pdf_generator_1.PdfReportGenerator.generarReporteEnsayo(pdfData);
-                console.log(`   ✅ PDF generado exitosamente: ${buffer.length} bytes`);
+                console.log(`   ✅ PDF generado: ${buffer.length} bytes`);
                 return buffer;
             }
             catch (error) {
@@ -473,6 +671,94 @@ let ReportesService = class ReportesService {
             ? recomendaciones
             : ['Sin recomendaciones'];
     }
+    /**
+     * NUEVO: Genera reporte completo con todos los servicios integrados
+     * Incluye validación, cálculos, 6 reportes especializados y gráficos
+     */
+    generarReporteCompleto(ensayoId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                console.log(`📊 Generando reporte completo para ensayo ${ensayoId}`);
+                // 1. Obtener datos
+                const { ensayo, datosCampo, datosTrilla, metadadatos } = yield this.obtenerDatosEnsayo(ensayoId);
+                if (!ensayo) {
+                    throw new Error(`Ensayo ${ensayoId} no encontrado`);
+                }
+                // 2. Validar coherencia de datos
+                const validacionGlobal = {
+                    advertencias: [],
+                    errores: [],
+                };
+                for (const dato of datosTrilla) {
+                    const validacion = this.calculosService.validarCoherenciaDatos(dato);
+                    validacionGlobal.advertencias.push(...validacion.advertencias);
+                    validacionGlobal.errores.push(...validacion.errores);
+                }
+                console.log(`✅ Validación: ${validacionGlobal.advertencias.length} advertencias, ${validacionGlobal.errores.length} errores`);
+                // 3. Generar 6 reportes especializados
+                const reportes = {
+                    rendimiento: this.reportesEspecializadosService.generarReporteRendimiento({
+                        datosTrilla,
+                        datosCampo,
+                    }),
+                    sanidad: this.reportesEspecializadosService.generarReporteSanidad({
+                        datosTrilla,
+                    }),
+                    desarrollo: this.reportesEspecializadosService.generarReporteDesarrollo({
+                        datosTrilla,
+                    }),
+                    composicion: this.reportesEspecializadosService.generarReporteComposicion({
+                        datosTrilla,
+                    }),
+                    eficiencia: this.reportesEspecializadosService.generarReporteEficiencia({
+                        datosTrilla,
+                    }),
+                    resumen: this.reportesEspecializadosService.generarResumenEjecutivo({
+                        datosTrilla,
+                        metadadatos,
+                    }),
+                };
+                console.log(`✅ Reportes generados: ${Object.keys(reportes).length} tipos`);
+                // 4. Generar gráficos SVG (básico)
+                const graficos = {
+                    rendimiento: svg_charts_service_1.SvgChartsService.generarGraficoBarras(((_a = reportes.rendimiento.graficos) === null || _a === void 0 ? void 0 : _a.barras) || [], { titulo: 'Rendimiento por Tratamiento', ancho: 800, alto: 500 }),
+                };
+                console.log(`✅ Gráficos generados`);
+                // 5. Retornar estructura completa
+                return {
+                    ensayo,
+                    metadadatos,
+                    datosCampo,
+                    datosTrilla,
+                    reportes,
+                    graficos,
+                    validacion: validacionGlobal,
+                };
+            }
+            catch (error) {
+                console.error('❌ Error generando reporte completo:', error);
+                throw error;
+            }
+        });
+    }
+    /**
+     * Limpia caracteres especiales UTF-8 problemáticos
+     */
+    limpiarUTF8(texto) {
+        if (!texto)
+            return '';
+        return texto
+            .replace(/Ã¡/g, 'á')
+            .replace(/Ã©/g, 'é')
+            .replace(/Ã­/g, 'í')
+            .replace(/Ã³/g, 'ó')
+            .replace(/Ãº/g, 'ú')
+            .replace(/Ã±/g, 'ñ')
+            .replace(/Â/g, '')
+            .replace(/Ã/g, '')
+            .trim();
+    }
 };
 exports.ReportesService = ReportesService;
 exports.ReportesService = ReportesService = __decorate([
@@ -484,11 +770,15 @@ exports.ReportesService = ReportesService = __decorate([
     __param(4, (0, typeorm_1.InjectRepository)(datos_cosecha_entity_1.DatosCosecha)),
     __param(5, (0, typeorm_1.InjectRepository)(tratamiento_entity_1.Tratamiento)),
     __param(6, (0, typeorm_1.InjectRepository)(bloque_entity_1.Bloque)),
+    __param(7, (0, typeorm_1.InjectRepository)(aplicacion_entity_1.Aplicacion)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        calculos_reportes_service_1.CalculosReportesService,
+        reportes_especializados_service_1.ReportesEspecializadosService])
 ], ReportesService);

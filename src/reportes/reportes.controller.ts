@@ -21,7 +21,7 @@ export class ReportesController {
   constructor(private readonly reportesService: ReportesService) {}
 
   @Get('ensayo/:ensayoId/pdf')
-  @ApiOperation({ summary: 'Generar reporte PDF de un ensayo' })
+  @ApiOperation({ summary: 'Generar reporte PDF completo de un ensayo' })
   @ApiParam({ name: 'ensayoId', type: Number })
   async generarReportePdf(
     @Param('ensayoId', ParseIntPipe) ensayoId: number,
@@ -30,19 +30,12 @@ export class ReportesController {
     try {
       console.log(`📄 Generando PDF para ensayo ${ensayoId}`);
 
-      // Obtener datos del ensayo desde la BD
-      const { datosCampo, datosTrilla, metadadatos } =
-        await this.reportesService.obtenerDatosEnsayo(ensayoId);
+      // Usar generarPDFEnsayo que obtiene TODOS los datos incluyendo larvas_porurf
+      const buffer = await this.reportesService.generarPDFEnsayo(ensayoId);
 
-      console.log(`  ✅ Datos de campo: ${datosCampo.length} registros`);
-      console.log(`  ✅ Datos de trilla: ${datosTrilla.length} registros`);
-      console.log(`  ✅ Metadata: ${JSON.stringify(metadadatos).substring(0, 100)}...`);
-
-      const buffer = await this.reportesService.generarPDF(
-        datosCampo,
-        datosTrilla,
-        metadadatos,
-      );
+      if (!buffer) {
+        return res.status(404).json({ error: 'No se pudo generar el PDF' });
+      }
 
       console.log(`  ✅ PDF generado: ${buffer.length} bytes`);
 
@@ -64,7 +57,7 @@ export class ReportesController {
   }
 
   @Get('ensayo/:ensayoId/xls')
-  @ApiOperation({ summary: 'Generar reporte Excel de un ensayo' })
+  @ApiOperation({ summary: 'Generar reporte Excel completo de un ensayo' })
   @ApiParam({ name: 'ensayoId', type: Number })
   async generarReporteXls(
     @Param('ensayoId', ParseIntPipe) ensayoId: number,
@@ -73,17 +66,20 @@ export class ReportesController {
     try {
       console.log(`📊 Generando Excel para ensayo ${ensayoId}`);
 
-      // Obtener datos del ensayo desde la BD
-      const { datosCampo, datosTrilla, metadadatos } =
-        await this.reportesService.obtenerDatosEnsayo(ensayoId);
+      // Usar el método RAW que funciona con SQL nativo
+      const datosCompletos =
+        await this.reportesService.obtenerDatosEnsayoRaw(ensayoId);
 
-      console.log(`  ✅ Datos de campo: ${datosCampo.length} registros`);
-      console.log(`  ✅ Datos de trilla: ${datosTrilla.length} registros`);
+      if (!datosCompletos) {
+        return res.status(404).json({ error: 'Ensayo no encontrado' });
+      }
+
+      console.log(`  ✅ Datos obtenidos: ${datosCompletos.datosTrilla.length} cosecha, ${datosCompletos.datosCampo.length} campo`);
 
       const buffer = await this.reportesService.generarExcel(
-        datosCampo,
-        datosTrilla,
-        metadadatos,
+        datosCompletos.datosCampo,
+        datosCompletos.datosTrilla,
+        datosCompletos.metadadatos,
       );
 
       console.log(`  ✅ Excel generado: ${buffer.length} bytes`);
