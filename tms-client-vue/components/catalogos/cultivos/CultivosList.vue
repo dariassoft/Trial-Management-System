@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useCultivosStore, type Cultivo } from '~/stores/cultivos'
 import CultivoForm from './CultivoForm.vue'
 import ConfirmDeleteModal from '~/components/common/ConfirmDeleteModal.vue'
@@ -22,7 +22,11 @@ watch(
 )
 
 const inicializar = async () => {
-  await cultivosStore.fetchCultivos()
+  try {
+    await cultivosStore.fetchCultivos()
+  } catch (error) {
+    console.warn('No se pudieron cargar cultivos inicialmente:', error)
+  }
 }
 
 const aplicarFiltros = async () => {
@@ -95,7 +99,10 @@ async function irAPagina(page: number) {
   }
 }
 
-inicializar()
+// Inicializar solo en el cliente, después del montaje
+onMounted(() => {
+  inicializar()
+})
 </script>
 
 <template>

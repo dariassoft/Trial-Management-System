@@ -46,8 +46,11 @@ export class PdfReportGenerator {
         doc.addPage();
 
         // Página 9: Estadísticas
-        PdfReportGenerator.generarEstadisticas(doc, datos);
-        doc.addPage();
+        const tieneEstadisticas = datos.estadisticas && Object.keys(datos.estadisticas).length > 0;
+        if (tieneEstadisticas) {
+          PdfReportGenerator.generarEstadisticas(doc, datos);
+          doc.addPage();
+        }
 
         // Página 10: Fotos (si existen)
         if (datos.fotos && datos.fotos.length > 0) {
@@ -55,8 +58,18 @@ export class PdfReportGenerator {
           doc.addPage();
         }
 
-        // Páginas 11+: Gráficos
-        PdfReportGenerator.generarGraficosPNG(doc, datos);
+        // Páginas 11+: Gráficos - SOLO SI HAY DATOS SUFICIENTES
+        // Verificar si hay estadísticas
+        if (tieneEstadisticas) {
+          PdfReportGenerator.generarGraficosPNG(doc, datos);
+        } else {
+          // Si no hay datos para gráficos, agregar página con info útil
+          doc.fontSize(14).font('Helvetica-Bold').text('INFORMACIÓN ADICIONAL');
+          doc.moveDown(1);
+          doc.fontSize(11).font('Helvetica').text('No hay datos de cosecha suficientes para generar gráficos de rendimiento.', doc.page.margins.left);
+          doc.moveDown(0.5);
+          doc.text('Para generar gráficos de análisis, se requiere registrar datos de cosecha (Datos de Trilla) para cada parcela del ensayo.');
+        }
 
         doc.end();
       } catch (error) {
@@ -159,14 +172,14 @@ export class PdfReportGenerator {
     );
     doc.moveDown(0.8);
 
-    // CONDICIONES DE APLICACION - Traer de DB
+    // CONDICIONES DE APLICACION - Todos desde BD
     const condicionesData = [
       ['Parámetro', 'Valor'],
-      ['Temperatura', ((meta as any).temperatura || 'N/A') + '°C'],
-      ['Humedad Relativa', ((meta as any).humedad || 'N/A') + '%'],
-      ['Viento', ((meta as any).velocidadViento || 'N/A') + ' km/h'],
-      ['Presión', ((meta as any).presion || 'N/A') + ' bar'],
-      ['Equipo', (meta as any).equipo || 'N/A'],
+      ['Temperatura', ((meta as any).temperatura !== undefined ? (meta as any).temperatura + '°C' : 'No registrado')],
+      ['Humedad Relativa', ((meta as any).humedad !== undefined ? (meta as any).humedad + '%' : 'No registrado')],
+      ['Velocidad Viento', ((meta as any).velocidadViento !== undefined ? (meta as any).velocidadViento + ' km/h' : 'No registrado')],
+      ['Presión', ((meta as any).presion !== undefined ? (meta as any).presion + ' bar' : 'No registrado')],
+      ['Equipo', (meta as any).equipo || 'No registrado'],
     ];
 
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000').text('Condiciones de Aplicación', doc.page.margins.left, doc.y);
@@ -174,18 +187,18 @@ export class PdfReportGenerator {
     PdfReportGenerator.dibujarTabla(doc, condicionesData, 500, 9);
     doc.moveDown(0.5);
 
-    // DISTRIBUCION - Alineado a la izquierda - Traer de DB
+    // DISTRIBUCION - Todos desde BD - Dinamico
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000').text('Distribución de Tratamientos', doc.page.margins.left, doc.y);
     doc.moveDown(0.3);
     const diseno = datos.diseno || {} as any;
     doc.fontSize(10).font('Helvetica').fillColor('#000000').text(
-      'Diseño: ' + ((diseno as any).nombre || 'Bloques Completos al Azar (BCA)'), doc.page.margins.left
+      'Diseño: ' + ((diseno as any).nombre || 'No especificado'), doc.page.margins.left
     );
     doc.fontSize(10).font('Helvetica').fillColor('#000000').text(
-      'Repeticiones: ' + ((diseno as any).repeticiones || '5') + ' bloques', doc.page.margins.left
+      'Repeticiones: ' + ((diseno as any).repeticiones || '0') + ' bloques', doc.page.margins.left
     );
     doc.fontSize(10).font('Helvetica').fillColor('#000000').text(
-      'Tratamientos: ' + ((diseno as any).tratamientos || '3'), doc.page.margins.left
+      'Tratamientos: ' + ((diseno as any).tratamientos || '0'), doc.page.margins.left
     );
   }
 
@@ -193,38 +206,53 @@ export class PdfReportGenerator {
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('EVALUACIONES EN CAMPO');
     doc.moveDown(0.6);
 
-    doc.fontSize(10).font('Helvetica').fillColor('#000000').text('Fechas de evaluación desde siembra (DDS):');
+    doc.fontSize(11).font('Helvetica-Bold').fillColor('#000000').text('Momentos de evaluación:');
+    doc.fontSize(9).font('Helvetica').fillColor('#333333').text(
+      'DDS (Días Después de Siembra) = Días transcurridos desde la siembra. Indica cuándo se realizó cada evaluación.'
+    );
     doc.moveDown(0.3);
 
-    // TRAER DESDE DB, NO HARDCODE
     const evaluacionesFechas = datos.evaluacionesFechas || [];
     if (evaluacionesFechas.length === 0) {
       doc.fontSize(10).text('Sin evaluaciones programadas');
       return;
     }
 
-    const headerFechas = [['DDS', 'Fecha', 'Variables']];
+    const headerFechas = [['DDS', 'Fecha Evaluación', 'Variables Medidas']];
     const fechasData = [...headerFechas, ...evaluacionesFechas];
 
     PdfReportGenerator.dibujarTabla(doc, fechasData, 500, 9);
   }
 
   private static generarTablaEvaluacionesDetalle(doc: any, datos: any): void {
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('DETALLE DE EVALUACIONES POR TRATAMIENTO Y BLOQUE');
-    doc.moveDown(0.6);
+    doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('EVALUACIONES EN CAMPO - DETALLE POR TRATAMIENTO Y BLOQUE');
+    doc.moveDown(0.3);
 
-    // TRAER DESDE DB, NO HARDCODE
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#333333').text('¿Qué significan las columnas?');
+    doc.fontSize(8).font('Helvetica').fillColor('#555555');
+    doc.text('• Trat = Número de Tratamiento');
+    doc.text('• Bloque = Letra del bloque (A, B, C, etc.)');
+    doc.text('• Valor (X DDS) = Valor medido X días después de siembra');
+    doc.text('• Fecha = Fecha cuando se realizó la medición');
+    doc.text('• Variable = Nombre de la variable medida');
+    doc.text('• Nº Var = Cantidad de variables medidas');
+    doc.moveDown(0.4);
+
     const evaluaciones = datos.evaluacionesDetalle || [];
+    const headerEvaluaciones = datos.headerEvaluaciones || ['Trat', 'Bloque', 'Nº Var'];
+
     if (evaluaciones.length === 0) {
       doc.fontSize(10).text('Sin evaluaciones registradas');
       return;
     }
 
-    // Construir tabla dinámicamente desde datos
-    const headerRow = ['T', 'B', 'V12', 'F12', 'S12', 'V21', 'F21', 'S21', 'V28', 'F28', 'V35', 'F35', 'V57', 'F57', 'V76', 'F76', 'NVI'];
-    const datosEvaluacion = [headerRow, ...evaluaciones];
+    const datosEvaluacion = [headerEvaluaciones, ...evaluaciones];
 
-    PdfReportGenerator.dibujarTabla(doc, datosEvaluacion, 760, 5);
+    // Usar tamaño de fuente más pequeño para más columnas
+    const fontSize = headerEvaluaciones.length > 10 ? 5 : 6;
+    const width = headerEvaluaciones.length > 10 ? 750 : 700;
+
+    PdfReportGenerator.dibujarTabla(doc, datosEvaluacion, width, fontSize);
   }
 
   private static generarTablaDatosCampo(doc: any, datos: any): void {
@@ -341,40 +369,56 @@ export class PdfReportGenerator {
     if (Object.keys(estadisticas).length === 0) return;
 
     const labels = Object.keys(estadisticas).sort();
+    let paginasGeneradas = 0;
 
     // GRÁFICO 1: RENDIMIENTO
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('Rendimiento Promedio por Tratamiento (kg/ha)', doc.page.margins.left, doc.y);
-    doc.moveDown(0.8);
     const rendimientos = labels.map(t => parseFloat(String((estadisticas as any)[t].promedio || 0)));
-    PdfReportGenerator.dibujarGraficoBarras(doc, labels, rendimientos, 5200, 5900, 350, 180);
-    doc.moveDown(1);
+    if (rendimientos.some(v => v > 0)) {
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('Rendimiento Promedio por Tratamiento (kg/ha)', doc.page.margins.left, doc.y);
+      doc.moveDown(0.8);
+      PdfReportGenerator.dibujarGraficoBarras(doc, labels, rendimientos, 5200, 5900, 350, 180);
+      doc.moveDown(1);
+      paginasGeneradas++;
+    }
 
-    // GRÁFICO 2: GIE - NUEVA PÁGINA CON COORDENADAS FIJAS
-    doc.addPage();
-    doc.moveDown(1);
-    doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
-      .text('GIE Promedio por Tratamiento (%)', 50, doc.y);
-    doc.moveDown(0.5);
-
+    // GRÁFICO 2: GIE - NUEVA PÁGINA SOLO SI HAY DATOS
     const gieValues = labels.map(t => parseFloat(String((estadisticas as any)[t].gie || 0)));
+    if (gieValues.some(v => v > 0)) {
+      if (paginasGeneradas > 0) {
+        doc.addPage();
+      }
+      doc.moveDown(1);
+      doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
+        .text('GIE Promedio por Tratamiento (%)', 50, doc.y);
+      doc.moveDown(0.5);
 
-    PdfReportGenerator.dibujarGraficoGIESimple(doc, labels, gieValues);
+      PdfReportGenerator.dibujarGraficoGIESimple(doc, labels, gieValues);
+      paginasGeneradas++;
+    }
 
-    // GRÁFICO 3: PLAGAS VS BENÉFICOS - NUEVA PÁGINA CON COORDENADAS FIJAS
-    doc.addPage();
-    doc.moveDown(1);
-    doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
-      .text('Plagas vs Insectos Benéficos (por m²)', 50, doc.y);
-    doc.moveDown(0.5);
-
+    // GRÁFICO 3: PLAGAS VS BENÉFICOS - NUEVA PÁGINA SOLO SI HAY DATOS
     const larvas = labels.map(t => parseFloat(String((estadisticas as any)[t].larvas_porurf || 0)));
     const beneficos = labels.map(t => parseFloat(String((estadisticas as any)[t].insectos_beneficios_porurf || 0)));
 
-    console.log(`🐛 GRÁFICO PLAGAS - Labels: ${JSON.stringify(labels)}`);
-    console.log(`🐛 GRÁFICO PLAGAS - Larvas: ${JSON.stringify(larvas)}`);
-    console.log(`🐛 GRÁFICO PLAGAS - Benéficos: ${JSON.stringify(beneficos)}`);
+    if (larvas.some(v => v > 0) || beneficos.some(v => v > 0)) {
+      if (paginasGeneradas > 0) {
+        doc.addPage();
+      }
+      doc.moveDown(1);
+      doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
+        .text('Plagas vs Insectos Benéficos (por m²)', 50, doc.y);
+      doc.moveDown(0.5);
 
-    PdfReportGenerator.dibujarGraficoPlayasSimple(doc, labels, larvas, beneficos);
+      console.log(`🐛 GRÁFICO PLAGAS - Labels: ${JSON.stringify(labels)}`);
+      console.log(`🐛 GRÁFICO PLAGAS - Larvas: ${JSON.stringify(larvas)}`);
+      console.log(`🐛 GRÁFICO PLAGAS - Benéficos: ${JSON.stringify(beneficos)}`);
+
+      PdfReportGenerator.dibujarGraficoPlayasSimple(doc, labels, larvas, beneficos);
+      paginasGeneradas++;
+    }
+
+    // Si no se generó ningún gráfico, no agregues nada (no dejar página en blanco)
+    console.log(`📊 Gráficos generados: ${paginasGeneradas}`);
   }
 
   /**
@@ -548,14 +592,17 @@ export class PdfReportGenerator {
         .text(label, groupX, y + h + 10, { width: w / labels.length, align: 'center' });
     });
 
-    // Leyenda
-    doc.moveDown(20);
+    // Leyenda - Pegada debajo del gráfico
+    const legendY = y + h + 35;
     doc.fontSize(9).font('Helvetica');
-    doc.fillColor('#FF6B6B').rect(x, doc.y, 12, 12).fill();
-    doc.fillColor('#000000').text('Larvas/m²', x + 20, doc.y + 2);
+    doc.fillColor('#FF6B6B').rect(x, legendY, 12, 12).fill();
+    doc.fillColor('#000000').text('Larvas/m²', x + 20, legendY + 2);
 
-    doc.fillColor('#10B981').rect(x + 150, doc.y - 12, 12, 12).fill();
-    doc.fillColor('#000000').text('Benéficos/m²', x + 170, doc.y - 10);
+    doc.fillColor('#10B981').rect(x + 150, legendY, 12, 12).fill();
+    doc.fillColor('#000000').text('Benéficos/m²', x + 170, legendY);
+
+    // Actualizar posición del documento
+    doc.y = legendY + 20;
   }
 
   /**

@@ -73,6 +73,30 @@ export class DatosSiembraService {
     return qb.getMany();
   }
 
+  async findByEnsayoId(ensayoId: number) {
+    const { isInvitado, labIds } = this.auth;
+    if (!isInvitado) {
+      return this.repo.find({
+        where: { parcela: { ensayo: { id: ensayoId } } },
+        relations: { parcela: { ensayo: true, bloque: true, tratamiento: true } },
+        order: { parcela: { id: 'ASC' } }
+      });
+    }
+    const qb = this.repo.createQueryBuilder('ds')
+      .leftJoinAndSelect('ds.parcela', 'parcela')
+      .leftJoinAndSelect('parcela.ensayo', 'ensayo')
+      .leftJoinAndSelect('parcela.bloque', 'bloque')
+      .leftJoinAndSelect('parcela.tratamiento', 'tratamiento')
+      .leftJoin('tratamiento.productos', 'tp')
+      .leftJoin('tp.producto', 'prod')
+      .leftJoin('prod.laboratorio', 'lab')
+      .where('ensayo.id = :ensayoId', { ensayoId })
+      .andWhere('lab.id IN (:...labIds)', { labIds })
+      .orderBy('parcela.id', 'ASC')
+      .distinct(true);
+    return qb.getMany();
+  }
+
   async findOne(id: number) {
     const { isInvitado, labIds } = this.auth;
     if (!isInvitado) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useProductosStore, type Producto } from '~/stores/productos'
 import ProductoForm from './ProductoForm.vue'
 import ConfirmDeleteModal from '~/components/common/ConfirmDeleteModal.vue'
@@ -23,7 +23,12 @@ watch(
 )
 
 const inicializar = async () => {
-  await productosStore.fetchProductos()
+  try {
+    await productosStore.fetchProductos()
+  } catch (error) {
+    // Manejo silencioso del error en la inicialización
+    console.warn('No se pudieron cargar productos inicialmente:', error)
+  }
 }
 
 const aplicarFiltros = async () => {
@@ -96,7 +101,10 @@ async function irAPagina(page: number) {
   }
 }
 
-inicializar()
+// Inicializar solo en el cliente, después del montaje
+onMounted(() => {
+  inicializar()
+})
 </script>
 
 <template>

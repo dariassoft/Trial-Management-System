@@ -23,6 +23,23 @@ export type ParcelaItem = {
     id: number
     nombreTratamiento: string
   }
+  siembra?: {
+    id: number
+    fechaSiembra?: string | null
+    semillasPorMetro?: number | null
+    densidadSiembra?: number | null
+    germinacionPct?: number | null
+    vigorPlantasEscala?: number | null
+    observaciones?: string | null
+  } | null
+  cosecha?: {
+    id: number
+    fechaCosecha?: string | null
+    humedadPct?: number | null
+    kgHaCorregido?: number | null
+    gie?: number | null
+    observaciones?: string | null
+  } | null
 }
 
 export const useParcelasStore = defineStore('parcelas', () => {

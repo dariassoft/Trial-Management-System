@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useTiposEnsayoStore, type TipoEnsayo } from '~/stores/tipos-ensayo'
 import TipoEnsayoForm from './TipoEnsayoForm.vue'
 import ConfirmDeleteModal from '~/components/common/ConfirmDeleteModal.vue'
@@ -22,7 +22,11 @@ watch(
 )
 
 const inicializar = async () => {
-  await tiposStore.fetchTiposEnsayo()
+  try {
+    await tiposStore.fetchTiposEnsayo()
+  } catch (error) {
+    console.warn('No se pudieron cargar tipos de ensayo inicialmente:', error)
+  }
 }
 
 const aplicarFiltros = async () => {
@@ -95,7 +99,10 @@ async function irAPagina(page: number) {
   }
 }
 
-inicializar()
+// Inicializar solo en el cliente, después del montaje
+onMounted(() => {
+  inicializar()
+})
 </script>
 
 <template>

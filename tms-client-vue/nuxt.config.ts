@@ -19,7 +19,7 @@ if (fs.existsSync(envPath)) {
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-11-27',
-  ssr: true, // SSR Mode - Server-Side Rendering para producción
+  ssr: process.env.NODE_ENV === 'production', // SSR solo en producción, deshabilitado en desarrollo
   devtools: { enabled: process.env.NODE_ENV === 'development' },
 
   // Módulos
@@ -66,11 +66,19 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: false,
+      routes: [],  // No pre-renderizar rutas dinámicas automáticamente
     },
     output: {
       dir: '.output',
       serverDir: '.output/server',
       publicDir: '.output/public',
+    },
+  },
+
+  // Configuración router para manejar mejor las rutas dinámicas
+  router: {
+    options: {
+      hashMode: false,
     },
   },
 })

@@ -182,7 +182,22 @@ function formatDate(date?: string | null) {
 }
 
 function irAMedicion(ensayoId: number) {
-  router.push(`/mediciones/${ensayoId}`)
+  try {
+    console.log('🎯 Navegando a mediciones del ensayo:', ensayoId)
+    router.push(`/mediciones/${ensayoId}`).catch((err: any) => {
+      console.error('❌ Error navegando:', err)
+      // Si falla, intentar recargar después de un delay
+      if (err.message && err.message.includes('Failed to fetch')) {
+        console.warn('⚠️ Reintentando en 1 segundo...')
+        setTimeout(() => {
+          router.push(`/mediciones/${ensayoId}`)
+        }, 1000)
+      }
+    })
+  } catch (err) {
+    console.error('❌ Error en irAMedicion:', err)
+    alert('Error al navegar: ' + (err instanceof Error ? err.message : 'Error desconocido'))
+  }
 }
 
 // === Funciones QR ===

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useVariedadesStore, type CultivoVariedad } from '~/stores/variedades'
 import { useCultivosStore } from '~/stores/cultivos'
 import VariedadForm from './VariedadForm.vue'
@@ -24,8 +24,12 @@ watch(
 )
 
 const inicializar = async () => {
-  await cultivosStore.fetchCultivos()
-  await variedadesStore.fetchVariedades()
+  try {
+    await cultivosStore.fetchCultivos()
+    await variedadesStore.fetchVariedades()
+  } catch (error) {
+    console.warn('No se pudieron cargar variedades inicialmente:', error)
+  }
 }
 
 const aplicarFiltros = async () => {
@@ -99,7 +103,10 @@ async function irAPagina(page: number) {
   }
 }
 
-inicializar()
+// Inicializar solo en el cliente, después del montaje
+onMounted(() => {
+  inicializar()
+})
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { usePermisosStore, type Permiso } from '~/stores/permisos'
 import { useRolesStore } from '~/stores/roles'
 import { useApi } from '~/composables/useApi'
@@ -27,8 +27,12 @@ watch(
 )
 
 const inicializar = async () => {
-  await rolesStore.fetchRoles()
-  await permisosStore.fetchPermisos()
+  try {
+    await rolesStore.fetchRoles()
+    await permisosStore.fetchPermisos()
+  } catch (error) {
+    console.warn('No se pudieron cargar permisos inicialmente:', error)
+  }
 }
 
 const inicializarPermisosDefault = async () => {
@@ -121,7 +125,10 @@ async function irAPagina(page: number) {
   }
 }
 
-inicializar()
+// Inicializar solo en el cliente, después del montaje
+onMounted(() => {
+  inicializar()
+})
 </script>
 
 <template>

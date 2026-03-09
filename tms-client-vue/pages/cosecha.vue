@@ -248,6 +248,8 @@
                   v-model.number="formCosecha.humedadPct"
                   type="number"
                   step="0.01"
+                  min="0"
+                  max="99.99"
                   placeholder="12.5"
                   class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -260,7 +262,9 @@
                 <input
                   v-model.number="formCosecha.kgHaCorregido"
                   type="number"
-                  step="0.1"
+                  step="0.01"
+                  min="0"
+                  max="99999.99"
                   placeholder="5000"
                   class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -276,6 +280,8 @@
                 v-model.number="formCosecha.gie"
                 type="number"
                 step="0.01"
+                min="0"
+                max="99999.99"
                 placeholder="95.5"
                 class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -294,7 +300,9 @@
                   <input
                     v-model.number="formCosecha.gramajePorGrano"
                     type="number"
-                    step="0.001"
+                    step="0.000001"
+                    min="0"
+                    max="99.999999"
                     placeholder="0.050"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -307,7 +315,9 @@
                   <input
                     v-model.number="formCosecha.granosPorurf"
                     type="number"
-                    step="1"
+                    step="0.1"
+                    min="0"
+                    max="9999999999.9"
                     placeholder="50000"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -322,7 +332,9 @@
                 <input
                   v-model.number="formCosecha.pesoGranosPorUrf"
                   type="number"
-                  step="0.1"
+                  step="0.01"
+                  min="0"
+                  max="999999.99"
                   placeholder="2500"
                   class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -335,11 +347,11 @@
                     Dañados (%)
                   </label>
                   <input
-                    v-model.number="formCosecha.granosDañados"
+                    v-model.number="formCosecha.granosDanados"
                     type="number"
-                    step="0.1"
+                    step="0.01"
                     min="0"
-                    max="100"
+                    max="999.99"
                     placeholder="5.0"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -352,9 +364,9 @@
                   <input
                     v-model.number="formCosecha.granosVerdes"
                     type="number"
-                    step="0.1"
+                    step="0.01"
                     min="0"
-                    max="100"
+                    max="999.99"
                     placeholder="2.5"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -367,9 +379,9 @@
                   <input
                     v-model.number="formCosecha.granosVanos"
                     type="number"
-                    step="0.1"
+                    step="0.01"
                     min="0"
-                    max="100"
+                    max="999.99"
                     placeholder="1.5"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -390,7 +402,9 @@
                   <input
                     v-model.number="formCosecha.hojasPorUrf"
                     type="number"
-                    step="1"
+                    step="0.1"
+                    min="0"
+                    max="9999999999.9"
                     placeholder="5000"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -403,7 +417,9 @@
                   <input
                     v-model.number="formCosecha.larvasPorUrf"
                     type="number"
-                    step="1"
+                    step="0.01"
+                    min="0"
+                    max="99999.99"
                     placeholder="10"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -419,7 +435,9 @@
                   <input
                     v-model.number="formCosecha.insectosBeneficiosPorUrf"
                     type="number"
-                    step="1"
+                    step="0.01"
+                    min="0"
+                    max="99999.99"
                     placeholder="25"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -432,7 +450,9 @@
                   <input
                     v-model.number="formCosecha.diametroEspiga"
                     type="number"
-                    step="0.1"
+                    step="0.01"
+                    min="0"
+                    max="999.99"
                     placeholder="8.5"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -449,6 +469,8 @@
                     v-model.number="formCosecha.alturaParcela"
                     type="number"
                     step="0.1"
+                    min="0"
+                    max="999.9"
                     placeholder="75.5"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -461,7 +483,9 @@
                   <input
                     v-model.number="formCosecha.densidadPlantasFinal"
                     type="number"
-                    step="0.1"
+                    step="0.01"
+                    min="0"
+                    max="9999.99"
                     placeholder="8.5"
                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -512,6 +536,7 @@ import { useRoute } from 'vue-router'
 import { useEnsayosStore } from '~/stores/ensayos'
 import { useParcelasStore } from '~/stores/parcelas'
 import { useApi } from '~/composables/useApi'
+import { useNotifications } from '~/composables/useNotifications'
 
 definePageMeta({
   middleware: 'auth',
@@ -522,6 +547,14 @@ const route = useRoute()
 const ensayosStore = useEnsayosStore()
 const parcelasStore = useParcelasStore()
 const api = useApi()
+const { showNotification } = useNotifications()
+
+// Función para redondear un número a una cantidad específica de decimales
+function roundToDecimals(value: number | null, decimals: number): number | null {
+  if (value === null || value === undefined || isNaN(value)) return null
+  const factor = Math.pow(10, decimals)
+  return Math.round(value * factor) / factor
+}
 
 const busqueda = ref('')
 const filtroEnsayoId = ref<number | null>(null)
@@ -549,7 +582,7 @@ const formCosecha = ref({
   insectosBeneficiosPorUrf: null as number | null, // Insectos benéficos por m²
 
   // Calidad del grano
-  granosDañados: null as number | null,    // Porcentaje de granos dañados (%)
+  granosDanados: null as number | null,    // Porcentaje de granos dañados (%)
   granosVerdes: null as number | null,     // Porcentaje de granos verdes (%)
   granosVanos: null as number | null,      // Porcentaje de granos vanos (%)
 
@@ -608,23 +641,25 @@ function abrirEditorCosecha(parcela: any) {
 
   // Cargar datos existentes si existen
   if (parcela.cosecha) {
+    // Redondear valores según precision/scale de la BD
+    // Estos valores corresponden a: precision (total dígitos) y scale (decimales)
     formCosecha.value = {
       fechaCosecha: parcela.cosecha.fechaCosecha ? new Date(parcela.cosecha.fechaCosecha).toISOString().split('T')[0] : '',
-      humedadPct: parcela.cosecha.humedadPct || null,
-      kgHaCorregido: parcela.cosecha.kgHaCorregido || null,
-      gie: parcela.cosecha.gie || null,
-      gramajePorGrano: parcela.cosecha.gramajePorGrano || null,
-      granosPorurf: parcela.cosecha.granosPorurf || null,
-      pesoGranosPorUrf: parcela.cosecha.pesoGranosPorUrf || null,
-      granosDañados: parcela.cosecha.granosDañados || null,
-      granosVerdes: parcela.cosecha.granosVerdes || null,
-      granosVanos: parcela.cosecha.granosVanos || null,
-      hojasPorUrf: parcela.cosecha.hojasPorUrf || null,
-      larvasPorUrf: parcela.cosecha.larvasPorUrf || null,
-      insectosBeneficiosPorUrf: parcela.cosecha.insectosBeneficiosPorUrf || null,
-      diametroEspiga: parcela.cosecha.diametroEspiga || null,
-      alturaParcela: parcela.cosecha.alturaParcela || null,
-      densidadPlantasFinal: parcela.cosecha.densidadPlantasFinal || null,
+      humedadPct: roundToDecimals(parcela.cosecha.humedadPct, 2),                           // precision: 5, scale: 2
+      kgHaCorregido: roundToDecimals(parcela.cosecha.kgHaCorregido, 2),                     // precision: 10, scale: 2
+      gie: roundToDecimals(parcela.cosecha.gie, 2),                                         // precision: 10, scale: 2
+      gramajePorGrano: roundToDecimals(parcela.cosecha.gramajePorGrano, 6),                 // precision: 8, scale: 6
+      granosPorurf: roundToDecimals(parcela.cosecha.granosPorurf, 1),                       // precision: 10, scale: 1
+      pesoGranosPorUrf: roundToDecimals(parcela.cosecha.pesoGranosPorUrf, 2),               // precision: 8, scale: 2
+      granosDanados: roundToDecimals(parcela.cosecha.granosDanados, 2),                     // precision: 5, scale: 2
+      granosVerdes: roundToDecimals(parcela.cosecha.granosVerdes, 2),                       // precision: 5, scale: 2
+      granosVanos: roundToDecimals(parcela.cosecha.granosVanos, 2),                         // precision: 5, scale: 2
+      hojasPorUrf: roundToDecimals(parcela.cosecha.hojasPorUrf, 1),                         // precision: 10, scale: 1
+      larvasPorUrf: roundToDecimals(parcela.cosecha.larvasPorUrf, 2),                       // precision: 8, scale: 2
+      insectosBeneficiosPorUrf: roundToDecimals(parcela.cosecha.insectosBeneficiosPorUrf, 2), // precision: 8, scale: 2
+      diametroEspiga: roundToDecimals(parcela.cosecha.diametroEspiga, 2),                   // precision: 5, scale: 2
+      alturaParcela: roundToDecimals(parcela.cosecha.alturaParcela, 1),                     // precision: 5, scale: 1
+      densidadPlantasFinal: roundToDecimals(parcela.cosecha.densidadPlantasFinal, 2),       // precision: 6, scale: 2
       observaciones: parcela.cosecha.observaciones || '',
     }
   } else {
@@ -637,7 +672,7 @@ function abrirEditorCosecha(parcela: any) {
       gramajePorGrano: null,
       granosPorurf: null,
       pesoGranosPorUrf: null,
-      granosDañados: null,
+      granosDanados: null,
       granosVerdes: null,
       granosVanos: null,
       hojasPorUrf: null,
@@ -664,7 +699,7 @@ function cerrarModalCosecha() {
     gramajePorGrano: null,
     granosPorurf: null,
     pesoGranosPorUrf: null,
-    granosDañados: null,
+    granosDanados: null,
     granosVerdes: null,
     granosVanos: null,
     hojasPorUrf: null,
@@ -696,7 +731,7 @@ async function guardarCosecha() {
       gramajePorGrano: formCosecha.value.gramajePorGrano,
       granosPorurf: formCosecha.value.granosPorurf,
       pesoGranosPorUrf: formCosecha.value.pesoGranosPorUrf,
-      granosDañados: formCosecha.value.granosDañados,
+      granosDanados: formCosecha.value.granosDanados,
       granosVerdes: formCosecha.value.granosVerdes,
       granosVanos: formCosecha.value.granosVanos,
 
@@ -721,13 +756,17 @@ async function guardarCosecha() {
       await api.post('/datos-cosecha', dto)
     }
 
-    // Recargar parcelas
+    // IMPORTANTE: Recargar parcelas para actualizar la relación cosecha en el store
+    // Esperar un pequeño delay para que el servidor actualice la BD completamente
+    await new Promise(resolve => setTimeout(resolve, 300))
+    console.log('🔄 Recargando parcelas para actualizar cosecha...')
     await cargarParcelas()
+
     cerrarModalCosecha()
-    alert('✅ Cosecha guardada correctamente')
+    showNotification('✅ Cosecha guardada correctamente', 'success')
   } catch (err: any) {
     console.error('Error al guardar cosecha:', err)
-    alert('❌ Error al guardar: ' + (err.message || 'Error desconocido'))
+    showNotification('❌ Error al guardar: ' + (err.message || 'Error desconocido'), 'error')
   } finally {
     guardandoCosecha.value = false
   }

@@ -63,7 +63,9 @@ export class ParcelasService {
     const qb = this.repo.createQueryBuilder('pa')
       .leftJoinAndSelect('pa.ensayo', 'ensayo')
       .leftJoinAndSelect('pa.bloque', 'bloque')
-      .leftJoinAndSelect('pa.tratamiento', 'tratamiento');
+      .leftJoinAndSelect('pa.tratamiento', 'tratamiento')
+      .leftJoinAndSelect('pa.siembra', 'siembra')
+      .leftJoinAndSelect('pa.cosecha', 'cosecha');
 
     if (isInvitado) {
       qb.leftJoin('tratamiento.productos', 'tp')
@@ -100,7 +102,10 @@ export class ParcelasService {
   async findOne(id: number) {
     const { isInvitado, labIds } = this.auth;
     if (!isInvitado) {
-      const entity = await this.repo.findOne({ where: { id }, relations: { ensayo: true, bloque: true, tratamiento: true } });
+      const entity = await this.repo.findOne({
+        where: { id },
+        relations: { ensayo: true, bloque: true, tratamiento: true, siembra: true, cosecha: true }
+      });
       if (!entity) throw new NotFoundException(`Parcela ${id} no encontrada`);
       return entity;
     }
@@ -108,6 +113,8 @@ export class ParcelasService {
       .leftJoinAndSelect('pa.ensayo', 'ensayo')
       .leftJoinAndSelect('pa.bloque', 'bloque')
       .leftJoinAndSelect('pa.tratamiento', 'tratamiento')
+      .leftJoinAndSelect('pa.siembra', 'siembra')
+      .leftJoinAndSelect('pa.cosecha', 'cosecha')
       .leftJoin('tratamiento.productos', 'tp')
       .leftJoin('tp.producto', 'prod')
       .leftJoin('prod.laboratorio', 'lab')

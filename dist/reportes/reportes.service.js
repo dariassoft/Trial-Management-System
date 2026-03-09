@@ -186,6 +186,7 @@ let ReportesService = class ReportesService {
      */
     obtenerDatosEnsayoRaw(ensayoId) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f;
             try {
                 const manager = this.ensayoRepository.manager;
                 // 1. ENSAYO COMPLETO
@@ -219,11 +220,12 @@ let ReportesService = class ReportesService {
         INNER JOIN Bloque b ON p.bloque_id_fk = b.bloque_id
         WHERE p.ensayo_id_fk = ?
       `, [ensayoId]);
-                // 4. DATOS CAMPO CON VARIABLES
+                // 4. DATOS CAMPO CON VARIABLES - COMPLETO CON MOMENTO INFO
                 const datosCampoRaw = yield manager.query(`
         SELECT 
           dc.dato_campo_id, p.nombre_parcela, t.numero_trat, b.nombre_bloque,
-          me.nombre_momento, pv.nombre_variable, dcm.valor
+          me.nombre_momento, me.dias_despues_aplicacion, me.fecha_evaluacion,
+          pv.nombre_variable, dcm.valor
         FROM Datos_Campo dc
         INNER JOIN Parcela p ON dc.parcela_id_fk = p.parcela_id
         INNER JOIN Tratamiento t ON p.tratamiento_id_fk = t.tratamiento_id
@@ -266,15 +268,16 @@ let ReportesService = class ReportesService {
                 // Convertir estadísticas a map
                 const estadisticas = {};
                 for (const stat of estadisticasRaw) {
-                    estadisticas[`T${stat.numero_trat}`] = {
-                        n: stat.n,
-                        promedio: stat.promedio,
-                        desviacion: stat.desviacion,
-                        minimo: stat.minimo,
-                        maximo: stat.maximo,
-                        gie: stat.gie,
-                        larvas_porurf: stat.larvas_porurf || 0,
-                        insectos_beneficios_porurf: stat.insectos_beneficios_porurf || 0,
+                    const s = stat;
+                    estadisticas[`T${s.numero_trat}`] = {
+                        n: s.n,
+                        promedio: s.promedio,
+                        desviacion: s.desviacion,
+                        minimo: s.minimo,
+                        maximo: s.maximo,
+                        gie: s.gie,
+                        larvas_porurf: s.larvas_porurf || 0,
+                        insectos_beneficios_porurf: s.insectos_beneficios_porurf || 0,
                     };
                 }
                 // PROCESAR DATOS COSECHA - SIN undefined
@@ -340,13 +343,139 @@ let ReportesService = class ReportesService {
                     pico: this.limpiarUTF8(aplicacion.pico_info || ''),
                     presion: aplicacion.presion_bar ? `${aplicacion.presion_bar}` : '',
                 };
+                // 7. CONSTRUIR EVALUACIONES DESDE DATOS YA CARGADOS EN datosCampoRaw
+                console.log(`🔍 datosCampoRaw.length = ${datosCampoRaw.length}`);
+                if (datosCampoRaw.length > 0) {
+                    console.log(`🔍 Primer registro datosCampoRaw:`, JSON.stringify(datosCampoRaw[0]));
+                }
+                // Agrupar por momento y recolectar variables
+                const momentosPorNombre = new Map();
+                for (const dc of datosCampoRaw) {
+                    if (!dc.nombre_momento)
+                        continue;
+                    if (!momentosPorNombre.has(dc.nombre_momento)) {
+                        momentosPorNombre.set(dc.nombre_momento, {
+                            dds: dc.dias_despues_aplicacion || 0,
+                            fecha: dc.fecha_evaluacion,
+                            variables: new Set(),
+                        });
+                    }
+                    if (dc.nombre_variable) {
+                        momentosPorNombre.get(dc.nombre_momento).variables.add(dc.nombre_variable);
+                    }
+                }
+                console.log(`🔍 Momentos encontrados: ${momentosPorNombre.size}`);
+                // Construir evaluacionesFechas - LLENO DE DATOS
+                const evaluacionesFechas = Array.from(momentosPorNombre.entries())
+                    .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0))
+                    .map(([nombre, data]) => [
+                    String(data.dds || ''),
+                    data.fecha ? new Date(data.fecha).toLocaleDateString('es-ES') : '',
+                    Array.from(data.variables).join(', ') || 'Sin variables',
+                ]);
+                console.log(`✅ evaluacionesFechas: ${JSON.stringify(evaluacionesFechas)}`);
+                // 8. CONSTRUIR EVALUACIONES DETALLE DESDE datosCampoRaw
+                // Obtener tratamientos únicos de parcelas del ensayo
+                const parcelasTratamientos = yield this.parcelaRepository
+                    .createQueryBuilder('p')
+                    .leftJoinAndSelect('p.tratamiento', 't')
+                    .leftJoinAndSelect('p.bloque', 'b')
+                    .where('p.ensayo_id_fk = :ensayoId', { ensayoId })
+                    .getMany();
+                // Extraer únicos
+                const tratamientosUnicos = new Map();
+                for (const p of parcelasTratamientos) {
+                    const key = `T${(_a = p.tratamiento) === null || _a === void 0 ? void 0 : _a.numeroTrat}_B${(_b = p.bloque) === null || _b === void 0 ? void 0 : _b.nombreBloque}`;
+                    if (!tratamientosUnicos.has(key)) {
+                        tratamientosUnicos.set(key, {
+                            tratamiento: String(((_c = p.tratamiento) === null || _c === void 0 ? void 0 : _c.numeroTrat) || ''),
+                            bloque: ((_d = p.bloque) === null || _d === void 0 ? void 0 : _d.nombreBloque) || '',
+                        });
+                    }
+                }
+                console.log(`🔍 Tratamientos únicos: ${tratamientosUnicos.size}`);
+                // Ordenar momentos por DDS
+                const momentosOrdenados = Array.from(momentosPorNombre.entries())
+                    .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0));
+                // Construir header dinámico basado en momentos - MÁS DESCRIPTIVO
+                const headerEvaluaciones = ['Trat', 'Bloque'];
+                for (const [nombre, momento] of momentosOrdenados) {
+                    const dds = momento.dds;
+                    const fecha = momento.fecha ? new Date(momento.fecha).toLocaleDateString('es-ES', { year: '2-digit', month: '2-digit', day: '2-digit' }) : 'N/A';
+                    headerEvaluaciones.push(`Valor (${dds} DDS)`);
+                    headerEvaluaciones.push(`Fecha ${fecha}`);
+                    headerEvaluaciones.push(`Variable`);
+                }
+                headerEvaluaciones.push('Nº Var');
+                console.log(`🔍 headerEvaluaciones: ${JSON.stringify(headerEvaluaciones)}`);
+                // Construir filas de evaluaciones detalle - LLENAR CON DATOS REALES DE datosCampoRaw
+                const evaluacionesDetalle = [];
+                for (const [tratKey, tratData] of tratamientosUnicos.entries()) {
+                    const filaMediciones = [
+                        tratData.tratamiento,
+                        tratData.bloque,
+                    ];
+                    let contadorVariables = 0;
+                    // Para cada momento, buscar los valores en datosCampoRaw
+                    for (const [nombreMomento, momentoData] of momentosOrdenados) {
+                        let valorMomento = '';
+                        let fechaMomento = '';
+                        let variableMomento = '';
+                        // Buscar en datosCampoRaw - TODOS LOS REGISTROS PARA ESTA COMBINACION
+                        for (const dcRaw of datosCampoRaw) {
+                            const dc = dcRaw;
+                            // Coincidir tratamiento, bloque y momento
+                            if (String(dc.numero_trat) !== tratData.tratamiento)
+                                continue;
+                            if (dc.nombre_bloque !== tratData.bloque)
+                                continue;
+                            if (dc.nombre_momento !== nombreMomento)
+                                continue;
+                            // Encontrado - llenar datos
+                            valorMomento = dc.valor ? String(dc.valor) : '';
+                            variableMomento = dc.nombre_variable || '';
+                            fechaMomento = dc.fecha_evaluacion
+                                ? new Date(dc.fecha_evaluacion).toLocaleDateString('es-ES')
+                                : '';
+                            contadorVariables++;
+                            break;
+                        }
+                        filaMediciones.push(valorMomento);
+                        filaMediciones.push(fechaMomento);
+                        filaMediciones.push(variableMomento);
+                    }
+                    filaMediciones.push(String(contadorVariables));
+                    evaluacionesDetalle.push(filaMediciones);
+                }
+                console.log(`🔍 evaluacionesDetalle.length: ${evaluacionesDetalle.length}`);
+                if (evaluacionesDetalle.length > 0) {
+                    console.log(`🔍 evaluacionesDetalle[0]:`, JSON.stringify(evaluacionesDetalle[0]));
+                }
+                console.log(`✅ Evaluaciones: ${evaluacionesFechas.length} fechas, ${evaluacionesDetalle.length} detalles`);
                 console.log(`✅ Datos obtenidos: ${datosTrillaProcessed.length} cosecha, ${datosCampoProcessed.length} campo, ${fotosProcessed.length} fotos`);
+                // Obtener protocolo y diseño desde BD
+                const protocolo = ensayo.protocolo ? {
+                    id: ensayo.protocolo.protocolo_id,
+                    descripcion: ensayo.protocolo.descripcion || 'Sin descripción',
+                } : { descripcion: 'Sin protocolo definido' };
+                const diseno = {
+                    nombre: ensayo.nombreEnsayo || 'No especificado',
+                    // Obtener cantidad real de bloques desde parcelas únicas
+                    repeticiones: new Set((_e = ensayo.parcelas) === null || _e === void 0 ? void 0 : _e.map((p) => { var _a; return (_a = p.bloque) === null || _a === void 0 ? void 0 : _a.bloque_id; })).size || 0,
+                    // Obtener cantidad real de tratamientos
+                    tratamientos: new Set((_f = ensayo.parcelas) === null || _f === void 0 ? void 0 : _f.map((p) => { var _a; return (_a = p.tratamiento) === null || _a === void 0 ? void 0 : _a.tratamiento_id; })).size || 0,
+                };
                 return {
                     datosCampo: datosCampoProcessed,
                     datosTrilla: datosTrillaProcessed,
                     metadadatos,
                     fotos: fotosProcessed,
                     estadisticas,
+                    evaluacionesFechas,
+                    evaluacionesDetalle,
+                    headerEvaluaciones,
+                    protocolo,
+                    diseno,
                 };
             }
             catch (error) {
@@ -545,6 +674,9 @@ let ReportesService = class ReportesService {
                     estadisticas: datosRaw.estadisticas,
                     resumen,
                     fotos: datosRaw.fotos || [],
+                    evaluacionesFechas: datosRaw.evaluacionesFechas || [],
+                    evaluacionesDetalle: datosRaw.evaluacionesDetalle || [],
+                    headerEvaluaciones: datosRaw.headerEvaluaciones || [],
                 };
                 console.log('   - Llamando a PdfReportGenerator...');
                 const buffer = yield pdf_generator_1.PdfReportGenerator.generarReporteEnsayo(pdfData);
