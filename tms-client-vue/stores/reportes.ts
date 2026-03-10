@@ -70,30 +70,6 @@ export const useReportesStore = defineStore('reportes', () => {
     }
   }
 
-  const obtenerVistaPreviaReporte = async (ensayoId: number, datosCampo: any[], datosTrilla: any[]) => {
-    loading.value = true
-    error.value = null
-    try {
-      const response = await api.post(`/reportes/ensayo/${ensayoId}/vista-previa`, {
-        datosCampo,
-        datosTrilla,
-        metadadatos: {
-          ensayoId,
-          fechaSiembra: new Date().toISOString(),
-          fechaAplicacion: new Date().toISOString(),
-        },
-      })
-
-      return response
-    } catch (err: any) {
-      error.value = extractErrorMessage(err, 'Error al obtener vista previa')
-      console.error('Error en obtenerVistaPreviaReporte:', err)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
-
   const limpiarMensajes = () => {
     error.value = null
     success.value = null
@@ -106,7 +82,6 @@ export const useReportesStore = defineStore('reportes', () => {
     success,
     generarReportePDF,
     generarReporteExcel,
-    obtenerVistaPreviaReporte,
     limpiarMensajes,
   }
 })

@@ -57,7 +57,7 @@ export class ReportesController {
   }
 
   @Get('ensayo/:ensayoId/xls')
-  @ApiOperation({ summary: 'Generar reporte Excel completo de un ensayo' })
+  @ApiOperation({ summary: 'Generar reporte Excel COMPLETO de un ensayo (igual que PDF)' })
   @ApiParam({ name: 'ensayoId', type: Number })
   async generarReporteXls(
     @Param('ensayoId', ParseIntPipe) ensayoId: number,
@@ -66,21 +66,12 @@ export class ReportesController {
     try {
       console.log(`📊 Generando Excel para ensayo ${ensayoId}`);
 
-      // Usar el método RAW que funciona con SQL nativo
-      const datosCompletos =
-        await this.reportesService.obtenerDatosEnsayoRaw(ensayoId);
+      // Usar el nuevo método que genera Excel COMPLETO como el PDF
+      const buffer = await this.reportesService.generarExcelEnsayo(ensayoId);
 
-      if (!datosCompletos) {
-        return res.status(404).json({ error: 'Ensayo no encontrado' });
+      if (!buffer) {
+        return res.status(404).json({ error: 'No se pudo generar el Excel' });
       }
-
-      console.log(`  ✅ Datos obtenidos: ${datosCompletos.datosTrilla.length} cosecha, ${datosCompletos.datosCampo.length} campo`);
-
-      const buffer = await this.reportesService.generarExcel(
-        datosCompletos.datosCampo,
-        datosCompletos.datosTrilla,
-        datosCompletos.metadadatos,
-      );
 
       console.log(`  ✅ Excel generado: ${buffer.length} bytes`);
 
@@ -104,47 +95,4 @@ export class ReportesController {
     }
   }
 
-  @Get('ensayo/:ensayoId/vista-previa')
-  @ApiOperation({ summary: 'Vista previa de reporte con datos crudos' })
-  @ApiParam({ name: 'ensayoId', type: Number })
-  async vistaPreviaReporte(
-    @Param('ensayoId', ParseIntPipe) ensayoId: number,
-  ) {
-    try {
-      console.log(`👁️  Vista previa para ensayo ${ensayoId}`);
-
-      // Obtener datos del ensayo desde la BD
-      const { datosCampo, datosTrilla, metadadatos } =
-        await this.reportesService.obtenerDatosEnsayo(ensayoId);
-
-      const estadisticas =
-        this.reportesService.calcularEstadisticasPorTratamiento(
-          datosTrilla || [],
-          'kgHa',
-        );
-
-      const resumen = this.reportesService.generarResumenEjecutivo(
-        datosCampo || [],
-        datosTrilla || [],
-        metadadatos,
-      );
-
-      console.log(`  ✅ Vista previa generada`);
-
-      return {
-        ensayoId,
-        estadisticas,
-        resumen,
-        datosCampoCount: datosCampo?.length || 0,
-        datosTrillaCount: datosTrilla?.length || 0,
-        metadata: metadadatos,
-      };
-    } catch (error: any) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error('❌ Error en vista previa:', errorMessage);
-      console.error('Stack:', error.stack);
-      return { error: 'Error al procesar datos', details: errorMessage };
-    }
-  }
 }

@@ -50,8 +50,6 @@ export class ReportesService {
     metadadatos: any;
   }> {
     try {
-      console.log(`📥 Obteniendo datos para ensayo ${ensayoId}...`);
-
       // 1. Obtener ensayo base CON TODAS LAS RELACIONES
       const ensayo = await this.ensayoRepository.findOne({
         where: { id: ensayoId },
@@ -69,13 +67,8 @@ export class ReportesService {
       });
 
       if (!ensayo) {
-        console.warn(`⚠️  Ensayo ${ensayoId} no encontrado`);
         return { ensayo: null, datosCampo: [], datosTrilla: [], metadadatos: {} };
       }
-
-      console.log(`✅ Ensayo: ${ensayo.nombreEnsayo}, ${ensayo.parcelas?.length || 0} parcelas`);
-      console.log(`   Cultivo: ${(ensayo.cultivo as any)?.nombre || 'NO CARGADO'}`);
-      console.log(`   TipoSiembra: ${(ensayo.tipoSiembra as any)?.nombre || 'NO CARGADO'}`);
 
       // 2. Obtener datos de campo
       const datosCampoRaw = await this.datosCampoRepository
@@ -87,8 +80,6 @@ export class ReportesService {
         .leftJoinAndSelect('m.variable', 'v')
         .where('p.ensayo_id_fk = :ensayoId', { ensayoId })
         .getMany();
-
-      console.log(`✅ Datos campo: ${datosCampoRaw.length} registros`);
 
       // 3. Procesar datos de campo
       const datosCampo: any[] = [];
@@ -121,16 +112,12 @@ export class ReportesService {
         .where('p.ensayo_id_fk = :ensayoId', { ensayoId })
         .getMany();
 
-      console.log(`✅ Datos cosecha: ${datosCosechaRaw.length} registros`);
-
       // OBTENER DATOS DE APLICACION PARA EL ENSAYO
       const aplicacion = await this.aplicacionRepository
         .createQueryBuilder('a')
         .where('a.ensayo_id_fk = :ensayoId', { ensayoId })
         .orderBy('a.aplicacion_id', 'ASC')
         .getOne();
-
-      console.log(`✅ Aplicación: ${aplicacion ? 'Encontrada' : 'No encontrada'}`);
 
       // 5. Procesar datos de trilla
       const datosTrilla: any[] = datosCosechaRaw.map(c => ({
@@ -173,8 +160,6 @@ export class ReportesService {
         numeroBloques: [...new Set((ensayo.parcelas || []).map(p => p.bloque?.id))].length,
       };
 
-      console.log(`✅ Completado: ${datosCampo.length} datos campo, ${datosTrilla.length} datos trilla`);
-
       return { ensayo, datosCampo, datosTrilla, metadadatos };
     } catch (error) {
       console.error(`❌ Error obtenerDatosEnsayo:`, error);
@@ -191,9 +176,10 @@ export class ReportesService {
 
       // 1. ENSAYO COMPLETO
       const ensayoRaw = await manager.query(`
-        SELECT e.*, c.nombre as cultivo_nombre, ts.nombre as tipo_siembra_nombre
+        SELECT e.*, c.nombre as cultivo_nombre, v.nombre as variedad_nombre, ts.nombre as tipo_siembra_nombre
         FROM Ensayo e
         LEFT JOIN Cultivo c ON e.cultivo_id = c.cultivo_id
+        LEFT JOIN Cultivo_Variedad v ON e.variedad_id = v.variedad_id
         LEFT JOIN TipoSiembra ts ON e.tipo_siembra_id = ts.id
         WHERE e.ensayo_id = ?
       `, [ensayoId]);
@@ -331,11 +317,12 @@ export class ReportesService {
         bloque: f.nombre_bloque,
       }));
 
-      // METADADATOS - SIN N/A - CON UTF-8 LIMPIO
+      // METADATOS - SIN N/A - CON UTF-8 LIMPIO
       const metadadatos = {
         ensayoId: ensayo.ensayo_id,
         nombreEnsayo: this.limpiarUTF8(ensayo.nombre_ensayo || ''),
         cultivo: this.limpiarUTF8(ensayo.cultivo_nombre || ''),
+        variedad: this.limpiarUTF8(ensayo.variedad_nombre || ''),
         tipoSiembra: this.limpiarUTF8(ensayo.tipo_siembra_nombre || ''),
         provincia: this.limpiarUTF8(ensayo.provincia || ''),
         departamento: this.limpiarUTF8(ensayo.departamento || ''),
@@ -352,14 +339,11 @@ export class ReportesService {
         viento: aplicacion.viento_kmh ? `${aplicacion.viento_kmh}` : '',
         pico: this.limpiarUTF8(aplicacion.pico_info || ''),
         presion: aplicacion.presion_bar ? `${aplicacion.presion_bar}` : '',
+        numeroTratamientos: estadisticasRaw.length,
+        numeroBloques: [...new Set(datosTrilla.map((dt: any) => dt.nombre_bloque))].length,
       };
 
       // 7. CONSTRUIR EVALUACIONES DESDE DATOS YA CARGADOS EN datosCampoRaw
-      console.log(`🔍 datosCampoRaw.length = ${datosCampoRaw.length}`);
-      if (datosCampoRaw.length > 0) {
-        console.log(`🔍 Primer registro datosCampoRaw:`, JSON.stringify(datosCampoRaw[0]));
-      }
-
       // Agrupar por momento y recolectar variables
       const momentosPorNombre = new Map<string, { dds: number; fecha: any; variables: Set<string> }>();
 
@@ -379,9 +363,6 @@ export class ReportesService {
         }
       }
 
-      console.log(`🔍 Momentos encontrados: ${momentosPorNombre.size}`);
-
-
       // Construir evaluacionesFechas - LLENO DE DATOS
       const evaluacionesFechas = Array.from(momentosPorNombre.entries())
         .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0))
@@ -390,8 +371,6 @@ export class ReportesService {
           data.fecha ? new Date(data.fecha).toLocaleDateString('es-ES') : '',
           Array.from(data.variables).join(', ') || 'Sin variables',
         ]);
-
-      console.log(`✅ evaluacionesFechas: ${JSON.stringify(evaluacionesFechas)}`);
 
       // 8. CONSTRUIR EVALUACIONES DETALLE DESDE datosCampoRaw
       // Obtener tratamientos únicos de parcelas del ensayo
@@ -414,8 +393,6 @@ export class ReportesService {
         }
       }
 
-      console.log(`🔍 Tratamientos únicos: ${tratamientosUnicos.size}`);
-
       // Ordenar momentos por DDS
       const momentosOrdenados = Array.from(momentosPorNombre.entries())
         .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0));
@@ -430,8 +407,6 @@ export class ReportesService {
         headerEvaluaciones.push(`Variable`);
       }
       headerEvaluaciones.push('Nº Var');
-
-      console.log(`🔍 headerEvaluaciones: ${JSON.stringify(headerEvaluaciones)}`);
 
       // Construir filas de evaluaciones detalle - LLENAR CON DATOS REALES DE datosCampoRaw
       const evaluacionesDetalle: any[] = [];
@@ -476,16 +451,6 @@ export class ReportesService {
         filaMediciones.push(String(contadorVariables));
         evaluacionesDetalle.push(filaMediciones);
       }
-
-      console.log(`🔍 evaluacionesDetalle.length: ${evaluacionesDetalle.length}`);
-      if (evaluacionesDetalle.length > 0) {
-        console.log(`🔍 evaluacionesDetalle[0]:`, JSON.stringify(evaluacionesDetalle[0]));
-      }
-
-
-
-      console.log(`✅ Evaluaciones: ${evaluacionesFechas.length} fechas, ${evaluacionesDetalle.length} detalles`);
-      console.log(`✅ Datos obtenidos: ${datosTrillaProcessed.length} cosecha, ${datosCampoProcessed.length} campo, ${fotosProcessed.length} fotos`);
 
       // Obtener protocolo y diseño desde BD
       const protocolo = ensayo.protocolo ? {
@@ -735,22 +700,11 @@ export class ReportesService {
    */
   async generarPDFEnsayo(ensayoId: number) {
     try {
-      console.log(`🔄 Generando PDF para ensayo ${ensayoId}...`);
-
       // USAR obtenerDatosEnsayoRaw que trae TODOS los campos incluyendo larvas_porurf
       const datosRaw = await this.obtenerDatosEnsayoRaw(ensayoId);
 
       if (!datosRaw) {
         throw new Error(`Ensayo ${ensayoId} no encontrado`);
-      }
-
-      console.log(`   - Datos de campo: ${datosRaw.datosCampo?.length || 0} registros`);
-      console.log(`   - Datos de trilla: ${datosRaw.datosTrilla?.length || 0} registros`);
-      console.log(`   - Estadísticas: ${Object.keys(datosRaw.estadisticas).length} tratamientos`);
-
-      // DEBUG: Verificar que larvas_porurf está en estadísticas
-      for (const [trat, stats] of Object.entries(datosRaw.estadisticas)) {
-        console.log(`   ${trat}: larvas=${(stats as any).larvas_porurf}, beneficos=${(stats as any).insectos_beneficios_porurf}`);
       }
 
       const resumen = this.generarResumenEjecutivo(
@@ -771,9 +725,7 @@ export class ReportesService {
         headerEvaluaciones: datosRaw.headerEvaluaciones || [],
       };
 
-      console.log('   - Llamando a PdfReportGenerator...');
       const buffer = await PdfReportGenerator.generarReporteEnsayo(pdfData);
-      console.log(`   ✅ PDF generado: ${buffer.length} bytes`);
 
       return buffer;
     } catch (error) {
@@ -783,19 +735,49 @@ export class ReportesService {
   }
 
   /**
-   * Genera Excel del reporte
+   * Genera Excel del reporte - AHORA COMPLETO COMO EL PDF
+   */
+  async generarExcelEnsayo(ensayoId: number) {
+    try {
+      // USAR obtenerDatosEnsayoRaw que trae TODOS los datos
+      const datosRaw = await this.obtenerDatosEnsayoRaw(ensayoId);
+
+      if (!datosRaw) {
+        throw new Error(`Ensayo ${ensayoId} no encontrado`);
+      }
+
+      // Construir objeto de datos completo para Excel
+      const excelData = {
+        metadatos: datosRaw.metadadatos,
+        datosCampo: datosRaw.datosCampo || [],
+        datosTrilla: datosRaw.datosTrilla || [],
+        estadisticas: datosRaw.estadisticas,
+        fotos: datosRaw.fotos || [],
+        evaluacionesFechas: datosRaw.evaluacionesFechas || [],
+        evaluacionesDetalle: datosRaw.evaluacionesDetalle || [],
+        headerEvaluaciones: datosRaw.headerEvaluaciones || [],
+        protocolo: datosRaw.protocolo,
+        diseno: datosRaw.diseno,
+      };
+
+      const buffer = await ExcelReportGenerator.generarReporteEnsayo(excelData);
+
+      return buffer;
+    } catch (error) {
+      console.error('❌ Error generando Excel:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Genera Excel del reporte - MÉTODO LEGADO (mantener compatibilidad)
    */
   async generarExcel(datosCampo: any[], datosTrilla: any[], metadadatos: any) {
     try {
-      console.log('🔄 Iniciando generación de Excel...');
-      console.log(`   - Datos de campo: ${datosCampo?.length || 0} registros`);
-      console.log(`   - Datos de trilla: ${datosTrilla?.length || 0} registros`);
-
       const estadisticas = this.calcularEstadisticasPorTratamiento(
         datosTrilla || [],
         'kgHa',
       );
-      console.log(`   - Estadísticas calculadas: ${Object.keys(estadisticas).length} tratamientos`);
 
       const excelData = {
         metadatos: metadadatos,
@@ -804,11 +786,9 @@ export class ReportesService {
         estadisticas,
       };
 
-      console.log('   - Llamando a ExcelReportGenerator...');
       const buffer = await ExcelReportGenerator.generarReporteEnsayo(
         excelData,
       );
-      console.log(`   ✅ Excel generado exitosamente: ${buffer.length} bytes`);
 
       return buffer;
     } catch (error) {
@@ -922,8 +902,6 @@ export class ReportesService {
    */
   async generarReporteCompleto(ensayoId: number) {
     try {
-      console.log(`📊 Generando reporte completo para ensayo ${ensayoId}`);
-
       // 1. Obtener datos
       const { ensayo, datosCampo, datosTrilla, metadadatos } =
         await this.obtenerDatosEnsayo(ensayoId);
@@ -943,10 +921,6 @@ export class ReportesService {
         validacionGlobal.advertencias.push(...validacion.advertencias);
         validacionGlobal.errores.push(...validacion.errores);
       }
-
-      console.log(
-        `✅ Validación: ${validacionGlobal.advertencias.length} advertencias, ${validacionGlobal.errores.length} errores`
-      );
 
       // 3. Generar 6 reportes especializados
       const reportes = {
@@ -972,8 +946,6 @@ export class ReportesService {
         }),
       };
 
-      console.log(`✅ Reportes generados: ${Object.keys(reportes).length} tipos`);
-
       // 4. Generar gráficos SVG (básico)
       const graficos = {
         rendimiento: SvgChartsService.generarGraficoBarras(
@@ -981,8 +953,6 @@ export class ReportesService {
           { titulo: 'Rendimiento por Tratamiento', ancho: 800, alto: 500 }
         ),
       };
-
-      console.log(`✅ Gráficos generados`);
 
       // 5. Retornar estructura completa
       return {
@@ -1017,4 +987,3 @@ export class ReportesService {
       .trim();
   }
 }
-

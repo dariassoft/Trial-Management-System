@@ -58,9 +58,8 @@ let ReportesService = class ReportesService {
      */
     obtenerDatosEnsayo(ensayoId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
             try {
-                console.log(`📥 Obteniendo datos para ensayo ${ensayoId}...`);
                 // 1. Obtener ensayo base CON TODAS LAS RELACIONES
                 const ensayo = yield this.ensayoRepository.findOne({
                     where: { id: ensayoId },
@@ -77,12 +76,8 @@ let ReportesService = class ReportesService {
                     ],
                 });
                 if (!ensayo) {
-                    console.warn(`⚠️  Ensayo ${ensayoId} no encontrado`);
                     return { ensayo: null, datosCampo: [], datosTrilla: [], metadadatos: {} };
                 }
-                console.log(`✅ Ensayo: ${ensayo.nombreEnsayo}, ${((_a = ensayo.parcelas) === null || _a === void 0 ? void 0 : _a.length) || 0} parcelas`);
-                console.log(`   Cultivo: ${((_b = ensayo.cultivo) === null || _b === void 0 ? void 0 : _b.nombre) || 'NO CARGADO'}`);
-                console.log(`   TipoSiembra: ${((_c = ensayo.tipoSiembra) === null || _c === void 0 ? void 0 : _c.nombre) || 'NO CARGADO'}`);
                 // 2. Obtener datos de campo
                 const datosCampoRaw = yield this.datosCampoRepository
                     .createQueryBuilder('dc')
@@ -93,22 +88,21 @@ let ReportesService = class ReportesService {
                     .leftJoinAndSelect('m.variable', 'v')
                     .where('p.ensayo_id_fk = :ensayoId', { ensayoId })
                     .getMany();
-                console.log(`✅ Datos campo: ${datosCampoRaw.length} registros`);
                 // 3. Procesar datos de campo
                 const datosCampo = [];
                 const parcelaMap = new Map();
                 for (const dato of datosCampoRaw) {
-                    const parcelaId = ((_d = dato.parcela) === null || _d === void 0 ? void 0 : _d.id) || 0;
+                    const parcelaId = ((_a = dato.parcela) === null || _a === void 0 ? void 0 : _a.id) || 0;
                     if (!parcelaMap.has(parcelaId)) {
                         parcelaMap.set(parcelaId, {
-                            tratamiento: ((_f = (_e = dato.parcela) === null || _e === void 0 ? void 0 : _e.tratamiento) === null || _f === void 0 ? void 0 : _f.id) || 1,
-                            bloque: ((_h = (_g = dato.parcela) === null || _g === void 0 ? void 0 : _g.bloque) === null || _h === void 0 ? void 0 : _h.nombreBloque) || 'B',
-                            parcela: ((_j = dato.parcela) === null || _j === void 0 ? void 0 : _j.nombreParcela) || `P${parcelaId}`,
+                            tratamiento: ((_c = (_b = dato.parcela) === null || _b === void 0 ? void 0 : _b.tratamiento) === null || _c === void 0 ? void 0 : _c.id) || 1,
+                            bloque: ((_e = (_d = dato.parcela) === null || _d === void 0 ? void 0 : _d.bloque) === null || _e === void 0 ? void 0 : _e.nombreBloque) || 'B',
+                            parcela: ((_f = dato.parcela) === null || _f === void 0 ? void 0 : _f.nombreParcela) || `P${parcelaId}`,
                         });
                     }
                     const fila = parcelaMap.get(parcelaId);
                     for (const m of dato.mediciones || []) {
-                        if (((_k = m.variable) === null || _k === void 0 ? void 0 : _k.nombre_variable) && fila) {
+                        if (((_g = m.variable) === null || _g === void 0 ? void 0 : _g.nombre_variable) && fila) {
                             fila[m.variable.nombre_variable] = this.parseNumerico(m.valor);
                         }
                     }
@@ -122,14 +116,12 @@ let ReportesService = class ReportesService {
                     .leftJoinAndSelect('p.bloque', 'b')
                     .where('p.ensayo_id_fk = :ensayoId', { ensayoId })
                     .getMany();
-                console.log(`✅ Datos cosecha: ${datosCosechaRaw.length} registros`);
                 // OBTENER DATOS DE APLICACION PARA EL ENSAYO
                 const aplicacion = yield this.aplicacionRepository
                     .createQueryBuilder('a')
                     .where('a.ensayo_id_fk = :ensayoId', { ensayoId })
                     .orderBy('a.aplicacion_id', 'ASC')
                     .getOne();
-                console.log(`✅ Aplicación: ${aplicacion ? 'Encontrada' : 'No encontrada'}`);
                 // 5. Procesar datos de trilla
                 const datosTrilla = datosCosechaRaw.map(c => {
                     var _a, _b, _c, _d, _e, _f;
@@ -146,13 +138,13 @@ let ReportesService = class ReportesService {
                 const metadadatos = {
                     ensayoId: ensayo.id,
                     nombreEnsayo: ensayo.nombreEnsayo || 'Sin nombre',
-                    cultivo: ((_l = ensayo.cultivo) === null || _l === void 0 ? void 0 : _l.nombre) || 'N/A',
-                    variedad: ((_m = ensayo.variedad) === null || _m === void 0 ? void 0 : _m.nombre) || 'N/A',
+                    cultivo: ((_h = ensayo.cultivo) === null || _h === void 0 ? void 0 : _h.nombre) || 'N/A',
+                    variedad: ((_j = ensayo.variedad) === null || _j === void 0 ? void 0 : _j.nombre) || 'N/A',
                     provincia: ensayo.provincia || 'N/A',
                     departamento: ensayo.departamento || 'N/A',
                     establecimiento: ensayo.establecimiento || 'N/A',
                     lote: ensayo.lote || 'N/A',
-                    tipoSiembra: ((_o = ensayo.tipoSiembra) === null || _o === void 0 ? void 0 : _o.nombre) || 'N/A',
+                    tipoSiembra: ((_k = ensayo.tipoSiembra) === null || _k === void 0 ? void 0 : _k.nombre) || 'N/A',
                     fechaSiembra: ensayo.fechaSiembra
                         ? new Date(ensayo.fechaSiembra).toLocaleDateString('es-ES')
                         : 'N/A',
@@ -167,12 +159,11 @@ let ReportesService = class ReportesService {
                     temperatura: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.tempC) ? `${aplicacion.tempC}°C` : 'N/A',
                     humedad: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.humedadPct) ? `${aplicacion.humedadPct}%` : 'N/A',
                     equipo: (aplicacion === null || aplicacion === void 0 ? void 0 : aplicacion.equipoInfo) || 'N/A',
-                    responsable: ((_p = ensayo.responsable) === null || _p === void 0 ? void 0 : _p.nombre) || 'N/A',
-                    laboratorio: ((_q = ensayo.laboratorio) === null || _q === void 0 ? void 0 : _q.nombre) || 'N/A',
+                    responsable: ((_l = ensayo.responsable) === null || _l === void 0 ? void 0 : _l.nombre) || 'N/A',
+                    laboratorio: ((_m = ensayo.laboratorio) === null || _m === void 0 ? void 0 : _m.nombre) || 'N/A',
                     numeroTratamientos: [...new Set((ensayo.parcelas || []).map(p => { var _a; return (_a = p.tratamiento) === null || _a === void 0 ? void 0 : _a.id; }))].length,
                     numeroBloques: [...new Set((ensayo.parcelas || []).map(p => { var _a; return (_a = p.bloque) === null || _a === void 0 ? void 0 : _a.id; }))].length,
                 };
-                console.log(`✅ Completado: ${datosCampo.length} datos campo, ${datosTrilla.length} datos trilla`);
                 return { ensayo, datosCampo, datosTrilla, metadadatos };
             }
             catch (error) {
@@ -191,9 +182,10 @@ let ReportesService = class ReportesService {
                 const manager = this.ensayoRepository.manager;
                 // 1. ENSAYO COMPLETO
                 const ensayoRaw = yield manager.query(`
-        SELECT e.*, c.nombre as cultivo_nombre, ts.nombre as tipo_siembra_nombre
+        SELECT e.*, c.nombre as cultivo_nombre, v.nombre as variedad_nombre, ts.nombre as tipo_siembra_nombre
         FROM Ensayo e
         LEFT JOIN Cultivo c ON e.cultivo_id = c.cultivo_id
+        LEFT JOIN Cultivo_Variedad v ON e.variedad_id = v.variedad_id
         LEFT JOIN TipoSiembra ts ON e.tipo_siembra_id = ts.id
         WHERE e.ensayo_id = ?
       `, [ensayoId]);
@@ -321,11 +313,12 @@ let ReportesService = class ReportesService {
                     tratamiento: f.numero_trat,
                     bloque: f.nombre_bloque,
                 }));
-                // METADADATOS - SIN N/A - CON UTF-8 LIMPIO
+                // METADATOS - SIN N/A - CON UTF-8 LIMPIO
                 const metadadatos = {
                     ensayoId: ensayo.ensayo_id,
                     nombreEnsayo: this.limpiarUTF8(ensayo.nombre_ensayo || ''),
                     cultivo: this.limpiarUTF8(ensayo.cultivo_nombre || ''),
+                    variedad: this.limpiarUTF8(ensayo.variedad_nombre || ''),
                     tipoSiembra: this.limpiarUTF8(ensayo.tipo_siembra_nombre || ''),
                     provincia: this.limpiarUTF8(ensayo.provincia || ''),
                     departamento: this.limpiarUTF8(ensayo.departamento || ''),
@@ -342,12 +335,10 @@ let ReportesService = class ReportesService {
                     viento: aplicacion.viento_kmh ? `${aplicacion.viento_kmh}` : '',
                     pico: this.limpiarUTF8(aplicacion.pico_info || ''),
                     presion: aplicacion.presion_bar ? `${aplicacion.presion_bar}` : '',
+                    numeroTratamientos: estadisticasRaw.length,
+                    numeroBloques: [...new Set(datosTrilla.map((dt) => dt.nombre_bloque))].length,
                 };
                 // 7. CONSTRUIR EVALUACIONES DESDE DATOS YA CARGADOS EN datosCampoRaw
-                console.log(`🔍 datosCampoRaw.length = ${datosCampoRaw.length}`);
-                if (datosCampoRaw.length > 0) {
-                    console.log(`🔍 Primer registro datosCampoRaw:`, JSON.stringify(datosCampoRaw[0]));
-                }
                 // Agrupar por momento y recolectar variables
                 const momentosPorNombre = new Map();
                 for (const dc of datosCampoRaw) {
@@ -364,7 +355,6 @@ let ReportesService = class ReportesService {
                         momentosPorNombre.get(dc.nombre_momento).variables.add(dc.nombre_variable);
                     }
                 }
-                console.log(`🔍 Momentos encontrados: ${momentosPorNombre.size}`);
                 // Construir evaluacionesFechas - LLENO DE DATOS
                 const evaluacionesFechas = Array.from(momentosPorNombre.entries())
                     .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0))
@@ -373,7 +363,6 @@ let ReportesService = class ReportesService {
                     data.fecha ? new Date(data.fecha).toLocaleDateString('es-ES') : '',
                     Array.from(data.variables).join(', ') || 'Sin variables',
                 ]);
-                console.log(`✅ evaluacionesFechas: ${JSON.stringify(evaluacionesFechas)}`);
                 // 8. CONSTRUIR EVALUACIONES DETALLE DESDE datosCampoRaw
                 // Obtener tratamientos únicos de parcelas del ensayo
                 const parcelasTratamientos = yield this.parcelaRepository
@@ -393,7 +382,6 @@ let ReportesService = class ReportesService {
                         });
                     }
                 }
-                console.log(`🔍 Tratamientos únicos: ${tratamientosUnicos.size}`);
                 // Ordenar momentos por DDS
                 const momentosOrdenados = Array.from(momentosPorNombre.entries())
                     .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0));
@@ -407,7 +395,6 @@ let ReportesService = class ReportesService {
                     headerEvaluaciones.push(`Variable`);
                 }
                 headerEvaluaciones.push('Nº Var');
-                console.log(`🔍 headerEvaluaciones: ${JSON.stringify(headerEvaluaciones)}`);
                 // Construir filas de evaluaciones detalle - LLENAR CON DATOS REALES DE datosCampoRaw
                 const evaluacionesDetalle = [];
                 for (const [tratKey, tratData] of tratamientosUnicos.entries()) {
@@ -447,12 +434,6 @@ let ReportesService = class ReportesService {
                     filaMediciones.push(String(contadorVariables));
                     evaluacionesDetalle.push(filaMediciones);
                 }
-                console.log(`🔍 evaluacionesDetalle.length: ${evaluacionesDetalle.length}`);
-                if (evaluacionesDetalle.length > 0) {
-                    console.log(`🔍 evaluacionesDetalle[0]:`, JSON.stringify(evaluacionesDetalle[0]));
-                }
-                console.log(`✅ Evaluaciones: ${evaluacionesFechas.length} fechas, ${evaluacionesDetalle.length} detalles`);
-                console.log(`✅ Datos obtenidos: ${datosTrillaProcessed.length} cosecha, ${datosCampoProcessed.length} campo, ${fotosProcessed.length} fotos`);
                 // Obtener protocolo y diseño desde BD
                 const protocolo = ensayo.protocolo ? {
                     id: ensayo.protocolo.protocolo_id,
@@ -651,20 +632,11 @@ let ReportesService = class ReportesService {
      */
     generarPDFEnsayo(ensayoId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
             try {
-                console.log(`🔄 Generando PDF para ensayo ${ensayoId}...`);
                 // USAR obtenerDatosEnsayoRaw que trae TODOS los campos incluyendo larvas_porurf
                 const datosRaw = yield this.obtenerDatosEnsayoRaw(ensayoId);
                 if (!datosRaw) {
                     throw new Error(`Ensayo ${ensayoId} no encontrado`);
-                }
-                console.log(`   - Datos de campo: ${((_a = datosRaw.datosCampo) === null || _a === void 0 ? void 0 : _a.length) || 0} registros`);
-                console.log(`   - Datos de trilla: ${((_b = datosRaw.datosTrilla) === null || _b === void 0 ? void 0 : _b.length) || 0} registros`);
-                console.log(`   - Estadísticas: ${Object.keys(datosRaw.estadisticas).length} tratamientos`);
-                // DEBUG: Verificar que larvas_porurf está en estadísticas
-                for (const [trat, stats] of Object.entries(datosRaw.estadisticas)) {
-                    console.log(`   ${trat}: larvas=${stats.larvas_porurf}, beneficos=${stats.insectos_beneficios_porurf}`);
                 }
                 const resumen = this.generarResumenEjecutivo(datosRaw.datosCampo || [], datosRaw.datosTrilla || [], datosRaw.metadadatos);
                 const pdfData = {
@@ -678,9 +650,7 @@ let ReportesService = class ReportesService {
                     evaluacionesDetalle: datosRaw.evaluacionesDetalle || [],
                     headerEvaluaciones: datosRaw.headerEvaluaciones || [],
                 };
-                console.log('   - Llamando a PdfReportGenerator...');
                 const buffer = yield pdf_generator_1.PdfReportGenerator.generarReporteEnsayo(pdfData);
-                console.log(`   ✅ PDF generado: ${buffer.length} bytes`);
                 return buffer;
             }
             catch (error) {
@@ -690,25 +660,52 @@ let ReportesService = class ReportesService {
         });
     }
     /**
-     * Genera Excel del reporte
+     * Genera Excel del reporte - AHORA COMPLETO COMO EL PDF
+     */
+    generarExcelEnsayo(ensayoId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // USAR obtenerDatosEnsayoRaw que trae TODOS los datos
+                const datosRaw = yield this.obtenerDatosEnsayoRaw(ensayoId);
+                if (!datosRaw) {
+                    throw new Error(`Ensayo ${ensayoId} no encontrado`);
+                }
+                // Construir objeto de datos completo para Excel
+                const excelData = {
+                    metadatos: datosRaw.metadadatos,
+                    datosCampo: datosRaw.datosCampo || [],
+                    datosTrilla: datosRaw.datosTrilla || [],
+                    estadisticas: datosRaw.estadisticas,
+                    fotos: datosRaw.fotos || [],
+                    evaluacionesFechas: datosRaw.evaluacionesFechas || [],
+                    evaluacionesDetalle: datosRaw.evaluacionesDetalle || [],
+                    headerEvaluaciones: datosRaw.headerEvaluaciones || [],
+                    protocolo: datosRaw.protocolo,
+                    diseno: datosRaw.diseno,
+                };
+                const buffer = yield excel_generator_1.ExcelReportGenerator.generarReporteEnsayo(excelData);
+                return buffer;
+            }
+            catch (error) {
+                console.error('❌ Error generando Excel:', error);
+                throw error;
+            }
+        });
+    }
+    /**
+     * Genera Excel del reporte - MÉTODO LEGADO (mantener compatibilidad)
      */
     generarExcel(datosCampo, datosTrilla, metadadatos) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('🔄 Iniciando generación de Excel...');
-                console.log(`   - Datos de campo: ${(datosCampo === null || datosCampo === void 0 ? void 0 : datosCampo.length) || 0} registros`);
-                console.log(`   - Datos de trilla: ${(datosTrilla === null || datosTrilla === void 0 ? void 0 : datosTrilla.length) || 0} registros`);
                 const estadisticas = this.calcularEstadisticasPorTratamiento(datosTrilla || [], 'kgHa');
-                console.log(`   - Estadísticas calculadas: ${Object.keys(estadisticas).length} tratamientos`);
                 const excelData = {
                     metadatos: metadadatos,
                     datosCampo: datosCampo || [],
                     datosTrilla: datosTrilla || [],
                     estadisticas,
                 };
-                console.log('   - Llamando a ExcelReportGenerator...');
                 const buffer = yield excel_generator_1.ExcelReportGenerator.generarReporteEnsayo(excelData);
-                console.log(`   ✅ Excel generado exitosamente: ${buffer.length} bytes`);
                 return buffer;
             }
             catch (error) {
@@ -811,7 +808,6 @@ let ReportesService = class ReportesService {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                console.log(`📊 Generando reporte completo para ensayo ${ensayoId}`);
                 // 1. Obtener datos
                 const { ensayo, datosCampo, datosTrilla, metadadatos } = yield this.obtenerDatosEnsayo(ensayoId);
                 if (!ensayo) {
@@ -827,7 +823,6 @@ let ReportesService = class ReportesService {
                     validacionGlobal.advertencias.push(...validacion.advertencias);
                     validacionGlobal.errores.push(...validacion.errores);
                 }
-                console.log(`✅ Validación: ${validacionGlobal.advertencias.length} advertencias, ${validacionGlobal.errores.length} errores`);
                 // 3. Generar 6 reportes especializados
                 const reportes = {
                     rendimiento: this.reportesEspecializadosService.generarReporteRendimiento({
@@ -851,12 +846,10 @@ let ReportesService = class ReportesService {
                         metadadatos,
                     }),
                 };
-                console.log(`✅ Reportes generados: ${Object.keys(reportes).length} tipos`);
                 // 4. Generar gráficos SVG (básico)
                 const graficos = {
                     rendimiento: svg_charts_service_1.SvgChartsService.generarGraficoBarras(((_a = reportes.rendimiento.graficos) === null || _a === void 0 ? void 0 : _a.barras) || [], { titulo: 'Rendimiento por Tratamiento', ancho: 800, alto: 500 }),
                 };
-                console.log(`✅ Gráficos generados`);
                 // 5. Retornar estructura completa
                 return {
                     ensayo,

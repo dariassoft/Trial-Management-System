@@ -57,13 +57,11 @@ let ReportesController = class ReportesController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log(`📊 Generando Excel para ensayo ${ensayoId}`);
-                // Usar el método RAW que funciona con SQL nativo
-                const datosCompletos = yield this.reportesService.obtenerDatosEnsayoRaw(ensayoId);
-                if (!datosCompletos) {
-                    return res.status(404).json({ error: 'Ensayo no encontrado' });
+                // Usar el nuevo método que genera Excel COMPLETO como el PDF
+                const buffer = yield this.reportesService.generarExcelEnsayo(ensayoId);
+                if (!buffer) {
+                    return res.status(404).json({ error: 'No se pudo generar el Excel' });
                 }
-                console.log(`  ✅ Datos obtenidos: ${datosCompletos.datosTrilla.length} cosecha, ${datosCompletos.datosCampo.length} campo`);
-                const buffer = yield this.reportesService.generarExcel(datosCompletos.datosCampo, datosCompletos.datosTrilla, datosCompletos.metadadatos);
                 console.log(`  ✅ Excel generado: ${buffer.length} bytes`);
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
                 res.setHeader('Content-Disposition', `attachment; filename="ensayo_${ensayoId}_${new Date().toISOString().split('T')[0]}.xlsx"`);
@@ -76,32 +74,6 @@ let ReportesController = class ReportesController {
                 res
                     .status(500)
                     .json({ error: 'Error al generar Excel', details: errorMessage });
-            }
-        });
-    }
-    vistaPreviaReporte(ensayoId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log(`👁️  Vista previa para ensayo ${ensayoId}`);
-                // Obtener datos del ensayo desde la BD
-                const { datosCampo, datosTrilla, metadadatos } = yield this.reportesService.obtenerDatosEnsayo(ensayoId);
-                const estadisticas = this.reportesService.calcularEstadisticasPorTratamiento(datosTrilla || [], 'kgHa');
-                const resumen = this.reportesService.generarResumenEjecutivo(datosCampo || [], datosTrilla || [], metadadatos);
-                console.log(`  ✅ Vista previa generada`);
-                return {
-                    ensayoId,
-                    estadisticas,
-                    resumen,
-                    datosCampoCount: (datosCampo === null || datosCampo === void 0 ? void 0 : datosCampo.length) || 0,
-                    datosTrillaCount: (datosTrilla === null || datosTrilla === void 0 ? void 0 : datosTrilla.length) || 0,
-                    metadata: metadadatos,
-                };
-            }
-            catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                console.error('❌ Error en vista previa:', errorMessage);
-                console.error('Stack:', error.stack);
-                return { error: 'Error al procesar datos', details: errorMessage };
             }
         });
     }
@@ -119,7 +91,7 @@ __decorate([
 ], ReportesController.prototype, "generarReportePdf", null);
 __decorate([
     (0, common_1.Get)('ensayo/:ensayoId/xls'),
-    (0, swagger_1.ApiOperation)({ summary: 'Generar reporte Excel completo de un ensayo' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Generar reporte Excel COMPLETO de un ensayo (igual que PDF)' }),
     (0, swagger_1.ApiParam)({ name: 'ensayoId', type: Number }),
     __param(0, (0, common_1.Param)('ensayoId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Res)()),
@@ -127,15 +99,6 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ReportesController.prototype, "generarReporteXls", null);
-__decorate([
-    (0, common_1.Get)('ensayo/:ensayoId/vista-previa'),
-    (0, swagger_1.ApiOperation)({ summary: 'Vista previa de reporte con datos crudos' }),
-    (0, swagger_1.ApiParam)({ name: 'ensayoId', type: Number }),
-    __param(0, (0, common_1.Param)('ensayoId', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], ReportesController.prototype, "vistaPreviaReporte", null);
 exports.ReportesController = ReportesController = __decorate([
     (0, swagger_1.ApiTags)('reportes'),
     (0, swagger_1.ApiBearerAuth)(),

@@ -44,267 +44,410 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExcelReportGenerator = void 0;
 const ExcelJS = __importStar(require("exceljs"));
+const svg_charts_service_1 = require("./svg-charts.service");
 /**
- * Servicio para generar reportes en Excel con estilos y gráficos
+ * Generador de reportes Excel profesional usando ExcelJS
+ * Incrusta gráficos como imágenes SVG generadas por SvgChartsService
  */
 class ExcelReportGenerator {
-    /**
-     * Genera reporte completo de ensayo en Excel
-     */
     static generarReporteEnsayo(datos) {
         return __awaiter(this, void 0, void 0, function* () {
-            const workbook = new ExcelJS.Workbook();
-            // Hoja 1: Resumen
-            this.crearHojaResumen(workbook, datos);
-            // Hoja 2: Datos de Campo
-            this.crearHojaDatosCampo(workbook, datos.datosCampo);
-            // Hoja 3: Datos de Trilla
-            this.crearHojaDatosTrilla(workbook, datos.datosTrilla);
-            // Hoja 4: Estadísticas
-            this.crearHojaEstadisticas(workbook, datos.estadisticas);
-            // Hoja 5: Gráficos
-            this.crearHojaGraficos(workbook, datos.estadisticas);
-            // Generar buffer
-            const buffer = yield workbook.xlsx.writeBuffer();
-            return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
-        });
-    }
-    static crearHojaResumen(workbook, datos) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
-        const ws = workbook.addWorksheet('Resumen');
-        // Estilos
-        const titleStyle = {
-            font: { bold: true, size: 14, color: { argb: 'FFFFFFFF' } },
-            fill: {
+            const wb = new ExcelJS.Workbook();
+            // Estilos comunes
+            const headerFill = {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: { argb: 'FF1F4E78' },
-            },
-            alignment: { horizontal: 'center', vertical: 'middle' },
-        };
-        // Título
-        ws.getCell('A1').value = 'REPORTE DE ENSAYO';
-        ws.getCell('A1').style = titleStyle;
-        ws.getRow(1).height = 30;
-        // Metadata
-        let row = 3;
-        const metadata = [
-            ['DATOS DEL ENSAYO', ''],
-            ['Ensayo ID', ((_a = datos.metadatos) === null || _a === void 0 ? void 0 : _a.ensayoId) || ''],
-            ['Fecha Siembra', ((_b = datos.metadatos) === null || _b === void 0 ? void 0 : _b.fechaSiembra) || ''],
-            ['Provincia', ((_c = datos.metadatos) === null || _c === void 0 ? void 0 : _c.provincia) || ''],
-            ['Departamento', ((_d = datos.metadatos) === null || _d === void 0 ? void 0 : _d.departamento) || ''],
-            ['Cultivo', ((_e = datos.metadatos) === null || _e === void 0 ? void 0 : _e.cultivo) || ''],
-            ['Tipo de Siembra', ((_f = datos.metadatos) === null || _f === void 0 ? void 0 : _f.tipoSiembra) || ''],
-            ['Estadío', ((_g = datos.metadatos) === null || _g === void 0 ? void 0 : _g.estadio) || ''],
-            ['Temperatura', ((_h = datos.metadatos) === null || _h === void 0 ? void 0 : _h.temperatura) ? `${datos.metadatos.temperatura}°C` : ''],
-            ['Humedad Relativa', ((_j = datos.metadatos) === null || _j === void 0 ? void 0 : _j.humedad) ? `${datos.metadatos.humedad}%` : ''],
-        ];
-        for (const [label, value] of metadata) {
-            ws.getCell(`A${row}`).value = label;
-            if (value) {
-                ws.getCell(`B${row}`).value = value;
+                fgColor: { argb: 'FF4472C4' },
+            };
+            const headerFont = {
+                bold: true,
+                color: { argb: 'FFFFFFFF' },
+                size: 12,
+            };
+            const titleFont = {
+                bold: true,
+                size: 14,
+                color: { argb: 'FF4472C4' },
+            };
+            const borderStyle = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' },
+            };
+            // ===== HOJA 1: RESUMEN =====
+            const ws1 = wb.addWorksheet('Resumen');
+            const meta = datos.metadatos || {};
+            // Título de la hoja
+            ws1.mergeCells('A1:B1');
+            const titleCell = ws1.getCell('A1');
+            titleCell.value = 'RESUMEN DEL ENSAYO';
+            titleCell.font = titleFont;
+            titleCell.alignment = { horizontal: 'center' };
+            ws1.columns = [
+                { key: 'concepto', width: 30 },
+                { key: 'valor', width: 60 },
+            ];
+            const resumenData = [
+                { concepto: 'ID Ensayo', valor: meta.ensayoId || '' },
+                { concepto: 'Nombre', valor: meta.nombreEnsayo || '' },
+                { concepto: 'Cultivo', valor: meta.cultivo || '' },
+                { concepto: 'Variedad', valor: meta.variedad || '' },
+                { concepto: 'Provincia', valor: meta.provincia || '' },
+                { concepto: 'Fecha Siembra', valor: meta.fechaSiembra || '' },
+                { concepto: 'Fecha Cosecha', valor: meta.fechaCosecha || '' },
+                { concepto: 'Tratamientos', valor: meta.numeroTratamientos || 0 },
+                { concepto: 'Bloques', valor: meta.numeroBloques || 0 },
+            ];
+            let currentRow = 3;
+            resumenData.forEach((row) => {
+                const r = ws1.getRow(currentRow);
+                r.values = [row.concepto, row.valor];
+                // Estilo para la columna de concepto
+                const cellConcepto = ws1.getCell(`A${currentRow}`);
+                cellConcepto.font = { bold: true };
+                cellConcepto.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE9E9E9' } };
+                cellConcepto.border = borderStyle;
+                // Estilo para la columna de valor
+                const cellValor = ws1.getCell(`B${currentRow}`);
+                cellValor.border = borderStyle;
+                currentRow++;
+            });
+            // ===== HOJA 2: EVALUACIONES FECHAS =====
+            const ws2 = wb.addWorksheet('Evaluaciones Fechas');
+            ws2.columns = [
+                { header: 'DDS', key: 'dds', width: 15 },
+                { header: 'Fecha', key: 'fecha', width: 20 },
+                { header: 'Variables', key: 'variables', width: 80 },
+            ];
+            // Estilo encabezado
+            const headerRow2 = ws2.getRow(1);
+            headerRow2.font = headerFont;
+            headerRow2.fill = headerFill;
+            headerRow2.alignment = { horizontal: 'center' };
+            if (datos.evaluacionesFechas && datos.evaluacionesFechas.length > 0) {
+                const evalRows = datos.evaluacionesFechas.map((eva) => ({
+                    dds: eva[0] || '',
+                    fecha: eva[1] || '',
+                    variables: eva[2] || '',
+                }));
+                ws2.addRows(evalRows);
+                // Bordes para datos
+                ws2.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) {
+                        row.eachCell((cell) => {
+                            cell.border = borderStyle;
+                            cell.alignment = { vertical: 'middle', wrapText: true };
+                        });
+                    }
+                });
             }
-            if (label === 'DATOS DEL ENSAYO') {
-                ws.getCell(`A${row}`).font = { bold: true, size: 12 };
+            // ===== HOJA 3: EVALUACIONES DETALLE =====
+            const ws3 = wb.addWorksheet('Evaluaciones Detalle');
+            if (datos.headerEvaluaciones && datos.headerEvaluaciones.length > 0) {
+                // Usar índices únicos para las claves de columna para evitar colisiones con nombres duplicados como "Variable"
+                ws3.columns = datos.headerEvaluaciones.map((h, i) => ({
+                    header: h,
+                    key: `col_${i}`,
+                    width: 20,
+                }));
+                const headerRow3 = ws3.getRow(1);
+                headerRow3.font = headerFont;
+                headerRow3.fill = headerFill;
+                headerRow3.alignment = { horizontal: 'center' };
+                if (datos.evaluacionesDetalle && datos.evaluacionesDetalle.length > 0) {
+                    // Agregar filas directamente como arrays, ya que datos.evaluacionesDetalle es un array de arrays
+                    ws3.addRows(datos.evaluacionesDetalle);
+                    ws3.eachRow((row, rowNumber) => {
+                        if (rowNumber > 1) {
+                            row.eachCell((cell) => {
+                                cell.border = borderStyle;
+                            });
+                        }
+                    });
+                }
             }
-            else {
-                ws.getCell(`A${row}`).font = { bold: true };
+            // ===== HOJA 4: DATOS CAMPO =====
+            const ws4 = wb.addWorksheet('Datos Campo');
+            ws4.columns = [
+                { header: 'Parcela', key: 'parcela', width: 20 },
+                { header: 'Tratamiento', key: 'tratamiento', width: 15 },
+                { header: 'Bloque', key: 'bloque', width: 10 },
+                { header: 'Momento', key: 'momento', width: 20 },
+                { header: 'Variable', key: 'variable', width: 25 },
+                { header: 'Valor', key: 'valor', width: 15 },
+            ];
+            const headerRow4 = ws4.getRow(1);
+            headerRow4.font = headerFont;
+            headerRow4.fill = headerFill;
+            headerRow4.alignment = { horizontal: 'center' };
+            if (datos.datosCampo && datos.datosCampo.length > 0) {
+                const campoRows = datos.datosCampo.map((dc) => ({
+                    parcela: dc.parcela || '',
+                    tratamiento: dc.tratamiento || '',
+                    bloque: dc.bloque || '',
+                    momento: dc.momento || '',
+                    variable: dc.variable || '',
+                    valor: dc.valor || '',
+                }));
+                ws4.addRows(campoRows);
+                ws4.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) {
+                        row.eachCell((cell) => {
+                            cell.border = borderStyle;
+                        });
+                    }
+                });
             }
-            row++;
-        }
-        ws.getColumn('A').width = 25;
-        ws.getColumn('B').width = 35;
-    }
-    static crearHojaDatosCampo(workbook, datos) {
-        const ws = workbook.addWorksheet('Datos Campo');
-        if (!datos || datos.length === 0) {
-            ws.addRow(['No hay datos de campo']);
-            return;
-        }
-        // Headers
-        const headers = Object.keys(datos[0]);
-        const headerRow = ws.addRow(headers);
-        headerRow.font = { bold: true };
-        headerRow.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFD9E1F2' },
-        };
-        // Datos
-        for (const dato of datos) {
-            ws.addRow(Object.values(dato));
-        }
-        // Auto-width
-        ws.columns.forEach((column) => {
-            column.width = 15;
+            // ===== HOJA 5: DATOS COSECHA =====
+            const ws5 = wb.addWorksheet('Datos Cosecha');
+            ws5.columns = [
+                { header: 'Parcela', key: 'parcela', width: 20 },
+                { header: 'Tratamiento', key: 'tratamiento', width: 15 },
+                { header: 'Bloque', key: 'bloque', width: 10 },
+                { header: 'Humedad %', key: 'humedad', width: 15 },
+                { header: 'kg/ha', key: 'kgha', width: 15 },
+                { header: 'GIE %', key: 'gie', width: 15 },
+                { header: 'Larvas', key: 'larvas', width: 15 },
+                { header: 'Benéficos', key: 'beneficos', width: 15 },
+            ];
+            const headerRow5 = ws5.getRow(1);
+            headerRow5.font = headerFont;
+            headerRow5.fill = headerFill;
+            headerRow5.alignment = { horizontal: 'center' };
+            if (datos.datosTrilla && datos.datosTrilla.length > 0) {
+                const trillaRows = datos.datosTrilla.map((dt) => ({
+                    parcela: dt.parcela || '',
+                    tratamiento: dt.tratamiento || '',
+                    bloque: dt.bloque || '',
+                    humedad: dt.humedad || '',
+                    kgha: dt.kgHa || '',
+                    gie: dt.gje || dt.gie || '',
+                    larvas: dt.larvas || '',
+                    beneficos: dt.beneficos || '',
+                }));
+                ws5.addRows(trillaRows);
+                ws5.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) {
+                        row.eachCell((cell) => {
+                            cell.border = borderStyle;
+                        });
+                    }
+                });
+            }
+            // ===== HOJA 6: ESTADÍSTICAS =====
+            const ws6 = wb.addWorksheet('Estadísticas');
+            ws6.columns = [
+                { header: 'Tratamiento', key: 'tratamiento', width: 15 },
+                { header: 'N', key: 'n', width: 10 },
+                { header: 'Promedio', key: 'promedio', width: 15 },
+                { header: 'Desviación', key: 'desviacion', width: 15 },
+                { header: 'Mínimo', key: 'minimo', width: 12 },
+                { header: 'Máximo', key: 'maximo', width: 12 },
+                { header: 'GIE', key: 'gie', width: 12 },
+                { header: 'Larvas', key: 'larvas', width: 12 },
+                { header: 'Benéficos', key: 'beneficos', width: 12 },
+            ];
+            const headerRow6 = ws6.getRow(1);
+            headerRow6.font = headerFont;
+            headerRow6.fill = headerFill;
+            headerRow6.alignment = { horizontal: 'center' };
+            const statsRows = [];
+            for (const [trat, stats] of Object.entries(datos.estadisticas || {})) {
+                const s = stats;
+                statsRows.push({
+                    tratamiento: trat,
+                    n: s.n || 0,
+                    promedio: s.promedio || 0,
+                    desviacion: s.desviacion || 0,
+                    minimo: s.minimo || 0,
+                    maximo: s.maximo || 0,
+                    gie: s.gie || 0,
+                    larvas: s.larvas_porurf || 0,
+                    beneficos: s.insectos_beneficios_porurf || 0,
+                });
+            }
+            if (statsRows.length > 0) {
+                ws6.addRows(statsRows);
+                ws6.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) {
+                        row.eachCell((cell) => {
+                            cell.border = borderStyle;
+                            if (cell.type === ExcelJS.ValueType.Number) {
+                                cell.numFmt = '0.00';
+                            }
+                        });
+                    }
+                });
+            }
+            // ===== HOJA 7: ANÁLISIS GRÁFICO =====
+            const ws7 = wb.addWorksheet('Análisis Gráfico');
+            currentRow = 2;
+            // Preparar datos para gráficos
+            const dataRendimiento = [];
+            const dataGie = [];
+            const dataLarvas = [];
+            for (const [trat, stats] of Object.entries(datos.estadisticas || {})) {
+                const s = stats;
+                dataRendimiento.push({ x: trat, y: Number(s.promedio || 0) });
+                dataGie.push({ x: trat, y: Number(s.gie || 0) });
+                dataLarvas.push({ x: trat, y: Number(s.larvas_porurf || 0) });
+            }
+            // --- SECCIÓN 1: RENDIMIENTO ---
+            const rendHeader = ws7.getCell(currentRow, 2);
+            rendHeader.value = 'RENDIMIENTO POR TRATAMIENTO (kg/ha)';
+            rendHeader.font = headerFont;
+            rendHeader.fill = headerFill;
+            rendHeader.alignment = { horizontal: 'center' };
+            ws7.mergeCells(currentRow, 2, currentRow, 3);
+            currentRow++;
+            ws7.getCell(currentRow, 2).value = 'Tratamiento';
+            ws7.getCell(currentRow, 3).value = 'Rendimiento (kg/ha)';
+            ws7.getCell(currentRow, 2).font = { bold: true };
+            ws7.getCell(currentRow, 3).font = { bold: true };
+            ws7.getCell(currentRow, 2).border = borderStyle;
+            ws7.getCell(currentRow, 3).border = borderStyle;
+            currentRow++;
+            for (const [trat, stats] of Object.entries(datos.estadisticas || {})) {
+                const s = stats;
+                ws7.getCell(currentRow, 2).value = trat;
+                ws7.getCell(currentRow, 3).value = Number(s.promedio || 0);
+                ws7.getCell(currentRow, 3).numFmt = '0.00';
+                ws7.getCell(currentRow, 2).border = borderStyle;
+                ws7.getCell(currentRow, 3).border = borderStyle;
+                currentRow++;
+            }
+            // GRÁFICO RENDIMIENTO (SVG)
+            if (dataRendimiento.length > 0) {
+                try {
+                    const svgString = svg_charts_service_1.SvgChartsService.generarGraficoBarras(dataRendimiento, {
+                        titulo: 'Rendimiento (kg/ha)',
+                        ancho: 600,
+                        alto: 350,
+                        ejeY: 'kg/ha'
+                    });
+                    const imageId = wb.addImage({
+                        buffer: Buffer.from(svgString),
+                        extension: 'png',
+                    });
+                    // Colocar gráfico a la derecha de la tabla, sin solapar
+                    ws7.addImage(imageId, {
+                        tl: { col: 4, row: 1 }, // Columna E, Fila 2
+                        ext: { width: 600, height: 350 }
+                    });
+                }
+                catch (e) {
+                    // Silencioso
+                }
+            }
+            // Espacio suficiente para el siguiente gráfico (altura del gráfico + margen)
+            currentRow = Math.max(currentRow, 2 + 18);
+            // --- SECCIÓN 2: GIE ---
+            const gieHeader = ws7.getCell(currentRow, 2);
+            gieHeader.value = 'GIE POR TRATAMIENTO (%)';
+            gieHeader.font = headerFont;
+            gieHeader.fill = headerFill;
+            gieHeader.alignment = { horizontal: 'center' };
+            ws7.mergeCells(currentRow, 2, currentRow, 3);
+            currentRow++;
+            ws7.getCell(currentRow, 2).value = 'Tratamiento';
+            ws7.getCell(currentRow, 3).value = 'GIE (%)';
+            ws7.getCell(currentRow, 2).font = { bold: true };
+            ws7.getCell(currentRow, 3).font = { bold: true };
+            ws7.getCell(currentRow, 2).border = borderStyle;
+            ws7.getCell(currentRow, 3).border = borderStyle;
+            currentRow++;
+            const gieDataStart = currentRow;
+            let gieCount = 0;
+            for (const [trat, stats] of Object.entries(datos.estadisticas || {})) {
+                const s = stats;
+                ws7.getCell(currentRow, 2).value = trat;
+                ws7.getCell(currentRow, 3).value = Number(s.gie || 0);
+                ws7.getCell(currentRow, 3).numFmt = '0.00';
+                ws7.getCell(currentRow, 2).border = borderStyle;
+                ws7.getCell(currentRow, 3).border = borderStyle;
+                currentRow++;
+                gieCount++;
+            }
+            // GRÁFICO GIE (SVG)
+            if (dataGie.length > 0) {
+                try {
+                    const svgString = svg_charts_service_1.SvgChartsService.generarGraficoBarras(dataGie, {
+                        titulo: 'GIE (%)',
+                        ancho: 600,
+                        alto: 350,
+                        ejeY: '%'
+                    });
+                    const imageId = wb.addImage({
+                        buffer: Buffer.from(svgString),
+                        extension: 'png',
+                    });
+                    const rowStart = currentRow - dataGie.length - 3;
+                    ws7.addImage(imageId, {
+                        tl: { col: 4, row: rowStart },
+                        ext: { width: 600, height: 350 }
+                    });
+                }
+                catch (e) {
+                    // Silencioso
+                }
+            }
+            currentRow = Math.max(currentRow, currentRow + 15);
+            // --- SECCIÓN 3: PLAGAS ---
+            const plagasHeader = ws7.getCell(currentRow, 2);
+            plagasHeader.value = 'PLAGAS (Larvas/m²)';
+            plagasHeader.font = headerFont;
+            plagasHeader.fill = headerFill;
+            plagasHeader.alignment = { horizontal: 'center' };
+            ws7.mergeCells(currentRow, 2, currentRow, 3);
+            currentRow++;
+            ws7.getCell(currentRow, 2).value = 'Tratamiento';
+            ws7.getCell(currentRow, 3).value = 'Larvas/m²';
+            ws7.getCell(currentRow, 2).font = { bold: true };
+            ws7.getCell(currentRow, 3).font = { bold: true };
+            ws7.getCell(currentRow, 2).border = borderStyle;
+            ws7.getCell(currentRow, 3).border = borderStyle;
+            currentRow++;
+            const plagasDataStart = currentRow;
+            let plagasCount = 0;
+            for (const [trat, stats] of Object.entries(datos.estadisticas || {})) {
+                const s = stats;
+                ws7.getCell(currentRow, 2).value = trat;
+                ws7.getCell(currentRow, 3).value = Number(s.larvas_porurf || 0);
+                ws7.getCell(currentRow, 3).numFmt = '0.00';
+                ws7.getCell(currentRow, 2).border = borderStyle;
+                ws7.getCell(currentRow, 3).border = borderStyle;
+                currentRow++;
+                plagasCount++;
+            }
+            // GRÁFICO PLAGAS (SVG)
+            if (dataLarvas.length > 0) {
+                try {
+                    const svgString = svg_charts_service_1.SvgChartsService.generarGraficoBarras(dataLarvas, {
+                        titulo: 'Larvas por m²',
+                        ancho: 600,
+                        alto: 350,
+                        ejeY: 'Larvas/m²'
+                    });
+                    const imageId = wb.addImage({
+                        buffer: Buffer.from(svgString),
+                        extension: 'png',
+                    });
+                    const rowStart = currentRow - dataLarvas.length - 3;
+                    ws7.addImage(imageId, {
+                        tl: { col: 4, row: rowStart },
+                        ext: { width: 600, height: 350 }
+                    });
+                }
+                catch (e) {
+                    // Silencioso
+                }
+            }
+            // Ajustar anchos de columna en hoja de gráficos
+            ws7.getColumn(2).width = 20;
+            ws7.getColumn(3).width = 20;
+            return yield wb.xlsx.writeBuffer();
         });
-    }
-    static crearHojaDatosTrilla(workbook, datos) {
-        const ws = workbook.addWorksheet('Datos Trilla');
-        if (!datos || datos.length === 0) {
-            ws.addRow(['No hay datos de trilla']);
-            return;
-        }
-        // Headers
-        const headers = Object.keys(datos[0]);
-        const headerRow = ws.addRow(headers);
-        headerRow.font = { bold: true };
-        headerRow.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFD9E1F2' },
-        };
-        // Datos
-        for (const dato of datos) {
-            ws.addRow(Object.values(dato));
-        }
-        // Auto-width
-        ws.columns.forEach((column) => {
-            column.width = 15;
-        });
-    }
-    static crearHojaEstadisticas(workbook, estadisticas) {
-        const ws = workbook.addWorksheet('Estadísticas');
-        const headers = [
-            'Tratamiento',
-            'N',
-            'Promedio',
-            'Desviación',
-            'Mínimo',
-            'Máximo',
-            'CV %',
-        ];
-        const headerRow = ws.addRow(headers);
-        headerRow.font = { bold: true };
-        headerRow.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFD9E1F2' },
-        };
-        // Datos
-        for (const [trat, stats] of Object.entries(estadisticas)) {
-            const statsData = stats;
-            ws.addRow([
-                trat,
-                statsData.n,
-                statsData.promedio,
-                statsData.desviacion,
-                statsData.minimo,
-                statsData.maximo,
-                statsData.coefVariacion,
-            ]);
-        }
-        ws.columns.forEach((column) => {
-            column.width = 15;
-        });
-    }
-    static crearHojaGraficos(workbook, estadisticas) {
-        const ws = workbook.addWorksheet('Gráficos');
-        if (!estadisticas || Object.keys(estadisticas).length === 0) {
-            ws.addRow(['No hay datos para gráficos']);
-            return;
-        }
-        // Título
-        const titleCell = ws.getCell('A1');
-        titleCell.value = 'GRÁFICOS Y VISUALIZACIONES';
-        titleCell.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
-        titleCell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FF1F4E78' },
-        };
-        ws.getRow(1).height = 25;
-        // Tabla 1: Rendimiento promedio
-        let row = 3;
-        ws.getCell(`A${row}`).value = 'Rendimiento Promedio por Tratamiento';
-        ws.getCell(`A${row}`).font = { bold: true, size: 12 };
-        row++;
-        ws.getCell(`A${row}`).value = 'Tratamiento';
-        ws.getCell(`B${row}`).value = 'Rendimiento (kg/ha)';
-        const headerRow1 = ws.getRow(row);
-        headerRow1.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        headerRow1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3b82f6' } };
-        row++;
-        Object.keys(estadisticas).sort().forEach((trat, idx) => {
-            const stats = estadisticas[trat];
-            ws.getCell(`A${row}`).value = `T${idx + 1}`;
-            ws.getCell(`B${row}`).value = stats.promedio ? Number(stats.promedio.toFixed(2)) : 0;
-            ws.getCell(`B${row}`).numFmt = '0.00';
-            row++;
-        });
-        // Crear gráfico de barras para rendimiento
-        try {
-            const chartRend = workbook.addChart('bar');
-            chartRend.title = { richText: [{ font: { bold: true, size: 14 }, text: 'Rendimiento por Tratamiento' }] };
-            chartRend.series[0].title = { v: 'Rendimiento (kg/ha)', t: 's' };
-            chartRend.series[0].val = `'Gráficos'!B5:B${row - 1}`;
-            chartRend.xAxis.val = `'Gráficos'!A5:A${row - 1}`;
-            chartRend.xAxis.type = 'cat';
-            chartRend.yAxis.type = 'val';
-            chartRend.plotArea = { layout: { x: 0.13, y: 0.13, w: 0.75, h: 0.75 } };
-            ws.addChart(chartRend, `A${row + 3}:H${row + 13}`);
-        }
-        catch (e) {
-            // Si falla, continuar sin gráfico
-        }
-        row += 16;
-        // Tabla 2: GIE promedio
-        ws.getCell(`A${row}`).value = 'GIE Promedio por Tratamiento';
-        ws.getCell(`A${row}`).font = { bold: true, size: 12 };
-        row++;
-        ws.getCell(`A${row}`).value = 'Tratamiento';
-        ws.getCell(`B${row}`).value = 'GIE (%)';
-        const headerRow2 = ws.getRow(row);
-        headerRow2.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        headerRow2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10b981' } };
-        row++;
-        let dataStartRow = row;
-        Object.keys(estadisticas).sort().forEach((trat, idx) => {
-            const stats = estadisticas[trat];
-            ws.getCell(`A${row}`).value = `T${idx + 1}`;
-            ws.getCell(`B${row}`).value = stats.gie ? Number(stats.gie.toFixed(2)) : 0;
-            ws.getCell(`B${row}`).numFmt = '0.00';
-            row++;
-        });
-        // Crear gráfico de barras para GIE
-        try {
-            const chartGie = workbook.addChart('bar');
-            chartGie.title = { richText: [{ font: { bold: true, size: 14 }, text: 'GIE por Tratamiento' }] };
-            chartGie.series[0].title = { v: 'GIE (%)', t: 's' };
-            chartGie.series[0].val = `'Gráficos'!B${dataStartRow}:B${row - 1}`;
-            chartGie.xAxis.val = `'Gráficos'!A${dataStartRow}:A${row - 1}`;
-            chartGie.xAxis.type = 'cat';
-            chartGie.yAxis.type = 'val';
-            chartGie.plotArea = { layout: { x: 0.13, y: 0.13, w: 0.75, h: 0.75 } };
-            ws.addChart(chartGie, `A${row + 3}:H${row + 13}`);
-        }
-        catch (e) {
-            // Si falla, continuar sin gráfico
-        }
-        row += 16;
-        // Tabla 3: Plagas vs Benéficos
-        ws.getCell(`A${row}`).value = 'Comparativa: Plagas vs Benéficos';
-        ws.getCell(`A${row}`).font = { bold: true, size: 12 };
-        row++;
-        ws.getCell(`A${row}`).value = 'Tratamiento';
-        ws.getCell(`B${row}`).value = 'Larvas/m²';
-        ws.getCell(`C${row}`).value = 'Benéficos/m²';
-        const headerRow3 = ws.getRow(row);
-        headerRow3.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        headerRow3.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFf59e0b' } };
-        row++;
-        dataStartRow = row;
-        Object.keys(estadisticas).sort().forEach((trat, idx) => {
-            const stats = estadisticas[trat];
-            ws.getCell(`A${row}`).value = `T${idx + 1}`;
-            ws.getCell(`B${row}`).value = stats.larvas_porurf || stats.larvasPorurf || 0;
-            ws.getCell(`C${row}`).value = stats.insectos_beneficios_porurf || stats.insectosBeneficiosPorurf || 0;
-            row++;
-        });
-        ws.getColumn('A').width = 20;
-        ws.getColumn('B').width = 20;
-        ws.getColumn('C').width = 20;
     }
 }
 exports.ExcelReportGenerator = ExcelReportGenerator;

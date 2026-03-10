@@ -4,256 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="Arreglos gral en diferentes paginas.">
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="Cambio en el menu, y reporte pdf.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/00_INDICE_FINAL_EMPIEZA_AQUI.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABM_LABORATORIOS_USUARIOS_ROLES_DOCUMENTACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ACTUALIZACION_DOCKER_REFERENCIAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ANALISIS_ERROR_DOCKER_RUTAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ANALISIS_ERROR_VIF_VELSE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ANTES_Y_DESPUES_DOCKER.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CAMBIOS_IMPLEMENTADOS_DETALLE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CAMBIOS_MENU_Y_ALINEACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CAMBIOS_UI_PROTOCOLOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHECKLIST_FIX_VIF_VELSE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHECKLIST_IMPLEMENTACION_PARCELAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHECKLIST_VALIDACION_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHECKLIST_VALIDACION_CORRECCIONES_LOGIN.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHECKLIST_VERIFICACION_TIPOS_ENSAYO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/COMANDOS_DUMP_RESTAURACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/COMO_INICIALIZAR_PERMISOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCIONES_AUTENTICACION_SESION_ACTUAL.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCIONES_FINALIZADAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCIONES_SESION_ACTUAL.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCION_ERRORES_ABM.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCION_ERRORES_LOGIN_DASHBOARD.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCION_ERRORES_PRODUCCION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCION_ERRORES_SESION3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CORRECCION_ERROR_ID_PAYLOAD.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEBUGGING_REPORTES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEPLOYMENT_INSTRUCTIONS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DETALLE_CAMBIOS_POR_ARCHIVO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DETALLE_SOLUCIONES_ERRORES.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DIAGRAMA_NAVEGACION_ACTUALIZADO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DOCKER_INSTRUCCIONES_IA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DOCUMENTACION_ACTUALIZADA.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DOCUMENTACION_REFERENCIA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERRORES_CORREGIDOS_PERMISOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERRORES_SEED_CORREGIDOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ESPECIFICACIONES_MEDICIONES_REPORTES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ESPECIFICACIONES_REPORTES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_APLICAR_BUSQUEDA_DUPLICADO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_BOTONES_PROTOCOLOS_NO_FUNCIONAN.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_CONFLICTO_TIPOS_PROTOCOLOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_DUPLICATED_API_V1_URLS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_ERROR_VIF_VELSE_SESION3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_FETCH_PROTOCOLOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_MODAL_CIERRE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_PARCELAS_Y_NAVEGACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIX_PROTOCOLOS_ENDPOINTS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUIA_TESTING_ABM.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUIA_TESTING_RAPIDO.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUIA_USO_PARCELAS_COMPLETA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUIA_USO_REPORTES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INDICE_COMPLETO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INDICE_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INDICE_DOCKER_RUTAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INDICE_DOCUMENTACION.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INDICE_MAESTRO_DOCUMENTACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INDICE_RAPIDO_ABM.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INDICE_SOLUCION_PARCELAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INICIO_RAPIDO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCCIONES_COMPILACION_FINAL.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCCIONES_DEPLOYMENT.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCCIONES_DESPLIEGUE_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCCIONES_DUMP_BD.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCCIONES_RAPIDAS_CORRECCION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCCIONES_VER_CAMBIOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/INVENTARIO_ARCHIVOS_ABM.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LISTA_DOCUMENTACION.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PAGINA_REPORTES_IMPLEMENTADA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PERMISOS_QUICK_REFERENCE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLAN_ABMS_PRIORITARIOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLAN_MEDICIONES_CAMPO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PROYECTO_TMS_DESCRIPCION_EJECUTIVA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/QUICK_REFERENCE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/QUICK_REFERENCE_PARCELAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/QUICK_START.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/REFERENCIA_RAPIDA_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/REFERENCIA_RUTAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/REPORTES_CORREGIDOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/REPORTES_ERRORES_SOLUCIONADOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/REPORTES_FUNCIONALIDAD.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/REPORTES_SOLUCION_COMPLETA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/REPORTE_FINAL_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESOLUCION_CONFLICTO_TIPOS_ENSAYO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_ABM_IMPLEMENTACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_CORRECCIONES_RAPIDO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_EJECUTIVO_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_EJECUTIVO_CORRECCIONES_LOGIN.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_EJECUTIVO_SESION.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_FINAL_CAMBIOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_FINAL_CORRECCIONES.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_FINAL_CORRECCIONES_LOGIN.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_FINAL_IMPLEMENTACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_FIX_DOCKER_DOCUMENTACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_FIX_LOCALSTORAGE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_SESION_PARCELAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_SESION_REPORTES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_SOLUCION_COMPLETA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESUMEN_VISUAL_ABM.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SCRIPTS_VERIFICACION_BD.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SESION_3_COMPLETADA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SESION_3_DOCUMENTACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SESION_3_INDICE_RAPIDO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SESION_4_STATUS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SESION_5_AMPLIACION_MEDICIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SESION_5_RESUMEN_EJECUTIVO_FINAL.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SISTEMA_PERMISOS_COMPLETO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SISTEMA_REPORTES_FINAL.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SOLUCION_ERROR_500_LABORATORIOS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SOLUCION_ERROR_LOCALSTORAGE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SOLUCION_PDF_VACIO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/STATUS_ABM_FASE1.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/STATUS_ABM_FASE2_COMPLETADA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/STATUS_ABM_FASE3_BACKEND.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/STATUS_ABM_FASE4_COMPLETADA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/STATUS_PROYECTO_ENERO_2026.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/STATUS_SESION3_POSTFIX.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TAREAS_PENDIENTES_GUIA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TEMPLATE_PROMPTS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/VALIDACION_INMEDIATA_SESION3_FIX.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/VALIDACION_SESION3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/VERIFICACION_FINAL_CORRECCIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/VERIFICAR_FIX_MODAL.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build-and-start.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/datos-siembra/datos-siembra.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/datos-siembra/datos-siembra.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/datos-siembra/datos-siembra.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/datos-siembra/datos-siembra.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/parcelas/parcelas.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/parcelas/parcelas.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/reportes/pdf-generator.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/pdf-generator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/reportes/excel-generator.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/excel-generator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/reportes/reportes.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/reportes.controller.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/reportes/reportes.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/reportes.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/00_README_SETUP.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/00_setup_complete.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/01_estructura_base.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/01_reset_and_structure.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/02_seed_auth_roles.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/03_seed_catalogos.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/04_seed_tipos_ensayo_variables.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/05_seed_laboratorios.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/06_seed_ensayos_prueba.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/07_seed_ensayos_datos.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/08_agregar_status_ensayo.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/09_seed_ensayos_utf8.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/10_seed_tipos_siembra.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/11_alter_ensayo_add_tratamiento_fk.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/11_create_protocolo_table.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/11_seed_tratamientos_productos.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/12_add_estadio_tratamiento_producto.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/12_alter_tratamiento_add_protocolo_fk.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/13_alter_ensayo_add_protocolo_fk.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/14_seed_protocolos_tratamientos_productos.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/15_alter_tratamiento_drop_unique_index.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/16_drop_specific_tratamiento_index.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/20_create_status_ensayo.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/21_seed_status_ensayo.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/22_drop_parcela_bloque_tratamiento_unique.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/ACTUALIZACION_SQL_BACKEND_SWAGGER.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/ACTUALIZACION_STATUS_ENSAYO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/API_DOCUMENTATION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/API_ENSAYOS_ACTUALIZADA.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/API_ENSAYOS_v3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/ARQUITECTURA_SESION_3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/BACKEND_VERIFICATION_COMPLETE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/BUTTON_STYLES_UPDATE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/CHECKLIST_FINAL_S3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/COMPLETE_DEBUG_GUIDE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DASHBOARD_DATE_FILTERS_ADDED.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DATE_FILTERS_COMPLETE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DATE_FILTER_CONFIRMED_WORKING.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DATE_FILTER_FINAL_FIX.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DATE_FILTER_FIX.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DATE_FILTER_IMPLEMENTATION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DATE_TIMEZONE_FIX.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DEBUG_INSTRUCTIONS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DOCKER_FIXES_RESUMEN.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DOCKER_GUIDE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DOCUMENTATION_INDEX.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/ENDPOINTS_TRATAMIENTOS_S3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/EXECUTE_AND_CAPTURE_LOGS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/FINAL_DEBUG_REQUEST.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/FIXES_APPLIED.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/FIX_LOGIN_ERROR.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/GUIA_RAPIDA_SESION_3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/IMPLEMENTATION_COMPLETE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/INPUT_SEARCH_STYLES_UPDATE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/INSTRUCCIONES_SQL_BACKEND.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/QUICK_VERIFICATION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/README_DATABASE_SETUP.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/README_FIXES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/REGENERAR_DOCUMENTACION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/RESUMEN_EJECUTIVO_S3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/RESUMEN_OPERATIVO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/SESSION_SUMMARY.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/SETUP_FINALIZADO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/START_HERE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/STATUS_COMPLETO_SESION_1.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/STATUS_SESION_3.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/TMS_Environment.postman_environment.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/TMS_Postman_2025.postman_collection.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/TROUBLESHOOTING.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/VALIDATION_CHECKLIST.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/VERIFICACION_FINAL.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/alter_ensayo_laboratorio.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/alter_parcela_nombre.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/auth_seed.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/cultivo_y_cultivo_variedad.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/database.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/1-decoradores-typescript.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/11_protocolos_tratamientos_rearchitecture.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/2-catalogos-cultivos-variedades.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/3-tipos-ensayo-y-eav.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/4-fix-seed-insecticida.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/5-endpoints-tipos-ensayo.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/6-revision-endpoints-sql-ajustes.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/7-fix-parcela-unique-synchronize.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/8-openapi-sin-bd.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/ANALISIS_API.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/decisiones/README_DECISIONES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/gemini-rules.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/openapi.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/tipo_ensayo.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/tipo_ensayo_seed.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/tms-postman.environment.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/tms-postman.postman_collection.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fix-frontend.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gemini-rules.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/generate_db_dump.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/generate_db_dump.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/datos-siembra/datos-siembra.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/datos-siembra/datos-siembra.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/datos-siembra/datos-siembra.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/datos-siembra/datos-siembra.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/parcelas/parcelas.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/parcelas/parcelas.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportes/pdf-generator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/pdf-generator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportes/excel-generator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/excel-generator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportes/reportes.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/reportes.controller.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/reportes/reportes.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/reportes.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-backend2.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/.output.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/cultivos/CultivosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/cultivos/CultivosList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-ensayo/TiposEnsayoList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-ensayo/TiposEnsayoList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-siembra/TiposSiembraList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/tipos-siembra/TiposSiembraList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/catalogos/variedades/VariedadesList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/catalogos/variedades/VariedadesList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/permisos/PermisosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/permisos/PermisosList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/productos/ProductosList.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/productos/ProductosList.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/cosecha.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/cosecha.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/parcelas.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/parcelas.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/reportes/ReportesGenerator.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/reportes/ReportesGenerator.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/reportes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/reportes.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -273,7 +33,7 @@
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="465" />
+    <option name="cachedIndexableFilesCount" value="497" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -440,7 +200,8 @@
       <workItem from="1772544827445" duration="17069000" />
       <workItem from="1772722378238" duration="27357000" />
       <workItem from="1772912424569" duration="11838000" />
-      <workItem from="1773065430737" duration="10231000" />
+      <workItem from="1773065430737" duration="21433000" />
+      <workItem from="1773099362128" duration="2940000" />
     </task>
     <task id="LOCAL-00001" summary="resueltos algunos errores grales">
       <option name="closed" value="true" />
@@ -514,7 +275,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772920637705</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Cambio en el menu, y reporte pdf.">
+      <option name="closed" value="true" />
+      <created>1773081383061</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1773081383061</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -538,7 +307,8 @@
     <MESSAGE value="toma de mediciones en siembra y cosecha por parcelas, pagina nueva de parcelas." />
     <MESSAGE value="pagina de reportes, generador pdf y xls." />
     <MESSAGE value="Arreglos gral en diferentes paginas." />
-    <option name="LAST_COMMIT_MESSAGE" value="Arreglos gral en diferentes paginas." />
+    <MESSAGE value="Cambio en el menu, y reporte pdf." />
+    <option name="LAST_COMMIT_MESSAGE" value="Cambio en el menu, y reporte pdf." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

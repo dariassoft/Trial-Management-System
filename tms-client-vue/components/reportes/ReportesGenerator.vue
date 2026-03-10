@@ -35,32 +35,6 @@ const generarReporte = async () => {
   }
 }
 
-const obtenerVistaPrevia = async () => {
-  if (!ensayoSeleccionado.value) {
-    alert('Por favor selecciona un ensayo')
-    return
-  }
-
-  const ensayo = ensayos.value.find(e => e.id === ensayoSeleccionado.value)
-  if (!ensayo) {
-    alert('Ensayo no encontrado')
-    return
-  }
-
-  // TODO: Obtener datos reales del ensayo desde la BD
-  const datosCampo = []
-  const datosTrilla = []
-
-  vistaPreviaData.value = await reportesStore.obtenerVistaPreviaReporte(
-    ensayoSeleccionado.value,
-    datosCampo,
-    datosTrilla
-  )
-
-  if (vistaPreviaData.value) {
-    mostrarVistaPrevia.value = true
-  }
-}
 </script>
 
 <template>
@@ -103,7 +77,7 @@ const obtenerVistaPrevia = async () => {
           >
             <option :value="null">-- Elige un ensayo --</option>
             <option v-for="ensayo in ensayos" :key="ensayo.id" :value="ensayo.id">
-              {{ ensayo.nombre || `Ensayo #${ensayo.id}` }}
+              {{ `Ensayo #${ensayo.id} - ${ensayo.nombreEnsayo}` }}
             </option>
           </select>
           <p v-if="ensayos.length === 0" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -150,7 +124,7 @@ const obtenerVistaPrevia = async () => {
           >
             <p class="font-medium text-gray-900 dark:text-white">📄 Reporte PDF</p>
             <ul class="mt-2 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-              <li>✓ 8 páginas profesionales</li>
+              <li>✓ 7 páginas profesionales</li>
               <li>✓ Gráficos integrados</li>
               <li>✓ Resumen ejecutivo</li>
               <li>✓ Listo para imprimir</li>
@@ -163,7 +137,7 @@ const obtenerVistaPrevia = async () => {
           >
             <p class="font-medium text-gray-900 dark:text-white">📊 Reporte Excel</p>
             <ul class="mt-2 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-              <li>✓ 6 hojas con datos</li>
+              <li>✓ 7 hojas con datos</li>
               <li>✓ Fórmulas calculadas</li>
               <li>✓ Gráficos interactivos</li>
               <li>✓ Editable</li>
@@ -186,55 +160,6 @@ const obtenerVistaPrevia = async () => {
             </span>
           </button>
 
-          <button
-            @click="obtenerVistaPrevia"
-            :disabled="!ensayoSeleccionado"
-            class="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
-          >
-            👁️ Vista Previa
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vista Previa -->
-    <div v-if="mostrarVistaPrevia && vistaPreviaData" class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white">👁️ Vista Previa de Datos Procesados</h2>
-        <button
-          @click="mostrarVistaPrevia = false"
-          class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div class="space-y-4">
-        <!-- Estadísticas -->
-        <div>
-          <h3 class="font-bold text-gray-900 dark:text-white mb-3">📊 Estadísticas por Tratamiento</h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm border-collapse">
-              <thead>
-                <tr class="bg-gray-100 dark:bg-gray-700">
-                  <th class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left">Trat</th>
-                  <th class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left">N</th>
-                  <th class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left">Promedio</th>
-                  <th class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left">Desviación</th>
-                  <th class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left">CV %</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(stats, trat) in vistaPreviaData.estadisticas" :key="trat" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td class="border border-gray-300 dark:border-gray-600 px-3 py-2 font-medium">{{ trat }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-3 py-2">{{ stats.n }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-3 py-2">{{ (stats.promedio as any).toFixed(2) }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-3 py-2">{{ (stats.desviacion as any).toFixed(2) }}</td>
-                  <td class="border border-gray-300 dark:border-gray-600 px-3 py-2">{{ (stats.coefVariacion as any).toFixed(2) }}%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>
