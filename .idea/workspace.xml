@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="Notificaciones Automaticas, tareas programadas y settings de hora" />
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="compilacion de reportes.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-backend_production.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-backend_upload_prod_old.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue_prod_old.zip" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -196,7 +202,7 @@
       <workItem from="1773065430737" duration="21433000" />
       <workItem from="1773099362128" duration="2940000" />
       <workItem from="1773234797297" duration="2011000" />
-      <workItem from="1773323537978" duration="4532000" />
+      <workItem from="1773323537978" duration="6519000" />
     </task>
     <task id="LOCAL-00001" summary="resueltos algunos errores grales">
       <option name="closed" value="true" />
@@ -294,7 +300,23 @@
       <option name="project" value="LOCAL" />
       <updated>1773329871596</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="compilacion de reportes.">
+      <option name="closed" value="true" />
+      <created>1773330014914</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1773330014914</updated>
+    </task>
+    <task id="LOCAL-00014" summary="compilacion de reportes.">
+      <option name="closed" value="true" />
+      <created>1773330060140</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1773330060140</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -320,7 +342,8 @@
     <MESSAGE value="Arreglos gral en diferentes paginas." />
     <MESSAGE value="Cambio en el menu, y reporte pdf." />
     <MESSAGE value="Notificaciones Automaticas, tareas programadas y settings de hora" />
-    <option name="LAST_COMMIT_MESSAGE" value="Notificaciones Automaticas, tareas programadas y settings de hora" />
+    <MESSAGE value="compilacion de reportes." />
+    <option name="LAST_COMMIT_MESSAGE" value="compilacion de reportes." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
