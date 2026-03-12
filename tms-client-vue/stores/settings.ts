@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
+import { useAuthStore } from './auth'
 
 export interface AppSettings {
+  // Configuración de notificaciones
+  notificationHour: number;        // Hora de generación de notificaciones (0-23)
+
   // Configuración de medios
   maxVideoSeconds: number        // Máximo segundos de video (default 20)
   maxPhotoSizeMB: number         // Máximo tamaño foto en MB (default 5)
@@ -17,6 +21,7 @@ export interface AppSettings {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
+  notificationHour: 8, // 8 AM
   maxVideoSeconds: 20,
   maxPhotoSizeMB: 5,
   maxVideoSizeMB: 50,
@@ -29,19 +34,18 @@ const DEFAULT_SETTINGS: AppSettings = {
 const STORAGE_KEY = 'tms_app_settings'
 
 export const useSettingsStore = defineStore('settings', () => {
+  const authStore = useAuthStore();
   // Estado
   const settings = ref<AppSettings>({ ...DEFAULT_SETTINGS })
   const isLoaded = ref(false)
 
-  // Cargar settings desde localStorage
+  // Cargar settings desde localStorage y el perfil del usuario
   function loadSettings() {
     try {
-      // Verificar si estamos en el cliente (no SSR)
       if (typeof window === 'undefined') {
         isLoaded.value = true
         return
       }
-
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored)
@@ -56,14 +60,11 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   // Guardar settings en localStorage
-  function saveSettings() {
+  async function saveSettings() {
     try {
-      // Verificar si estamos en el cliente (no SSR)
-      if (typeof window === 'undefined') {
-        return
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings.value))
       }
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings.value))
     } catch (err) {
       console.error('Error guardando settings:', err)
     }
@@ -72,7 +73,6 @@ export const useSettingsStore = defineStore('settings', () => {
   // Actualizar un setting específico
   function updateSetting<K extends keyof AppSettings>(key: K, value: AppSettings[K]) {
     settings.value[key] = value
-    saveSettings()
   }
 
   // Resetear a valores por defecto
@@ -90,6 +90,11 @@ export const useSettingsStore = defineStore('settings', () => {
 
   // Cargar al inicializar
   loadSettings()
+
+  // Recargar settings cuando el usuario cambia
+  watch(() => authStore.user, () => {
+    loadSettings();
+  });
 
   return {
     settings,

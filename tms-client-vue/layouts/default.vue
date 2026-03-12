@@ -1,18 +1,37 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
 import { useTheme } from '~/composables/useTheme'
-import { ref, onMounted } from 'vue'
+import { useNotificacionesStore } from '~/stores/notificaciones'
+import { ref, onMounted, onUnmounted } from 'vue'
 import ModuleMenu from '~/components/navigation/ModuleMenu.vue'
 import TheToast from '~/components/common/TheToast.vue'
 import OfflineIndicator from '~/components/common/OfflineIndicator.vue'
 
-
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()
+const notificacionesStore = useNotificacionesStore()
 const showMenu = ref(false)
+let pollInterval: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
   useTheme().initializeTheme()
+  // Cargar el conteo de notificaciones no leídas
+  if (authStore.isAuthenticated) {
+    notificacionesStore.fetchUnreadCount()
+    // Polling cada 60 segundos
+    pollInterval = setInterval(() => {
+      if (authStore.isAuthenticated) {
+        notificacionesStore.fetchUnreadCount()
+      }
+    }, 60000)
+  }
+})
+
+onUnmounted(() => {
+  if (pollInterval) {
+    clearInterval(pollInterval)
+    pollInterval = null
+  }
 })
 </script>
 
@@ -51,6 +70,32 @@ onMounted(() => {
               />
             </svg>
           </button>
+
+          <!-- Notification Bell -->
+          <NuxtLink
+            to="/notificaciones"
+            class="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            title="Notificaciones"
+          >
+            <!-- Bell icon -->
+            <svg
+              class="w-6 h-6"
+              :class="notificacionesStore.unreadCount > 0 ? 'text-yellow-500' : 'text-gray-600 dark:text-gray-300'"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+            <!-- Badge -->
+            <span
+              v-if="notificacionesStore.unreadCount > 0"
+              class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full"
+            >
+              {{ notificacionesStore.unreadCount > 99 ? '99+' : notificacionesStore.unreadCount }}
+            </span>
+          </NuxtLink>
 
           <!-- User Menu -->
           <div class="relative">

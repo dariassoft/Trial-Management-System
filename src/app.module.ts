@@ -32,6 +32,8 @@ import { StatusEnsayoModule } from './status-ensayo/status-ensayo.module';
 import { RolesModule } from './roles/roles.module';
 import { PermisosModule } from './permisos/permisos.module';
 import { ReportesModule } from './reportes/reportes.module';
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
+import { TareasProgramadasModule } from './tareas-programadas/tareas-programadas.module';
 
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
   ? []
@@ -98,6 +100,8 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     PermisosModule, // Nuevo - ABM de Permisos
     ReportesModule, // Nuevo - Generación de reportes
     FotosModule, // Para subir/servir fotos y videos
+    NotificacionesModule, // Notificaciones para usuarios
+    TareasProgramadasModule, // Cron jobs para generar notificaciones
   ],
   controllers: [AppController],
   providers: [AppService],

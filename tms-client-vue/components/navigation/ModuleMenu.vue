@@ -294,6 +294,22 @@
             </transition>
           </div>
 
+          <div v-if="hasAccess('notificaciones')" class="px-2 py-1">
+            <NuxtLink
+              to="/notificaciones"
+              @click="isOpen = false"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors"
+              :class="[
+                isActive('/notificaciones')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              ]"
+            >
+              <span class="text-lg">🔔</span>
+              <span>Notificaciones</span>
+            </NuxtLink>
+          </div>
+
           <div v-if="hasAccess('settings')" class="px-2 py-1">
             <NuxtLink
               to="/settings"
@@ -379,6 +395,9 @@ const allModules = {
     roles: ['Superadministrador'],
   },
   settings: {
+    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio', 'Analista'],
+  },
+  notificaciones: {
     roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio', 'Analista'],
   },
 }

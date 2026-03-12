@@ -4,16 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="Cambio en el menu, y reporte pdf.">
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="reporte xls.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/reportes/excel-generator.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/excel-generator.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/reportes/reportes.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/reportes.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/reportes/reportes.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/reportes.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportes/excel-generator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/excel-generator.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportes/reportes.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/reportes.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportes/reportes.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/reportes.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/reportes/ReportesGenerator.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/reportes/ReportesGenerator.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/reportes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/reportes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/settings.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/settings.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/settings.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,15 +25,18 @@
       <entry key="_/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend" value="3552VZEOFyhqRToFMN0YkiDtUFY" />
     </persistenceIdMap>
   </component>
+  <component name="CopilotUserSelectedChatMode">
+    <option name="chatModeId" value="Agent" />
+  </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
       <entry key="edit-panel" value="GPT-5 mini" />
-      <entry key="chat-panel" value="Claude Haiku 4.5" />
-      <entry key="agent-panel" value="Claude Haiku 4.5" />
+      <entry key="chat-panel" value="Claude Opus 4.6" />
+      <entry key="agent-panel" value="Claude Opus 4.6" />
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="497" />
+    <option name="cachedIndexableFilesCount" value="512" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -202,6 +205,8 @@
       <workItem from="1772912424569" duration="11838000" />
       <workItem from="1773065430737" duration="21433000" />
       <workItem from="1773099362128" duration="2940000" />
+      <workItem from="1773234797297" duration="2011000" />
+      <workItem from="1773323537978" duration="4174000" />
     </task>
     <task id="LOCAL-00001" summary="resueltos algunos errores grales">
       <option name="closed" value="true" />

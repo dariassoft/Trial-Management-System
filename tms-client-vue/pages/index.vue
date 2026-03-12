@@ -102,7 +102,7 @@ onMounted(async () => {
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Accesos Administrativos</h3>
         <div class="space-y-2">
           <NuxtLink
-            to="/laboratorios"
+            to="/admin/laboratorios"
             class="block px-4 py-2 rounded-lg bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800 font-medium"
           >
             🔬 Gestionar Laboratorios

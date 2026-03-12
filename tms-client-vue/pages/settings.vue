@@ -1,3 +1,4 @@
+
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
     <!-- Header -->
@@ -14,6 +15,25 @@
 
     <!-- Contenido -->
     <div class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+      <!-- Sección: Notificaciones -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            🔔 Notificaciones
+          </h2>
+        </div>
+        <div class="p-4 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Hora de generación de notificaciones diarias
+            </label>
+            <select v-model.number="settings.notificationHour" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <option v-for="hour in 24" :key="hour" :value="hour - 1">{{ (hour - 1).toString().padStart(2, '0') }}:00</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       <!-- Sección: Captura de Medios -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
