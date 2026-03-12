@@ -38,7 +38,6 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
       unreadCount.value = data.filter((n: Notificacion) => !n.leido).length;
     } catch (err) {
       error.value = extractErrorMessage(err, 'Error al cargar notificaciones');
-      console.error('Error fetching notifications:', err);
     } finally {
       loading.value = false;
     }
@@ -49,8 +48,8 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
     try {
       const response = await api.get('/notificaciones/unread-count') as any;
       unreadCount.value = response?.count ?? 0;
-    } catch (err) {
-      console.error('Error fetching unread count:', err);
+    } catch {
+      // Silencioso: el endpoint puede no estar disponible aún
     }
   }
 
