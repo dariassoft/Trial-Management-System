@@ -125,24 +125,28 @@ Después de ejecutar el script, verifica que se creó correctamente:
 SELECT ensayo_id, nombre_ensayo, codigo_labor
 FROM Ensayo
 WHERE codigo_labor = 'PC-2026-001';
+```
 
--- Verificar conteos
+**Última ejecución generó**: `ensayo_id = 76`
+
+```sql
+-- Verificar conteos (reemplazar 76 con el ensayo_id de tu ejecución)
 SELECT
-  (SELECT COUNT(*) FROM Bloque WHERE ensayo_id_fk = <ensayo_id>) as bloques,
-  (SELECT COUNT(*) FROM Parcela WHERE ensayo_id_fk = <ensayo_id>) as parcelas,
+  (SELECT COUNT(*) FROM Bloque WHERE ensayo_id_fk = 76) as bloques,
+  (SELECT COUNT(*) FROM Parcela WHERE ensayo_id_fk = 76) as parcelas,
   (SELECT COUNT(*) FROM Datos_Siembra ds
      JOIN Parcela p ON p.parcela_id = ds.parcela_id_fk
-     WHERE p.ensayo_id_fk = <ensayo_id>) as siembras,
+     WHERE p.ensayo_id_fk = 76) as siembras,
   (SELECT COUNT(*) FROM Datos_Campo dc
      JOIN Parcela p ON p.parcela_id = dc.parcela_id_fk
-     WHERE p.ensayo_id_fk = <ensayo_id>) as datos_campo,
+     WHERE p.ensayo_id_fk = 76) as datos_campo,
   (SELECT COUNT(*) FROM Datos_Campo_Medicion dcm
      JOIN Datos_Campo dc ON dc.dato_campo_id = dcm.dato_campo_id_fk
      JOIN Parcela p ON p.parcela_id = dc.parcela_id_fk
-     WHERE p.ensayo_id_fk = <ensayo_id>) as mediciones,
+     WHERE p.ensayo_id_fk = 76) as mediciones,
   (SELECT COUNT(*) FROM Datos_Cosecha dcos
      JOIN Parcela p ON p.parcela_id = dcos.parcela_id_fk
-     WHERE p.ensayo_id_fk = <ensayo_id>) as cosechas;
+     WHERE p.ensayo_id_fk = 76) as cosechas;
 ```
 
 **Resultado esperado**:
@@ -155,38 +159,53 @@ mediciones: 300
 cosechas: 20
 ```
 
+✅ **Verificado**: Todos los datos se insertaron correctamente en la última ejecución.
+
 ---
 
 ## 📊 Generación de Reportes
 
-Una vez ejecutado el script y verificado el `ensayo_id`, genera los reportes:
+Una vez ejecutado el script, puedes generar los reportes usando el `ensayo_id` obtenido.
+
+**Ensayo generado en última ejecución**: `ensayo_id = 76`
 
 ### Reporte PDF
 
 ```bash
-# Desde navegador o curl
-curl -X GET "http://localhost:3000/api/v1/reportes/pdf/<ensayo_id>" \
-  -H "Authorization: Bearer <tu_token_jwt>" \
-  --output reporte_ensayo.pdf
+# Desde navegador o curl (reemplazar <token_jwt> con tu token de sesión)
+curl -X GET "http://localhost:3000/api/v1/reportes/pdf/76" \
+  -H "Authorization: Bearer <token_jwt>" \
+  --output reporte_ensayo_76.pdf
 ```
 
 O abre en navegador (si tienes sesión activa):
 ```
-http://localhost:3000/api/v1/reportes/pdf/<ensayo_id>
+http://localhost:3000/api/v1/reportes/pdf/76
 ```
 
 ### Reporte Excel
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/reportes/excel/<ensayo_id>" \
-  -H "Authorization: Bearer <tu_token_jwt>" \
-  --output reporte_ensayo.xlsx
+curl -X GET "http://localhost:3000/api/v1/reportes/excel/76" \
+  -H "Authorization: Bearer <token_jwt>" \
+  --output reporte_ensayo_76.xlsx
 ```
 
 O en navegador:
 ```
-http://localhost:3000/api/v1/reportes/excel/<ensayo_id>
+http://localhost:3000/api/v1/reportes/excel/76
 ```
+
+### 🎯 Método Recomendado: Desde la Interfaz Web
+
+La forma más fácil es usar la interfaz web:
+
+1. Navega a **http://localhost:3001**
+2. Inicia sesión con tus credenciales
+3. Ve a la sección **Ensayos**
+4. Busca: `PC-2026-001` o `PRUEBA COMPLETA 2026`
+5. Haz clic en el ensayo para ver los detalles
+6. Usa los botones **"Generar PDF"** y **"Generar Excel"** en la interfaz
 
 ---
 
