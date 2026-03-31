@@ -42,6 +42,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'mysql',
+        connectorPackage: 'mysql2',
         host: config.get('DB_HOST', 'mysql'),
         port: parseInt(config.get('DB_PORT', '3306'), 10),
         username: config.get('DB_USER', 'myuser'),

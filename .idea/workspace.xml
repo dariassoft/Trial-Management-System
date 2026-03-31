@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="ajuste en notificaciones" />
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="ajuste en notificaciones">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/database/data-source.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/database/data-source.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/database/database.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/database/database.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/data-source.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/data-source.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/database.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/database.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-backend-prod.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-backend-prod.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod.zip" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -26,7 +39,7 @@
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="512" />
+    <option name="cachedIndexableFilesCount" value="514" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -196,7 +209,10 @@
       <workItem from="1773065430737" duration="21433000" />
       <workItem from="1773099362128" duration="2940000" />
       <workItem from="1773234797297" duration="2011000" />
-      <workItem from="1773323537978" duration="7240000" />
+      <workItem from="1773323537978" duration="11180000" />
+      <workItem from="1773368987042" duration="1228000" />
+      <workItem from="1773684153590" duration="106000" />
+      <workItem from="1774961012988" duration="815000" />
     </task>
     <task id="LOCAL-00001" summary="resueltos algunos errores grales">
       <option name="closed" value="true" />
@@ -326,7 +342,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773336822506</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="ajuste en notificaciones">
+      <option name="closed" value="true" />
+      <created>1773336844860</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1773336844860</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
