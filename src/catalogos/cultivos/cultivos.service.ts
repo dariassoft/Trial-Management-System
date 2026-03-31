@@ -20,8 +20,19 @@ export class CultivosService {
     return this.cultivoRepository.save(cultivo);
   }
 
-  findAll() {
-    return this.cultivoRepository.find({ order: { nombre: 'ASC' } });
+  async findAll(options: { page?: number; limit?: number; sort?: string; order?: 'ASC' | 'DESC'; q?: string } = {}) {
+    const { page = 1, limit = 10, sort = 'nombre', order = 'ASC', q } = options;
+    const allowedSort = ['id', 'nombre', 'ciclo_vegetativo'].includes(sort) ? sort : 'nombre';
+    const skip = (page - 1) * limit;
+    const qTrimmed = q?.trim();
+
+    const qb = this.cultivoRepository.createQueryBuilder('c');
+    if (qTrimmed) {
+      qb.where('LOWER(c.nombre) LIKE LOWER(:q) OR LOWER(c.descripcion) LIKE LOWER(:q)', { q: `%${qTrimmed}%` });
+    }
+    const total = await qb.getCount();
+    const data = await qb.orderBy(`c.${allowedSort}`, order as 'ASC' | 'DESC').skip(skip).take(limit).getMany();
+    return { data, meta: { total, page, limit, pageCount: Math.ceil(total / limit) } };
   }
 
   findOne(id: number) {
@@ -33,7 +44,7 @@ export class CultivosService {
   }
 
   async update(id: number, updateCultivoDto: UpdateCultivoDto) {
-    const cultivo = await this.cultivoRepository.preload({ id, ...updateCultivoDto });
+    const cultivo = await this.cultivoRepository.preload({ id, ...(updateCultivoDto as any) });
     if (!cultivo) throw new NotFoundException(`Cultivo con ID #${id} no encontrado`);
     return this.cultivoRepository.save(cultivo);
   }

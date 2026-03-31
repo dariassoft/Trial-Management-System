@@ -402,12 +402,45 @@ import { reactive, watch, ref, computed } from 'vue'
 import QRCode from 'qrcode'
 import MatrizVisual from './MatrizVisual.vue'
 
+interface QRInfo {
+  ensayoNombre?: string
+  laboratorioNombre?: string
+  tipoEnsayoNombre?: string
+  bloqueNombre?: string
+  parcelaNombre?: string
+  tratamientoNombre?: string
+}
+
 interface Props {
-  parcela?: { id: number; nombreParcela?: string; posXGrid?: number; posYGrid?: number; tratamientoId: number } | null
+  parcela?: {
+    id: number
+    nombreParcela?: string
+    posXGrid?: number | null
+    posYGrid?: number | null
+    tratamientoId?: number | null
+    tratamiento?: { id: number; descripcion?: string } | null
+  } | null
   tratamientos: Array<{ id: number; descripcion: string; protocolo?: { id: number; nombre: string } }>
-  ensayo?: { id: number; nombreEnsayo: string; codigoLabor?: string; filas?: number | null; columnas?: number | null; laboratorio?: { nombre: string }; tipoEnsayo?: { nombre: string }; protocolo?: { id: number; nombre: string } }
-  bloque?: { id: number; nombreBloque: string }
-  parcelasExistentes?: Array<{ id: number; posXGrid?: number | null; posYGrid?: number | null; bloqueId: number }> | null
+  ensayo?: {
+    id: number
+    nombre?: string
+    nombreEnsayo: string
+    codigoLabor?: string
+    filas?: number | null
+    columnas?: number | null
+    laboratorio?: { id?: number; nombre: string } | null
+    tipoEnsayo?: { id?: number; nombre: string } | null
+    protocolo?: { id: number; nombre: string } | null
+    protocoloId?: number | null
+  } | null
+  bloque?: { id: number; nombreBloque: string } | null
+  parcelasExistentes?: Array<{
+    id: number
+    posXGrid?: number | null
+    posYGrid?: number | null
+    bloqueId?: number
+    bloque?: { id: number; nombreBloque?: string } | null
+  }> | null
 }
 
 interface Emits {
@@ -432,9 +465,15 @@ const mostrarQRModal = ref(false)
 const mostrarInfoNombre = ref(false)
 const qrCanvas = ref<HTMLCanvasElement | null>(null)
 const qrCodeData = ref('')
-const qrInfo = ref<any>({})
+const qrInfo = reactive<QRInfo>({
+  ensayoNombre: '',
+  laboratorioNombre: '',
+  tipoEnsayoNombre: '',
+  bloqueNombre: '',
+  parcelaNombre: '',
+  tratamientoNombre: '',
+})
 const errorDuplicado = ref('')
-const mostrarMatriz = ref(true)
 
 // Propiedades calculadas
 const codigoLabor = computed(() => {
@@ -630,35 +669,22 @@ function autocompletarNombre() {
   const codigo = codigoLabor.value?.trim() || ''
   const bloque = nombreBloque.value?.trim() || ''
 
-  // Construir el nombre de la parcela según la fórmula: codigoLabor-bloque-X.Y
   let nombreGenerado = ''
 
-  // Si hay código labor, empezar con él
-  if (codigo) {
-    nombreGenerado = codigo
-  }
+  if (codigo) nombreGenerado = codigo
+  if (bloque) nombreGenerado = nombreGenerado ? `${nombreGenerado}-${bloque}` : bloque
 
-  // Agregar el nombre del bloque
-  if (bloque) {
-    if (nombreGenerado) {
-      nombreGenerado += `-${bloque}`
-    } else {
-      nombreGenerado = bloque
-    }
-  }
-
-  // Agregar posiciones X.Y solo si ambas están definidas
   if (form.posXGrid && form.posYGrid) {
+    // Con posiciones: sufijo X.Y (garantiza unicidad dentro del bloque)
     nombreGenerado += `-${form.posXGrid}.${form.posYGrid}`
+  } else if (form.tratamientoId) {
+    // Sin posiciones: agregar tratamientoId para evitar duplicados con parcelas antiguas
+    nombreGenerado += `-T${form.tratamientoId}`
   }
 
   form.nombreParcela = nombreGenerado || 'PARCELA'
 
   console.log('✏️ Nombre autogenerado:', form.nombreParcela)
-  console.log('   - codigoLabor:', codigo)
-  console.log('   - nombreBloque:', bloque)
-  console.log('   - posX:', form.posXGrid)
-  console.log('   - posY:', form.posYGrid)
 }
 
 function mostrarInfoPosiciones() {
@@ -696,16 +722,16 @@ async function generarYMostrarQR() {
     console.log('📝 QR Data:', qrDataStr)
 
     qrCodeData.value = qrDataStr
-    qrInfo.value = {
+    Object.assign(qrInfo, {
       ensayoNombre: props.ensayo?.nombreEnsayo || props.ensayo?.nombre || 'Sin nombre',
-      laboratorioNombre: props.ensayo?.laboratorio?.nombre || props.ensayo?.laboratorio || 'Sin laboratorio',
-      tipoEnsayoNombre: props.ensayo?.tipoEnsayo?.nombre || props.ensayo?.tipoEnsayo || 'Sin tipo',
+      laboratorioNombre: props.ensayo?.laboratorio?.nombre || 'Sin laboratorio',
+      tipoEnsayoNombre: props.ensayo?.tipoEnsayo?.nombre || 'Sin tipo',
       bloqueNombre: `Bloque ${nombreBloque.value || props.bloque?.nombreBloque || '?'}`,
       parcelaNombre: form.nombreParcela || `(${form.posXGrid || '?'}, ${form.posYGrid || '?'})`,
       tratamientoNombre: tratamiento?.descripcion || 'Sin tratamiento',
-    }
+    })
 
-    console.log('📦 QR Info:', qrInfo.value)
+    console.log('📦 QR Info:', qrInfo)
     mostrarQRModal.value = true
 
     // Esperar a que el DOM se actualice con el nuevo qrCodeData
@@ -746,13 +772,14 @@ async function generarYMostrarQR() {
 }
 
 function imprimirQR() {
-  if (!qrCanvas.value) return
+  const canvas = qrCanvas.value as HTMLCanvasElement | null
+  if (!canvas) return
 
   const printWindow = window.open('', '', 'height=800,width=600')
   if (!printWindow) return
 
   // Convertir canvas a imagen
-  const qrImage = qrCanvas.value.toDataURL('image/png')
+  const qrImage = canvas.toDataURL('image/png')
 
   const html = `
     <!DOCTYPE html>
@@ -828,12 +855,12 @@ function imprimirQR() {
         </div>
 
         <div class="info">
-          <p><span class="info-label">Ensayo:</span> ${qrInfo.value.ensayoNombre}</p>
-          <p><span class="info-label">Laboratorio:</span> ${qrInfo.value.laboratorioNombre}</p>
-          <p><span class="info-label">Tipo Ensayo:</span> ${qrInfo.value.tipoEnsayoNombre}</p>
-          <p><span class="info-label">Bloque:</span> ${qrInfo.value.bloqueNombre}</p>
-          <p><span class="info-label">Parcela:</span> ${qrInfo.value.parcelaNombre}</p>
-          <p><span class="info-label">Tratamiento:</span> ${qrInfo.value.tratamientoNombre}</p>
+          <p><span class="info-label">Ensayo:</span> ${qrInfo.ensayoNombre}</p>
+          <p><span class="info-label">Laboratorio:</span> ${qrInfo.laboratorioNombre}</p>
+          <p><span class="info-label">Tipo Ensayo:</span> ${qrInfo.tipoEnsayoNombre}</p>
+          <p><span class="info-label">Bloque:</span> ${qrInfo.bloqueNombre}</p>
+          <p><span class="info-label">Parcela:</span> ${qrInfo.parcelaNombre}</p>
+          <p><span class="info-label">Tratamiento:</span> ${qrInfo.tratamientoNombre}</p>
         </div>
 
         <div class="footer">
@@ -855,7 +882,8 @@ function imprimirQR() {
 }
 
 function descargarQR() {
-  if (!qrCanvas.value) return
+  const srcCanvas = qrCanvas.value as HTMLCanvasElement | null
+  if (!srcCanvas) return
 
   // Crear canvas con leyenda
   const downloadCanvas = document.createElement('canvas')
@@ -876,7 +904,7 @@ function descargarQR() {
   ctx.fillRect(0, 0, totalWidth, totalHeight)
 
   // Dibujar QR en el centro
-  ctx.drawImage(qrCanvas.value, padding, padding, qrSize, qrSize)
+  ctx.drawImage(srcCanvas, padding, padding, qrSize, qrSize)
 
   // Texto
   ctx.fillStyle = 'black'
@@ -887,17 +915,17 @@ function descargarQR() {
   const textY = qrSize + padding + 20
   const lineHeight = 15
 
-  ctx.fillText(`Ensayo: ${qrInfo.value.ensayoNombre}`, textX, textY)
-  ctx.fillText(`Laboratorio: ${qrInfo.value.laboratorioNombre}`, textX, textY + lineHeight)
-  ctx.fillText(`Tipo Ensayo: ${qrInfo.value.tipoEnsayoNombre}`, textX, textY + lineHeight * 2)
-  ctx.fillText(`Bloque: ${qrInfo.value.bloqueNombre}`, textX, textY + lineHeight * 3)
-  ctx.fillText(`Parcela: ${qrInfo.value.parcelaNombre}`, textX, textY + lineHeight * 4)
-  ctx.fillText(`Tratamiento: ${qrInfo.value.tratamientoNombre}`, textX, textY + lineHeight * 5)
+  ctx.fillText(`Ensayo: ${qrInfo.ensayoNombre}`, textX, textY)
+  ctx.fillText(`Laboratorio: ${qrInfo.laboratorioNombre}`, textX, textY + lineHeight)
+  ctx.fillText(`Tipo Ensayo: ${qrInfo.tipoEnsayoNombre}`, textX, textY + lineHeight * 2)
+  ctx.fillText(`Bloque: ${qrInfo.bloqueNombre}`, textX, textY + lineHeight * 3)
+  ctx.fillText(`Parcela: ${qrInfo.parcelaNombre}`, textX, textY + lineHeight * 4)
+  ctx.fillText(`Tratamiento: ${qrInfo.tratamientoNombre}`, textX, textY + lineHeight * 5)
 
   // Descargar
   const link = document.createElement('a')
   link.href = downloadCanvas.toDataURL('image/png')
-  link.download = `parcela-qr-${qrInfo.value.parcelaNombre}-${new Date().getTime()}.png`
+  link.download = `parcela-qr-${qrInfo.parcelaNombre}-${new Date().getTime()}.png`
   link.click()
 }
 

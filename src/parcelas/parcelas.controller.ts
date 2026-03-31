@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, ParseIntPipe } from '@nestjs/common';
+// ParseIntPipe retenido para los @Param que sí lo usan
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiParam } from '@nestjs/swagger';
 import { ParcelasService } from './parcelas.service';
 import { CreateParcelaDto } from './dto/create-parcela.dto';
@@ -19,21 +20,7 @@ export class ParcelasController {
   @Post()
   @ApiOperation({ summary: 'Crear una parcela' })
   @ApiCreatedResponse({ type: Parcela, description: 'Parcela creada' })
-  @ApiBody({
-    type: CreateParcelaDto,
-    examples: {
-      default: {
-        value: {
-          ensayoId: 1,
-          bloqueId: 1,
-          tratamientoId: 1,
-          nombreParcela: '26-BASF-0001-PRE-1 A',
-          posXGrid: 2,
-          posYGrid: 3,
-        },
-      },
-    },
-  })
+  @ApiBody({ type: CreateParcelaDto })
   create(@Body() dto: CreateParcelaDto) {
     return this.service.create(dto);
   }
@@ -45,17 +32,18 @@ export class ParcelasController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('sort') sort?: string,
-    @Query('order') order?: 'ASC' | 'DESC',
-    @Query('ensayoId', new ParseIntPipe({ optional: true })) ensayoId?: number,
-    @Query('bloqueId', new ParseIntPipe({ optional: true })) bloqueId?: number,
+    @Query('order') order?: string,
+    @Query('ensayoId') ensayoId?: string,
+    @Query('bloqueId') bloqueId?: string,
   ) {
+    const parsedOrder = (order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC') as 'ASC' | 'DESC';
     const params = {
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 10,
       sort: sort || 'id',
-      order: order || 'ASC',
-      ensayoId,
-      bloqueId,
+      order: parsedOrder,
+      ensayoId: ensayoId ? parseInt(ensayoId, 10) : undefined,
+      bloqueId: bloqueId ? parseInt(bloqueId, 10) : undefined,
     };
     return this.service.findAll(params);
   }
@@ -73,17 +61,7 @@ export class ParcelasController {
   @ApiOperation({ summary: 'Actualizar parcela' })
   @ApiParam({ name: 'id', type: Number })
   @ApiOkResponse({ type: Parcela })
-  @ApiBody({
-    type: UpdateParcelaDto,
-    examples: {
-      default: {
-        value: {
-          posXGrid: 5,
-          posYGrid: 6,
-        },
-      },
-    },
-  })
+  @ApiBody({ type: UpdateParcelaDto })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateParcelaDto) {
     return this.service.update(id, dto);
   }

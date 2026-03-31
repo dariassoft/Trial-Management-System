@@ -217,6 +217,22 @@
                 >
                   🌱 Tipos de Siembra
                 </NuxtLink>
+                <NuxtLink
+                  v-if="hasAccess('productos')"
+                  to="/admin/productos"
+                  @click="isOpen = false"
+                  class="block px-4 py-2 text-sm rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  🧪 Productos
+                </NuxtLink>
+                <NuxtLink
+                  v-if="hasAccess('laboratorios')"
+                  to="/admin/laboratorios"
+                  @click="isOpen = false"
+                  class="block px-4 py-2 text-sm rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  🏭 Laboratorios
+                </NuxtLink>
               </div>
             </transition>
           </div>
@@ -250,22 +266,6 @@
               leave-to-class="transform opacity-0 -translate-y-2"
             >
               <div v-show="expandedSections.admin" class="pl-8 space-y-1 mt-1">
-                <NuxtLink
-                  v-if="hasAccess('productos')"
-                  to="/admin/productos"
-                  @click="isOpen = false"
-                  class="block px-4 py-2 text-sm rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  🏭 Productos
-                </NuxtLink>
-                <NuxtLink
-                  v-if="hasAccess('laboratorios')"
-                  to="/admin/laboratorios"
-                  @click="isOpen = false"
-                  class="block px-4 py-2 text-sm rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  🏭 Laboratorios
-                </NuxtLink>
                 <NuxtLink
                   v-if="hasAccess('usuarios')"
                   to="/admin/usuarios"
@@ -347,43 +347,48 @@ const expandedSections = ref({
   admin: false,
 })
 
-// Definir todos los módulos disponibles con sus roles
+// Roles del sistema (deben coincidir exactamente con el enum Role del backend)
+// Role.SUPERADMIN = 'Superadministrador'
+// Role.ADMIN     = 'Administrador'
+// Role.MANAGER   = 'Manager'
+// Role.TECNICO   = 'Tecnico'
+// Role.INVITADO  = 'Invitado'
 const allModules = {
   dashboard: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio', 'Analista'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico', 'Invitado'],
   },
   ensayos: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   bloques: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   mediciones: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   protocolos: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   siembra: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   cosecha: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   reportes: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Analista'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   cultivos: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   variedades: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   productos: {
-    roles: ['Superadministrador', 'Administrador', 'Manager'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico'],
   },
   laboratorios: {
-    roles: ['Superadministrador', 'Administrador'],
+    roles: ['Superadministrador', 'Administrador', 'Manager'],
   },
   usuarios: {
     roles: ['Superadministrador', 'Administrador'],
@@ -395,10 +400,10 @@ const allModules = {
     roles: ['Superadministrador'],
   },
   settings: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio', 'Analista'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico', 'Invitado'],
   },
   notificaciones: {
-    roles: ['Superadministrador', 'Administrador', 'Investigador', 'Técnico de Laboratorio', 'Analista'],
+    roles: ['Superadministrador', 'Administrador', 'Manager', 'Tecnico', 'Invitado'],
   },
 }
 
@@ -421,19 +426,19 @@ const hasMedicionesAccess = computed(() => {
   )
 })
 
-// Verificar si hay acceso a algún módulo del grupo Catálogos
+// Verificar si hay acceso a algún módulo del grupo Catálogos (incluye productos y laboratorios)
 const hasCatalogosAccess = computed(() => {
   return (
     hasAccess('cultivos') ||
-    hasAccess('variedades')
+    hasAccess('variedades') ||
+    hasAccess('productos') ||
+    hasAccess('laboratorios')
   )
 })
 
 // Verificar si hay acceso a algún módulo del grupo Admin
 const hasAdminAccess = computed(() => {
   return (
-    hasAccess('productos') ||
-    hasAccess('laboratorios') ||
     hasAccess('usuarios') ||
     hasAccess('roles') ||
     hasAccess('permisos')

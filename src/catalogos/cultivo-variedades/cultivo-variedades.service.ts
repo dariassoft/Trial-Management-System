@@ -33,8 +33,21 @@ export class CultivoVariedadesService {
     return this.variedadRepository.save(nuevaVariedad);
   }
 
-  findAll() {
-    return this.variedadRepository.find({ relations: ['cultivo'] });
+  findAll(options: { page?: number; limit?: number; sort?: string; order?: 'ASC' | 'DESC'; q?: string; cultivoId?: number } = {}) {
+    const { page = 1, limit = 10, sort = 'nombre', order = 'ASC', q, cultivoId } = options;
+    const allowedSort = ['id', 'nombre'].includes(sort) ? sort : 'nombre';
+    const skip = (page - 1) * limit;
+    const qTrimmed = q?.trim();
+
+    const qb = this.variedadRepository.createQueryBuilder('v').leftJoinAndSelect('v.cultivo', 'cultivo');
+    if (qTrimmed) {
+      qb.where('LOWER(v.nombre) LIKE LOWER(:q) OR LOWER(v.descripcion) LIKE LOWER(:q)', { q: `%${qTrimmed}%` });
+    }
+    if (cultivoId) {
+      qb.andWhere('v.cultivo_id = :cultivoId', { cultivoId });
+    }
+    return qb.orderBy(`v.${allowedSort}`, order as 'ASC' | 'DESC').skip(skip).take(limit).getManyAndCount()
+      .then(([data, total]) => ({ data, meta: { total, page, limit, pageCount: Math.ceil(total / limit) } }));
   }
 
   findOne(id: number) {
@@ -42,7 +55,7 @@ export class CultivoVariedadesService {
   }
 
   async update(id: number, updateDto: UpdateCultivoVariedadDto) {
-    const variedad = await this.variedadRepository.preload({ id, ...updateDto });
+    const variedad = await this.variedadRepository.preload({ id, ...(updateDto as any) });
     if (!variedad) throw new NotFoundException(`Variedad con ID #${id} no encontrada`);
 
     if (updateDto.cultivo_id) {

@@ -256,8 +256,9 @@ async function buscar() {
   cargando.value = true
   error.value = ''
   try {
-    await ensayosStore.fetchEnsayos({ limit: 100 })
-    await bloquesStore.fetchBloques({ limit: 100 })
+    // Cargar todos los ensayos en orden descendente (más recientes primero)
+    await ensayosStore.fetchEnsayos({ limit: 500, sort: 'id', order: 'DESC' })
+    await bloquesStore.fetchBloques({ limit: 500 })
   } catch (err: any) {
     error.value = err.message || 'Error al cargar datos'
   } finally {

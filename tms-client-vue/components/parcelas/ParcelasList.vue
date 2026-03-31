@@ -80,7 +80,7 @@
               {{ parcela.nombreParcela || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
-              {{ parcela.tratamiento?.descripcion || '-' }}
+              {{ parcela.tratamiento?.nombreTratamiento || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
               {{ parcela.posXGrid || '-' }}, {{ parcela.posYGrid || '-' }}
@@ -124,7 +124,7 @@
 import { computed, ref, onMounted } from 'vue'
 import { useParcelas } from '~/composables/useParcelas'
 import { useApi } from '~/composables/useApi'
-import { useEnsayosStore } from '~/stores/ensayos'
+import { useEnsayosStore, type Ensayo } from '~/stores/ensayos'
 import { useBloquesStore } from '~/stores/bloques'
 import ParcelaForm from './ParcelaForm.vue'
 
@@ -164,8 +164,8 @@ const ensayoActual = computed(() => {
   // Si no, intentar usar el de props
   if (props.ensayo) return props.ensayo
   // Finalmente, buscar en el store
-  const storeEnsayo = ensayosStore.currentEnsayo
-  if (storeEnsayo && Number(storeEnsayo.id) === Number(props.ensayoId)) return storeEnsayo
+  const storeEnsayo = ensayosStore.currentEnsayo as Ensayo | null
+  if (storeEnsayo && Number(storeEnsayo?.id) === Number(props.ensayoId)) return storeEnsayo
   return null
 })
 
@@ -277,7 +277,8 @@ onMounted(async () => {
     // Luego cargar tratamientos (que dependen del protocolo del ensayo)
     await Promise.all([
       cargarTratamientos(),
-      cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId })
+      // Límite alto para que el mapa visual muestre TODAS las parcelas del bloque como ocupadas
+      cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
     ])
     console.log('✅ Datos cargados. Parcelas:', parcelasStore.items.length)
   } catch (err) {
@@ -352,7 +353,7 @@ async function guardarParcela(datos: any) {
       console.log('  ✅ Creación enviada')
     }
     console.log('✅ Parcela guardada, recargando listado...')
-    await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId })
+    await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
     console.log('✅ Listado recargado')
     cerrarFormParcela()
   } catch (err: any) {
@@ -372,7 +373,7 @@ async function guardarParcela(datos: any) {
 
 async function eliminarParcela(id: number) {
   await eliminarParcelaComposable(id)
-  await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId })
+  await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
 }
 </script>
 

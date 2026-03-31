@@ -112,11 +112,9 @@ const celdas = computed(() => {
   console.log('   - posX seleccionada:', props.posXSeleccionada)
   console.log('   - posY seleccionada:', props.posYSeleccionada)
 
-  // Iterar filas en orden DESCENDENTE para ambas X e Y
-  // Y va de filasTotal a 1 (arriba a abajo)
-  // X va de columnasTotal a 1 (derecha a izquierda)
+  // Filas en orden DESCENDENTE (Y de filasTotal→1), columnas en orden ASCENDENTE (X de 1→columnasTotal)
   for (let y = filasTotal.value; y >= 1; y--) {
-    for (let x = columnasTotal.value; x >= 1; x--) {
+    for (let x = 1; x <= columnasTotal.value; x++) {
       const ocupada = (props.parcelasOcupadas || []).some(p => p.x === x && p.y === y)
       const seleccionada = x === props.posXSeleccionada && y === props.posYSeleccionada
 
@@ -134,7 +132,7 @@ const celdas = computed(() => {
   }
 
   console.log('   → Celdas calculadas:', resultado.length)
-  console.log('   → Orden visual: X descendente (derecha a izquierda), Y descendente (arriba a abajo)')
+  console.log('   → Orden visual: Y descendente (filas de arriba↓abajo), X ascendente (columnas de izquierda→derecha)')
   return resultado
 })
 
