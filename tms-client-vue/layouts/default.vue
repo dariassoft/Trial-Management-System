@@ -64,7 +64,7 @@ onUnmounted(() => {
         </button>
         <div class="flex-1 px-4 flex justify-between">
           <div class="flex-1 flex">
-            <!-- You can add a search bar here if needed -->
+            <div class="flex items-center justify-center"><span class="text-white font-bold">Trial Management System</span></div>
           </div>
           <div class="ml-4 flex items-center md:ml-6">
             <button @click="toggleTheme" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">

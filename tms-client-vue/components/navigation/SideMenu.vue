@@ -48,7 +48,6 @@
         <div class="flex flex-col h-0 flex-1">
           <div class="flex items-center h-16 flex-shrink-0 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
              <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center"><span class="text-white font-bold">TMS</span></div>
-             <span class="ml-3 text-xl font-bold text-gray-900 dark:text-white">TMS</span>
           </div>
           <div class="flex-1 flex flex-col overflow-y-auto">
             <nav class="flex-1 px-2 py-4 bg-white dark:bg-gray-800 space-y-1">

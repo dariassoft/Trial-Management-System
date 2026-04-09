@@ -80,7 +80,7 @@ const fillDemo = () => {
           Bienvenido a TMS
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
-          Sistema de Gestión de Ensayos Agronómicos
+          Gestión de Ensayos Agronómicos
         </p>
       </div>
 
