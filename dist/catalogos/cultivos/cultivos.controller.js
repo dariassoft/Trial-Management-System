@@ -27,8 +27,14 @@ let CultivosController = class CultivosController {
     create(createCultivoDto) {
         return this.cultivosService.create(createCultivoDto);
     }
-    findAll() {
-        return this.cultivosService.findAll();
+    findAll(page, limit, sort, order, q) {
+        return this.cultivosService.findAll({
+            page: page ? parseInt(page, 10) : 1,
+            limit: limit ? parseInt(limit, 10) : 10,
+            sort: sort || 'nombre',
+            order: ((order === null || order === void 0 ? void 0 : order.toUpperCase()) === 'DESC' ? 'DESC' : 'ASC'),
+            q,
+        });
     }
     findOne(id) {
         return this.cultivosService.findOne(id);
@@ -46,10 +52,9 @@ let CultivosController = class CultivosController {
 exports.CultivosController = CultivosController;
 __decorate([
     (0, common_1.Post)(),
-    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER, rol_entity_1.Role.TECNICO),
     (0, swagger_1.ApiOperation)({ summary: 'Crear un nuevo cultivo' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Cultivo creado' }),
-    (0, swagger_1.ApiResponse)({ status: 403, description: 'Forbidden (Sin permisos)' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_cultivo_dto_1.CreateCultivoDto]),
@@ -57,9 +62,19 @@ __decorate([
 ], CultivosController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Obtener lista de todos los cultivos' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar cultivos con paginación y búsqueda' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
+    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String }),
+    (0, swagger_1.ApiQuery)({ name: 'order', required: false, enum: ['ASC', 'DESC'] }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('sort')),
+    __param(3, (0, common_1.Query)('order')),
+    __param(4, (0, common_1.Query)('q')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String, String, String]),
     __metadata("design:returntype", void 0)
 ], CultivosController.prototype, "findAll", null);
 __decorate([
@@ -80,7 +95,7 @@ __decorate([
 ], CultivosController.prototype, "findVariedadesPorCultivo", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER, rol_entity_1.Role.TECNICO),
     (0, swagger_1.ApiOperation)({ summary: 'Actualizar un cultivo' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
@@ -90,7 +105,7 @@ __decorate([
 ], CultivosController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
     (0, swagger_1.ApiOperation)({ summary: 'Eliminar un cultivo (y sus variedades)' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),

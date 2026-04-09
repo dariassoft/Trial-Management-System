@@ -37,8 +37,39 @@ let TiposSiembraService = class TiposSiembraService {
         });
     }
     findAll() {
+        return __awaiter(this, arguments, void 0, function* (options = {}) {
+            const { page = 1, limit = 10, sort = 'nombre', order = 'ASC', q } = options;
+            const allowedSort = ['id', 'nombre'].includes(sort) ? sort : 'nombre';
+            const skip = (page - 1) * limit;
+            const qTrimmed = q === null || q === void 0 ? void 0 : q.trim();
+            const qb = this.repository.createQueryBuilder('t');
+            if (qTrimmed) {
+                qb.where('LOWER(t.nombre) LIKE LOWER(:q) OR LOWER(t.descripcion) LIKE LOWER(:q)', { q: `%${qTrimmed}%` });
+            }
+            const [data, total] = yield qb.orderBy(`t.${allowedSort}`, order).skip(skip).take(limit).getManyAndCount();
+            return { data, meta: { total, page, limit, pageCount: Math.ceil(total / limit) } };
+        });
+    }
+    findOne(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.find({ order: { nombre: 'ASC' } });
+            const tipo = yield this.repository.findOne({ where: { id } });
+            if (!tipo)
+                throw new common_1.NotFoundException(`Tipo de siembra con ID #${id} no encontrado`);
+            return tipo;
+        });
+    }
+    update(id, dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const tipo = yield this.findOne(id);
+            Object.assign(tipo, dto);
+            return this.repository.save(tipo);
+        });
+    }
+    remove(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const tipo = yield this.findOne(id);
+            yield this.repository.remove(tipo);
+            return { deleted: true };
         });
     }
 };

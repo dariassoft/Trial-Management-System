@@ -6,17 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="ajuste en notificaciones">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/app.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/app.module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/database/data-source.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/database/data-source.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/database/database.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/database/database.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/database/data-source.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/data-source.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/database/database.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/database.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-backend-prod.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-backend-prod.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/cultivo-variedades/cultivo-variedades.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/cultivo-variedades/cultivo-variedades.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/cultivo-variedades/cultivo-variedades.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/cultivo-variedades/cultivo-variedades.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/cultivos/cultivos.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/cultivos/cultivos.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/cultivos/cultivos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/cultivos/cultivos.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/tipos-siembra/tipos-siembra.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/tipos-siembra/tipos-siembra.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/catalogos/tipos-siembra/tipos-siembra.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/catalogos/tipos-siembra/tipos-siembra.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/parcelas/parcelas.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/parcelas/parcelas.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/reportes/pdf-generator.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/pdf-generator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportes/pdf-generator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/pdf-generator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/navigation/ModuleMenu.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

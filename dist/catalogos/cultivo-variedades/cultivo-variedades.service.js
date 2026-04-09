@@ -48,8 +48,20 @@ let CultivoVariedadesService = class CultivoVariedadesService {
             return this.variedadRepository.save(nuevaVariedad);
         });
     }
-    findAll() {
-        return this.variedadRepository.find({ relations: ['cultivo'] });
+    findAll(options = {}) {
+        const { page = 1, limit = 10, sort = 'nombre', order = 'ASC', q, cultivoId } = options;
+        const allowedSort = ['id', 'nombre'].includes(sort) ? sort : 'nombre';
+        const skip = (page - 1) * limit;
+        const qTrimmed = q === null || q === void 0 ? void 0 : q.trim();
+        const qb = this.variedadRepository.createQueryBuilder('v').leftJoinAndSelect('v.cultivo', 'cultivo');
+        if (qTrimmed) {
+            qb.where('LOWER(v.nombre) LIKE LOWER(:q) OR LOWER(v.descripcion) LIKE LOWER(:q)', { q: `%${qTrimmed}%` });
+        }
+        if (cultivoId) {
+            qb.andWhere('v.cultivo_id = :cultivoId', { cultivoId });
+        }
+        return qb.orderBy(`v.${allowedSort}`, order).skip(skip).take(limit).getManyAndCount()
+            .then(([data, total]) => ({ data, meta: { total, page, limit, pageCount: Math.ceil(total / limit) } }));
     }
     findOne(id) {
         return this.variedadRepository.findOne({ where: { id }, relations: ['cultivo'] });

@@ -37,7 +37,19 @@ let CultivosService = class CultivosService {
         return this.cultivoRepository.save(cultivo);
     }
     findAll() {
-        return this.cultivoRepository.find({ order: { nombre: 'ASC' } });
+        return __awaiter(this, arguments, void 0, function* (options = {}) {
+            const { page = 1, limit = 10, sort = 'nombre', order = 'ASC', q } = options;
+            const allowedSort = ['id', 'nombre', 'ciclo_vegetativo'].includes(sort) ? sort : 'nombre';
+            const skip = (page - 1) * limit;
+            const qTrimmed = q === null || q === void 0 ? void 0 : q.trim();
+            const qb = this.cultivoRepository.createQueryBuilder('c');
+            if (qTrimmed) {
+                qb.where('LOWER(c.nombre) LIKE LOWER(:q) OR LOWER(c.descripcion) LIKE LOWER(:q)', { q: `%${qTrimmed}%` });
+            }
+            const total = yield qb.getCount();
+            const data = yield qb.orderBy(`c.${allowedSort}`, order).skip(skip).take(limit).getMany();
+            return { data, meta: { total, page, limit, pageCount: Math.ceil(total / limit) } };
+        });
     }
     findOne(id) {
         return this.cultivoRepository.findOne({ where: { id } });

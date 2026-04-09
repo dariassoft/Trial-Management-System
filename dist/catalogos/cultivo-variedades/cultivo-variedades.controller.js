@@ -27,8 +27,15 @@ let CultivoVariedadesController = class CultivoVariedadesController {
     create(createCultivoVariedadDto) {
         return this.cultivoVariedadesService.create(createCultivoVariedadDto);
     }
-    findAll() {
-        return this.cultivoVariedadesService.findAll();
+    findAll(page, limit, sort, order, q, cultivoId) {
+        return this.cultivoVariedadesService.findAll({
+            page: page ? parseInt(page, 10) : 1,
+            limit: limit ? parseInt(limit, 10) : 10,
+            sort: sort || 'nombre',
+            order: ((order === null || order === void 0 ? void 0 : order.toUpperCase()) === 'DESC' ? 'DESC' : 'ASC'),
+            q,
+            cultivoId: cultivoId ? parseInt(cultivoId, 10) : undefined,
+        });
     }
     findOne(id) {
         return this.cultivoVariedadesService.findOne(id);
@@ -43,10 +50,9 @@ let CultivoVariedadesController = class CultivoVariedadesController {
 exports.CultivoVariedadesController = CultivoVariedadesController;
 __decorate([
     (0, common_1.Post)(),
-    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER, rol_entity_1.Role.TECNICO),
     (0, swagger_1.ApiOperation)({ summary: 'Crear una nueva variedad (asignada a un cultivo)' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Variedad creada' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Cultivo padre no encontrado' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_cultivo_variedad_dto_1.CreateCultivoVariedadDto]),
@@ -54,9 +60,21 @@ __decorate([
 ], CultivoVariedadesController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Obtener lista de todas las variedades' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar variedades con paginación y búsqueda' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
+    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String }),
+    (0, swagger_1.ApiQuery)({ name: 'order', required: false, enum: ['ASC', 'DESC'] }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String }),
+    (0, swagger_1.ApiQuery)({ name: 'cultivoId', required: false, type: Number }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('sort')),
+    __param(3, (0, common_1.Query)('order')),
+    __param(4, (0, common_1.Query)('q')),
+    __param(5, (0, common_1.Query)('cultivoId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String, String, String, String]),
     __metadata("design:returntype", void 0)
 ], CultivoVariedadesController.prototype, "findAll", null);
 __decorate([
@@ -69,7 +87,7 @@ __decorate([
 ], CultivoVariedadesController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER, rol_entity_1.Role.TECNICO),
     (0, swagger_1.ApiOperation)({ summary: 'Actualizar una variedad' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),

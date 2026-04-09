@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParcelasController = void 0;
 const common_1 = require("@nestjs/common");
+// ParseIntPipe retenido para los @Param que sí lo usan
 const swagger_1 = require("@nestjs/swagger");
 const parcelas_service_1 = require("./parcelas.service");
 const create_parcela_dto_1 = require("./dto/create-parcela.dto");
@@ -29,13 +30,14 @@ let ParcelasController = class ParcelasController {
         return this.service.create(dto);
     }
     findAll(page, limit, sort, order, ensayoId, bloqueId) {
+        const parsedOrder = ((order === null || order === void 0 ? void 0 : order.toUpperCase()) === 'DESC' ? 'DESC' : 'ASC');
         const params = {
             page: page ? parseInt(page, 10) : 1,
             limit: limit ? parseInt(limit, 10) : 10,
             sort: sort || 'id',
-            order: order || 'ASC',
-            ensayoId,
-            bloqueId,
+            order: parsedOrder,
+            ensayoId: ensayoId ? parseInt(ensayoId, 10) : undefined,
+            bloqueId: bloqueId ? parseInt(bloqueId, 10) : undefined,
         };
         return this.service.findAll(params);
     }
@@ -55,21 +57,7 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Crear una parcela' }),
     (0, swagger_1.ApiCreatedResponse)({ type: parcela_entity_1.Parcela, description: 'Parcela creada' }),
-    (0, swagger_1.ApiBody)({
-        type: create_parcela_dto_1.CreateParcelaDto,
-        examples: {
-            default: {
-                value: {
-                    ensayoId: 1,
-                    bloqueId: 1,
-                    tratamientoId: 1,
-                    nombreParcela: '26-BASF-0001-PRE-1 A',
-                    posXGrid: 2,
-                    posYGrid: 3,
-                },
-            },
-        },
-    }),
+    (0, swagger_1.ApiBody)({ type: create_parcela_dto_1.CreateParcelaDto }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_parcela_dto_1.CreateParcelaDto]),
@@ -83,10 +71,10 @@ __decorate([
     __param(1, (0, common_1.Query)('limit')),
     __param(2, (0, common_1.Query)('sort')),
     __param(3, (0, common_1.Query)('order')),
-    __param(4, (0, common_1.Query)('ensayoId', new common_1.ParseIntPipe({ optional: true }))),
-    __param(5, (0, common_1.Query)('bloqueId', new common_1.ParseIntPipe({ optional: true }))),
+    __param(4, (0, common_1.Query)('ensayoId')),
+    __param(5, (0, common_1.Query)('bloqueId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, Number, Number]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ParcelasController.prototype, "findAll", null);
 __decorate([
@@ -105,17 +93,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Actualizar parcela' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: Number }),
     (0, swagger_1.ApiOkResponse)({ type: parcela_entity_1.Parcela }),
-    (0, swagger_1.ApiBody)({
-        type: update_parcela_dto_1.UpdateParcelaDto,
-        examples: {
-            default: {
-                value: {
-                    posXGrid: 5,
-                    posYGrid: 6,
-                },
-            },
-        },
-    }),
+    (0, swagger_1.ApiBody)({ type: update_parcela_dto_1.UpdateParcelaDto }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

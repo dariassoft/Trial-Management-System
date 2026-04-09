@@ -26,14 +26,29 @@ let TiposSiembraController = class TiposSiembraController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll() {
-        return this.service.findAll();
+    findAll(page, limit, sort, order, q) {
+        return this.service.findAll({
+            page: page ? parseInt(page, 10) : 1,
+            limit: limit ? parseInt(limit, 10) : 10,
+            sort: sort || 'nombre',
+            order: ((order === null || order === void 0 ? void 0 : order.toUpperCase()) === 'DESC' ? 'DESC' : 'ASC'),
+            q,
+        });
+    }
+    findOne(id) {
+        return this.service.findOne(id);
+    }
+    update(id, dto) {
+        return this.service.update(id, dto);
+    }
+    remove(id) {
+        return this.service.remove(id);
     }
 };
 exports.TiposSiembraController = TiposSiembraController;
 __decorate([
     (0, common_1.Post)(),
-    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER, rol_entity_1.Role.TECNICO),
     (0, swagger_1.ApiOperation)({ summary: 'Crear un tipo de siembra' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Tipo de siembra creado' }),
     __param(0, (0, common_1.Body)()),
@@ -43,11 +58,48 @@ __decorate([
 ], TiposSiembraController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Listar tipos de siembra' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar tipos de siembra con paginación y búsqueda' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
+    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, type: String }),
+    (0, swagger_1.ApiQuery)({ name: 'order', required: false, enum: ['ASC', 'DESC'] }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('sort')),
+    __param(3, (0, common_1.Query)('order')),
+    __param(4, (0, common_1.Query)('q')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String, String, String]),
     __metadata("design:returntype", void 0)
 ], TiposSiembraController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener un tipo de siembra por ID' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], TiposSiembraController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER, rol_entity_1.Role.TECNICO),
+    (0, swagger_1.ApiOperation)({ summary: 'Actualizar un tipo de siembra' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], TiposSiembraController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN, rol_entity_1.Role.MANAGER),
+    (0, swagger_1.ApiOperation)({ summary: 'Eliminar un tipo de siembra' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], TiposSiembraController.prototype, "remove", null);
 exports.TiposSiembraController = TiposSiembraController = __decorate([
     (0, swagger_1.ApiTags)('Catálogo - Tipos de Siembra'),
     (0, swagger_1.ApiBearerAuth)(),
