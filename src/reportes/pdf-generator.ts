@@ -148,8 +148,8 @@ export class PdfReportGenerator {
     const appData = [
       ['Parámetro', 'Valor'],
       ['Equipo', (meta as any).equipo || ''],
-      ['Temperatura', (meta as any).temperatura || ''],
-      ['Humedad Relativa', (meta as any).humedad || ''],
+      ['Temperatura', (meta as any).temperatura ? `${(meta as any).temperatura}°C` : ''],
+      ['Humedad Relativa', (meta as any).humedad ? `${(meta as any).humedad}%` : ''],
       ['Estadío', (meta as any).estadio || ''],
       ['Fecha Aplicación', (meta as any).fechaAplicacion || ''],
     ];
@@ -172,14 +172,20 @@ export class PdfReportGenerator {
     );
     doc.moveDown(0.8);
 
-    // CONDICIONES DE APLICACION - Todos desde BD
+    // CONDICIONES DE APLICACION - Extraer valores primero
+    const temperatura = (meta as any).temperatura;
+    const humedad = (meta as any).humedad;
+    const velocidadViento = (meta as any).velocidadViento || (meta as any).viento;
+    const presion = (meta as any).presion;
+    const equipo = (meta as any).equipo;
+
     const condicionesData = [
       ['Parámetro', 'Valor'],
-      ['Temperatura', ((meta as any).temperatura !== undefined ? (meta as any).temperatura + '°C' : 'No registrado')],
-      ['Humedad Relativa', ((meta as any).humedad !== undefined ? (meta as any).humedad + '%' : 'No registrado')],
-      ['Velocidad Viento', ((meta as any).velocidadViento !== undefined ? (meta as any).velocidadViento + ' km/h' : 'No registrado')],
-      ['Presión', ((meta as any).presion !== undefined ? (meta as any).presion + ' bar' : 'No registrado')],
-      ['Equipo', (meta as any).equipo || 'No registrado'],
+      ['Temperatura', (temperatura && temperatura !== '' ? `${temperatura}°C` : 'No registrado')],
+      ['Humedad Relativa', (humedad && humedad !== '' ? `${humedad}%` : 'No registrado')],
+      ['Velocidad Viento', (velocidadViento && velocidadViento !== '' ? `${velocidadViento} km/h` : 'No registrado')],
+      ['Presión', (presion && presion !== '' ? `${presion} bar` : 'No registrado')],
+      ['Equipo', (equipo && equipo !== '' ? equipo : 'No registrado')],
     ];
 
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000').text('Condiciones de Aplicación', doc.page.margins.left, doc.y);

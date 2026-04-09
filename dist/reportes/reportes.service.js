@@ -177,16 +177,29 @@ let ReportesService = class ReportesService {
      */
     obtenerDatosEnsayoRaw(ensayoId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
+            console.log(`🔍 INICIANDO obtenerDatosEnsayoRaw para ensayo ${ensayoId}`);
             try {
                 const manager = this.ensayoRepository.manager;
-                // 1. ENSAYO COMPLETO
+                // 1. ENSAYO COMPLETO - Columnas explícitas para evitar conflictos
                 const ensayoRaw = yield manager.query(`
-        SELECT e.*, 
-               c.nombre as cultivo_nombre, 
-               v.nombre as variedad_nombre, 
-               ts.nombre as tipo_siembra_nombre,
-               p.descripcion as protocolo_descripcion
+        SELECT 
+          e.ensayo_id,
+          e.nombre_ensayo,
+          e.provincia,
+          e.departamento,
+          e.establecimiento,
+          e.lote,
+          e.fecha_siembra,
+          e.fecha_cosecha,
+          e.cultivo_id,
+          e.variedad_id,
+          e.tipo_siembra_id,
+          e.protocolo_id_fk,
+          c.nombre as cultivo_nombre, 
+          v.nombre as variedad_nombre, 
+          ts.nombre as tipo_siembra_nombre,
+          p.descripcion as protocolo_descripcion
         FROM Ensayo e
         LEFT JOIN Cultivo c ON e.cultivo_id = c.cultivo_id
         LEFT JOIN Cultivo_Variedad v ON e.variedad_id = v.variedad_id
@@ -202,6 +215,9 @@ let ReportesService = class ReportesService {
         SELECT * FROM Aplicacion WHERE ensayo_id_fk = ? LIMIT 1
       `, [ensayoId]);
                 const aplicacion = aplicacionRaw.length ? aplicacionRaw[0] : {};
+                console.log('===== DATOS QUERY APLICACION =====');
+                console.log(JSON.stringify(aplicacion, null, 2));
+                console.log('==================================');
                 // 3. DATOS COSECHA TODOS LOS CAMPOS
                 const datosTrilla = yield manager.query(`
         SELECT 
@@ -318,28 +334,29 @@ let ReportesService = class ReportesService {
                     tratamiento: f.numero_trat,
                     bloque: f.nombre_bloque,
                 }));
-                // METADATOS - SIN N/A - CON UTF-8 LIMPIO
+                // METADATOS - Valores sin formateo, el PDF generator agrega los sufijos
                 const metadadatos = {
                     ensayoId: ensayo.ensayo_id,
-                    nombreEnsayo: this.limpiarUTF8(ensayo.nombre_ensayo || ''),
-                    cultivo: this.limpiarUTF8(ensayo.cultivo_nombre || ''),
-                    variedad: this.limpiarUTF8(ensayo.variedad_nombre || ''),
-                    tipoSiembra: this.limpiarUTF8(ensayo.tipo_siembra_nombre || ''),
-                    provincia: this.limpiarUTF8(ensayo.provincia || ''),
-                    departamento: this.limpiarUTF8(ensayo.departamento || ''),
-                    establecimiento: this.limpiarUTF8(ensayo.establecimiento || ''),
-                    lote: this.limpiarUTF8(ensayo.lote || ''),
+                    nombreEnsayo: this.limpiarUTF8((_a = ensayo.nombre_ensayo) !== null && _a !== void 0 ? _a : ''),
+                    cultivo: this.limpiarUTF8((_b = ensayo.cultivo_nombre) !== null && _b !== void 0 ? _b : ''),
+                    variedad: this.limpiarUTF8((_c = ensayo.variedad_nombre) !== null && _c !== void 0 ? _c : ''),
+                    tipoSiembra: this.limpiarUTF8((_d = ensayo.tipo_siembra_nombre) !== null && _d !== void 0 ? _d : ''),
+                    provincia: this.limpiarUTF8((_e = ensayo.provincia) !== null && _e !== void 0 ? _e : ''),
+                    departamento: this.limpiarUTF8((_f = ensayo.departamento) !== null && _f !== void 0 ? _f : ''),
+                    establecimiento: this.limpiarUTF8((_g = ensayo.establecimiento) !== null && _g !== void 0 ? _g : ''),
+                    lote: this.limpiarUTF8((_h = ensayo.lote) !== null && _h !== void 0 ? _h : ''),
                     fechaSiembra: ensayo.fecha_siembra ? new Date(ensayo.fecha_siembra).toLocaleDateString('es-ES') : '',
                     fechaCosecha: ensayo.fecha_cosecha ? new Date(ensayo.fecha_cosecha).toLocaleDateString('es-ES') : '',
-                    // APLICACION
+                    // APLICACION - SIN SUFIJOS, el PDF generator los agregará
                     fechaAplicacion: aplicacion.fecha_hora ? new Date(aplicacion.fecha_hora).toLocaleDateString('es-ES') : '',
-                    estadio: this.limpiarUTF8(aplicacion.estadio_cultivo || ''),
-                    temperatura: aplicacion.temp_c ? `${aplicacion.temp_c}°C` : '',
-                    humedad: aplicacion.humedad_pct ? `${aplicacion.humedad_pct}%` : '',
-                    equipo: this.limpiarUTF8(aplicacion.equipo_info || ''),
-                    viento: aplicacion.viento_kmh ? `${aplicacion.viento_kmh}` : '',
-                    pico: this.limpiarUTF8(aplicacion.pico_info || ''),
-                    presion: aplicacion.presion_bar ? `${aplicacion.presion_bar}` : '',
+                    estadio: this.limpiarUTF8((_j = aplicacion.estadio_cultivo) !== null && _j !== void 0 ? _j : ''),
+                    temperatura: (_k = aplicacion.temp_c) !== null && _k !== void 0 ? _k : '',
+                    humedad: (_l = aplicacion.humedad_pct) !== null && _l !== void 0 ? _l : '',
+                    equipo: this.limpiarUTF8((_m = aplicacion.equipo_info) !== null && _m !== void 0 ? _m : ''),
+                    viento: (_o = aplicacion.viento_kmh) !== null && _o !== void 0 ? _o : '',
+                    velocidadViento: (_p = aplicacion.viento_kmh) !== null && _p !== void 0 ? _p : '',
+                    pico: this.limpiarUTF8((_q = aplicacion.pico_info) !== null && _q !== void 0 ? _q : ''),
+                    presion: (_r = aplicacion.presion_bar) !== null && _r !== void 0 ? _r : '',
                     numeroTratamientos: estadisticasRaw.length,
                     numeroBloques: [...new Set(datosTrilla.map((dt) => dt.nombre_bloque))].length,
                 };
@@ -379,11 +396,11 @@ let ReportesService = class ReportesService {
                 // Extraer únicos
                 const tratamientosUnicos = new Map();
                 for (const p of parcelasTratamientos) {
-                    const key = `T${(_a = p.tratamiento) === null || _a === void 0 ? void 0 : _a.numeroTrat}_B${(_b = p.bloque) === null || _b === void 0 ? void 0 : _b.nombreBloque}`;
+                    const key = `T${(_s = p.tratamiento) === null || _s === void 0 ? void 0 : _s.numeroTrat}_B${(_t = p.bloque) === null || _t === void 0 ? void 0 : _t.nombreBloque}`;
                     if (!tratamientosUnicos.has(key)) {
                         tratamientosUnicos.set(key, {
-                            tratamiento: String(((_c = p.tratamiento) === null || _c === void 0 ? void 0 : _c.numeroTrat) || ''),
-                            bloque: ((_d = p.bloque) === null || _d === void 0 ? void 0 : _d.nombreBloque) || '',
+                            tratamiento: String(((_u = p.tratamiento) === null || _u === void 0 ? void 0 : _u.numeroTrat) || ''),
+                            bloque: ((_v = p.bloque) === null || _v === void 0 ? void 0 : _v.nombreBloque) || '',
                         });
                     }
                 }
@@ -642,7 +659,7 @@ let ReportesService = class ReportesService {
                 }
                 const resumen = this.generarResumenEjecutivo(datosRaw.datosCampo || [], datosRaw.datosTrilla || [], datosRaw.metadadatos);
                 const pdfData = {
-                    metadatos: datosRaw.metadatos,
+                    metadatos: datosRaw.metadadatos,
                     datosCampo: datosRaw.datosCampo || [],
                     datosTrilla: datosRaw.datosTrilla || [],
                     estadisticas: datosRaw.estadisticas,
@@ -654,6 +671,9 @@ let ReportesService = class ReportesService {
                     protocolo: datosRaw.protocolo, // <-- Pasar protocolo
                     diseno: datosRaw.diseno, // <-- Pasar diseno
                 };
+                console.log('===== DATOS QUE SE PASAN AL PDF =====');
+                console.log('metadatos:', JSON.stringify(pdfData.metadatos, null, 2));
+                console.log('======================================');
                 const buffer = yield pdf_generator_1.PdfReportGenerator.generarReporteEnsayo(pdfData);
                 return buffer;
             }

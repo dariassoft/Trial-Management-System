@@ -126,8 +126,8 @@ class PdfReportGenerator {
         const appData = [
             ['Parámetro', 'Valor'],
             ['Equipo', meta.equipo || ''],
-            ['Temperatura', meta.temperatura || ''],
-            ['Humedad Relativa', meta.humedad || ''],
+            ['Temperatura', meta.temperatura ? `${meta.temperatura}°C` : ''],
+            ['Humedad Relativa', meta.humedad ? `${meta.humedad}%` : ''],
             ['Estadío', meta.estadio || ''],
             ['Fecha Aplicación', meta.fechaAplicacion || ''],
         ];
@@ -143,14 +143,19 @@ class PdfReportGenerator {
         doc.moveDown(0.3);
         doc.fontSize(10).font('Helvetica').fillColor('#000000').text(protocolo.descripcion || 'Sin descripción de protocolo');
         doc.moveDown(0.8);
-        // CONDICIONES DE APLICACION - Todos desde BD
+        // CONDICIONES DE APLICACION - Extraer valores primero
+        const temperatura = meta.temperatura;
+        const humedad = meta.humedad;
+        const velocidadViento = meta.velocidadViento || meta.viento;
+        const presion = meta.presion;
+        const equipo = meta.equipo;
         const condicionesData = [
             ['Parámetro', 'Valor'],
-            ['Temperatura', (meta.temperatura !== undefined ? meta.temperatura + '°C' : 'No registrado')],
-            ['Humedad Relativa', (meta.humedad !== undefined ? meta.humedad + '%' : 'No registrado')],
-            ['Velocidad Viento', (meta.velocidadViento !== undefined ? meta.velocidadViento + ' km/h' : 'No registrado')],
-            ['Presión', (meta.presion !== undefined ? meta.presion + ' bar' : 'No registrado')],
-            ['Equipo', meta.equipo || 'No registrado'],
+            ['Temperatura', (temperatura && temperatura !== '' ? `${temperatura}°C` : 'No registrado')],
+            ['Humedad Relativa', (humedad && humedad !== '' ? `${humedad}%` : 'No registrado')],
+            ['Velocidad Viento', (velocidadViento && velocidadViento !== '' ? `${velocidadViento} km/h` : 'No registrado')],
+            ['Presión', (presion && presion !== '' ? `${presion} bar` : 'No registrado')],
+            ['Equipo', (equipo && equipo !== '' ? equipo : 'No registrado')],
         ];
         doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000').text('Condiciones de Aplicación', doc.page.margins.left, doc.y);
         doc.moveDown(0.4);

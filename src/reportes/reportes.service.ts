@@ -171,16 +171,29 @@ export class ReportesService {
    * NUEVO MÉTODO: Obtiene datos del ensayo usando SQL nativo con nombres EXACTOS
    */
   async obtenerDatosEnsayoRaw(ensayoId: number): Promise<any> {
+    console.log(`🔍 INICIANDO obtenerDatosEnsayoRaw para ensayo ${ensayoId}`);
     try {
       const manager = this.ensayoRepository.manager;
   
-      // 1. ENSAYO COMPLETO
+      // 1. ENSAYO COMPLETO - Columnas explícitas para evitar conflictos
       const ensayoRaw = await manager.query(`
-        SELECT e.*, 
-               c.nombre as cultivo_nombre, 
-               v.nombre as variedad_nombre, 
-               ts.nombre as tipo_siembra_nombre,
-               p.descripcion as protocolo_descripcion
+        SELECT 
+          e.ensayo_id,
+          e.nombre_ensayo,
+          e.provincia,
+          e.departamento,
+          e.establecimiento,
+          e.lote,
+          e.fecha_siembra,
+          e.fecha_cosecha,
+          e.cultivo_id,
+          e.variedad_id,
+          e.tipo_siembra_id,
+          e.protocolo_id_fk,
+          c.nombre as cultivo_nombre, 
+          v.nombre as variedad_nombre, 
+          ts.nombre as tipo_siembra_nombre,
+          p.descripcion as protocolo_descripcion
         FROM Ensayo e
         LEFT JOIN Cultivo c ON e.cultivo_id = c.cultivo_id
         LEFT JOIN Cultivo_Variedad v ON e.variedad_id = v.variedad_id
@@ -197,7 +210,11 @@ export class ReportesService {
         SELECT * FROM Aplicacion WHERE ensayo_id_fk = ? LIMIT 1
       `, [ensayoId]);
       const aplicacion = aplicacionRaw.length ? aplicacionRaw[0] : {};
-  
+
+      console.log('===== DATOS QUERY APLICACION =====');
+      console.log(JSON.stringify(aplicacion, null, 2));
+      console.log('==================================');
+
       // 3. DATOS COSECHA TODOS LOS CAMPOS
       const datosTrilla = await manager.query(`
         SELECT 
@@ -322,32 +339,33 @@ export class ReportesService {
         bloque: f.nombre_bloque,
       }));
   
-      // METADATOS - SIN N/A - CON UTF-8 LIMPIO
+      // METADATOS - Valores sin formateo, el PDF generator agrega los sufijos
       const metadadatos = {
         ensayoId: ensayo.ensayo_id,
-        nombreEnsayo: this.limpiarUTF8(ensayo.nombre_ensayo || ''),
-        cultivo: this.limpiarUTF8(ensayo.cultivo_nombre || ''),
-        variedad: this.limpiarUTF8(ensayo.variedad_nombre || ''),
-        tipoSiembra: this.limpiarUTF8(ensayo.tipo_siembra_nombre || ''),
-        provincia: this.limpiarUTF8(ensayo.provincia || ''),
-        departamento: this.limpiarUTF8(ensayo.departamento || ''),
-        establecimiento: this.limpiarUTF8(ensayo.establecimiento || ''),
-        lote: this.limpiarUTF8(ensayo.lote || ''),
+        nombreEnsayo: this.limpiarUTF8(ensayo.nombre_ensayo ?? ''),
+        cultivo: this.limpiarUTF8(ensayo.cultivo_nombre ?? ''),
+        variedad: this.limpiarUTF8(ensayo.variedad_nombre ?? ''),
+        tipoSiembra: this.limpiarUTF8(ensayo.tipo_siembra_nombre ?? ''),
+        provincia: this.limpiarUTF8(ensayo.provincia ?? ''),
+        departamento: this.limpiarUTF8(ensayo.departamento ?? ''),
+        establecimiento: this.limpiarUTF8(ensayo.establecimiento ?? ''),
+        lote: this.limpiarUTF8(ensayo.lote ?? ''),
         fechaSiembra: ensayo.fecha_siembra ? new Date(ensayo.fecha_siembra).toLocaleDateString('es-ES') : '',
         fechaCosecha: ensayo.fecha_cosecha ? new Date(ensayo.fecha_cosecha).toLocaleDateString('es-ES') : '',
-        // APLICACION
+        // APLICACION - SIN SUFIJOS, el PDF generator los agregará
         fechaAplicacion: aplicacion.fecha_hora ? new Date(aplicacion.fecha_hora).toLocaleDateString('es-ES') : '',
-        estadio: this.limpiarUTF8(aplicacion.estadio_cultivo || ''),
-        temperatura: aplicacion.temp_c ? `${aplicacion.temp_c}°C` : '',
-        humedad: aplicacion.humedad_pct ? `${aplicacion.humedad_pct}%` : '',
-        equipo: this.limpiarUTF8(aplicacion.equipo_info || ''),
-        viento: aplicacion.viento_kmh ? `${aplicacion.viento_kmh}` : '',
-        pico: this.limpiarUTF8(aplicacion.pico_info || ''),
-        presion: aplicacion.presion_bar ? `${aplicacion.presion_bar}` : '',
+        estadio: this.limpiarUTF8(aplicacion.estadio_cultivo ?? ''),
+        temperatura: aplicacion.temp_c ?? '',
+        humedad: aplicacion.humedad_pct ?? '',
+        equipo: this.limpiarUTF8(aplicacion.equipo_info ?? ''),
+        viento: aplicacion.viento_kmh ?? '',
+        velocidadViento: aplicacion.viento_kmh ?? '',
+        pico: this.limpiarUTF8(aplicacion.pico_info ?? ''),
+        presion: aplicacion.presion_bar ?? '',
         numeroTratamientos: estadisticasRaw.length,
         numeroBloques: [...new Set(datosTrilla.map((dt: any) => dt.nombre_bloque))].length,
       };
-  
+
       // 7. CONSTRUIR EVALUACIONES DESDE DATOS YA CARGADOS EN datosCampoRaw
       // Agrupar por momento y recolectar variables
       const momentosPorNombre = new Map<string, { dds: number; fecha: any; variables: Set<string> }>();
@@ -716,7 +734,7 @@ export class ReportesService {
       );
   
       const pdfData = {
-        metadatos: datosRaw.metadatos,
+        metadatos: datosRaw.metadadatos,
         datosCampo: datosRaw.datosCampo || [],
         datosTrilla: datosRaw.datosTrilla || [],
         estadisticas: datosRaw.estadisticas,
@@ -729,6 +747,10 @@ export class ReportesService {
         diseno: datosRaw.diseno,       // <-- Pasar diseno
       };
   
+      console.log('===== DATOS QUE SE PASAN AL PDF =====');
+      console.log('metadatos:', JSON.stringify(pdfData.metadatos, null, 2));
+      console.log('======================================');
+
       const buffer = await PdfReportGenerator.generarReporteEnsayo(pdfData);
   
       return buffer;
