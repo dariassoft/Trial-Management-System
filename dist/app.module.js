@@ -43,6 +43,7 @@ const permisos_module_1 = require("./permisos/permisos.module");
 const reportes_module_1 = require("./reportes/reportes.module");
 const notificaciones_module_1 = require("./notificaciones/notificaciones.module");
 const tareas_programadas_module_1 = require("./tareas-programadas/tareas-programadas.module");
+const asistente_flujo_module_1 = require("./asistente-flujo/asistente-flujo.module");
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     ? []
     : [typeorm_1.TypeOrmModule.forRootAsync({
@@ -111,6 +112,7 @@ exports.AppModule = AppModule = __decorate([
             fotos_module_1.FotosModule, // Para subir/servir fotos y videos
             notificaciones_module_1.NotificacionesModule, // Notificaciones para usuarios
             tareas_programadas_module_1.TareasProgramadasModule, // Cron jobs para generar notificaciones
+            asistente_flujo_module_1.AsistenteFlujoModule, // Asistente de flujo de trabajo para ensayos
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

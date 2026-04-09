@@ -7,6 +7,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import SideMenu from '~/components/navigation/SideMenu.vue'
 import TheToast from '~/components/common/TheToast.vue'
 import OfflineIndicator from '~/components/common/OfflineIndicator.vue'
+import WorkflowAssistant from '~/components/common/WorkflowAssistant.vue'
 
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()
@@ -107,5 +108,6 @@ onUnmounted(() => {
     </div>
     <TheToast />
     <OfflineIndicator />
+    <WorkflowAssistant v-if="authStore.isAuthenticated" />
   </div>
 </template>

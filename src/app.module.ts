@@ -34,6 +34,7 @@ import { PermisosModule } from './permisos/permisos.module';
 import { ReportesModule } from './reportes/reportes.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { TareasProgramadasModule } from './tareas-programadas/tareas-programadas.module';
+import { AsistenteFlujoModule } from './asistente-flujo/asistente-flujo.module';
 
 const ormModules = (process.env.GENERATE_OPENAPI === 'true')
   ? []
@@ -103,6 +104,7 @@ const ormModules = (process.env.GENERATE_OPENAPI === 'true')
     FotosModule, // Para subir/servir fotos y videos
     NotificacionesModule, // Notificaciones para usuarios
     TareasProgramadasModule, // Cron jobs para generar notificaciones
+    AsistenteFlujoModule, // Asistente de flujo de trabajo para ensayos
   ],
   controllers: [AppController],
   providers: [AppService],
