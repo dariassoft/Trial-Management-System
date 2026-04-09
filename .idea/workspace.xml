@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="busqueda de ensayos en reportes">
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="grafica en reporte pdf arreglada">
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/reportes/svg-charts.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/svg-charts.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportes/svg-charts.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/svg-charts.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/reportes/reportes.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/reportes.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportes/reportes.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/reportes.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -368,7 +369,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775709344782</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="grafica en reporte pdf arreglada">
+      <option name="closed" value="true" />
+      <created>1775710153938</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1775710153938</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -399,7 +408,8 @@
     <MESSAGE value="ajuste en notificaciones" />
     <MESSAGE value="nuevo menu" />
     <MESSAGE value="busqueda de ensayos en reportes" />
-    <option name="LAST_COMMIT_MESSAGE" value="busqueda de ensayos en reportes" />
+    <MESSAGE value="grafica en reporte pdf arreglada" />
+    <option name="LAST_COMMIT_MESSAGE" value="grafica en reporte pdf arreglada" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

@@ -173,26 +173,31 @@ export class ReportesService {
   async obtenerDatosEnsayoRaw(ensayoId: number): Promise<any> {
     try {
       const manager = this.ensayoRepository.manager;
-
+  
       // 1. ENSAYO COMPLETO
       const ensayoRaw = await manager.query(`
-        SELECT e.*, c.nombre as cultivo_nombre, v.nombre as variedad_nombre, ts.nombre as tipo_siembra_nombre
+        SELECT e.*, 
+               c.nombre as cultivo_nombre, 
+               v.nombre as variedad_nombre, 
+               ts.nombre as tipo_siembra_nombre,
+               p.descripcion as protocolo_descripcion
         FROM Ensayo e
         LEFT JOIN Cultivo c ON e.cultivo_id = c.cultivo_id
         LEFT JOIN Cultivo_Variedad v ON e.variedad_id = v.variedad_id
         LEFT JOIN TipoSiembra ts ON e.tipo_siembra_id = ts.id
+        LEFT JOIN Protocolo p ON e.protocolo_id_fk = p.protocolo_id
         WHERE e.ensayo_id = ?
       `, [ensayoId]);
-
+  
       if (!ensayoRaw.length) return null;
       const ensayo = ensayoRaw[0];
-
+  
       // 2. APLICACION COMPLETA
       const aplicacionRaw = await manager.query(`
         SELECT * FROM Aplicacion WHERE ensayo_id_fk = ? LIMIT 1
       `, [ensayoId]);
       const aplicacion = aplicacionRaw.length ? aplicacionRaw[0] : {};
-
+  
       // 3. DATOS COSECHA TODOS LOS CAMPOS
       const datosTrilla = await manager.query(`
         SELECT 
@@ -208,7 +213,7 @@ export class ReportesService {
         INNER JOIN Bloque b ON p.bloque_id_fk = b.bloque_id
         WHERE p.ensayo_id_fk = ?
       `, [ensayoId]);
-
+  
       // 4. DATOS CAMPO CON VARIABLES - COMPLETO CON MOMENTO INFO
       const datosCampoRaw = await manager.query(`
         SELECT 
@@ -224,7 +229,7 @@ export class ReportesService {
         LEFT JOIN Protocolo_Variable pv ON dcm.variable_id_fk = pv.variable_id
         WHERE p.ensayo_id_fk = ?
       `, [ensayoId]);
-
+  
       // 5. FOTOS Y ARCHIVOS
       const fotosRaw = await manager.query(`
         SELECT 
@@ -237,7 +242,7 @@ export class ReportesService {
         INNER JOIN Bloque b ON p.bloque_id_fk = b.bloque_id
         WHERE p.ensayo_id_fk = ?
       `, [ensayoId]);
-
+  
       // 6. ESTADÍSTICAS
       const estadisticasRaw = await manager.query(`
         SELECT
@@ -256,7 +261,7 @@ export class ReportesService {
         WHERE p.ensayo_id_fk = ?
         GROUP BY t.numero_trat
       `, [ensayoId]);
-
+  
       // Convertir estadísticas a map
       const estadisticas: any = {};
       for (const stat of estadisticasRaw as any[]) {
@@ -272,7 +277,7 @@ export class ReportesService {
           insectos_beneficios_porurf: s.insectos_beneficios_porurf || 0,
         };
       }
-
+  
       // PROCESAR DATOS COSECHA - SIN undefined
       const datosTrillaProcessed = datosTrilla.map((dt: any) => ({
         parcela: dt.nombre_parcela,
@@ -294,7 +299,7 @@ export class ReportesService {
         altura: dt.altura_parcela !== null ? `${dt.altura_parcela}cm` : '',
         densidad: dt.densidad_plantas_final !== null ? `${dt.densidad_plantas_final}` : '',
       }));
-
+  
       // PROCESAR DATOS CAMPO - SIN undefined
       const datosCampoProcessed = datosCampoRaw.map((dc: any) => ({
         parcela: dc.nombre_parcela,
@@ -304,7 +309,7 @@ export class ReportesService {
         variable: dc.nombre_variable,
         valor: dc.valor !== null ? `${parseFloat(dc.valor).toFixed(1)}` : '',
       }));
-
+  
       // PROCESAR FOTOS - SIN undefined
       const fotosProcessed = fotosRaw.map((f: any) => ({
         id: f.foto_id,
@@ -316,7 +321,7 @@ export class ReportesService {
         tratamiento: f.numero_trat,
         bloque: f.nombre_bloque,
       }));
-
+  
       // METADATOS - SIN N/A - CON UTF-8 LIMPIO
       const metadadatos = {
         ensayoId: ensayo.ensayo_id,
@@ -342,14 +347,14 @@ export class ReportesService {
         numeroTratamientos: estadisticasRaw.length,
         numeroBloques: [...new Set(datosTrilla.map((dt: any) => dt.nombre_bloque))].length,
       };
-
+  
       // 7. CONSTRUIR EVALUACIONES DESDE DATOS YA CARGADOS EN datosCampoRaw
       // Agrupar por momento y recolectar variables
       const momentosPorNombre = new Map<string, { dds: number; fecha: any; variables: Set<string> }>();
-
+  
       for (const dc of datosCampoRaw as any[]) {
         if (!(dc as any).nombre_momento) continue;
-
+  
         if (!momentosPorNombre.has((dc as any).nombre_momento)) {
           momentosPorNombre.set((dc as any).nombre_momento, {
             dds: (dc as any).dias_despues_aplicacion || 0,
@@ -357,12 +362,12 @@ export class ReportesService {
             variables: new Set<string>(),
           });
         }
-
+  
         if ((dc as any).nombre_variable) {
           momentosPorNombre.get((dc as any).nombre_momento)!.variables.add((dc as any).nombre_variable);
         }
       }
-
+  
       // Construir evaluacionesFechas - LLENO DE DATOS
       const evaluacionesFechas = Array.from(momentosPorNombre.entries())
         .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0))
@@ -371,7 +376,7 @@ export class ReportesService {
           data.fecha ? new Date(data.fecha).toLocaleDateString('es-ES') : '',
           Array.from(data.variables).join(', ') || 'Sin variables',
         ]);
-
+  
       // 8. CONSTRUIR EVALUACIONES DETALLE DESDE datosCampoRaw
       // Obtener tratamientos únicos de parcelas del ensayo
       const parcelasTratamientos = await this.parcelaRepository
@@ -380,7 +385,7 @@ export class ReportesService {
         .leftJoinAndSelect('p.bloque', 'b')
         .where('p.ensayo_id_fk = :ensayoId', { ensayoId })
         .getMany();
-
+  
       // Extraer únicos
       const tratamientosUnicos = new Map<string, any>();
       for (const p of parcelasTratamientos) {
@@ -392,11 +397,11 @@ export class ReportesService {
           });
         }
       }
-
+  
       // Ordenar momentos por DDS
       const momentosOrdenados = Array.from(momentosPorNombre.entries())
         .sort((a, b) => (a[1].dds || 0) - (b[1].dds || 0));
-
+  
       // Construir header dinámico basado en momentos - MÁS DESCRIPTIVO
       const headerEvaluaciones = ['Trat', 'Bloque'];
       for (const [nombre, momento] of momentosOrdenados) {
@@ -407,24 +412,24 @@ export class ReportesService {
         headerEvaluaciones.push(`Variable`);
       }
       headerEvaluaciones.push('Nº Var');
-
+  
       // Construir filas de evaluaciones detalle - LLENAR CON DATOS REALES DE datosCampoRaw
       const evaluacionesDetalle: any[] = [];
-
+  
       for (const [tratKey, tratData] of tratamientosUnicos.entries()) {
         const filaMediciones: any[] = [
           tratData.tratamiento,
           tratData.bloque,
         ];
-
+  
         let contadorVariables = 0;
-
+  
         // Para cada momento, buscar los valores en datosCampoRaw
         for (const [nombreMomento, momentoData] of momentosOrdenados) {
           let valorMomento = '';
           let fechaMomento = '';
           let variableMomento = '';
-
+  
           // Buscar en datosCampoRaw - TODOS LOS REGISTROS PARA ESTA COMBINACION
           for (const dcRaw of datosCampoRaw as any[]) {
             const dc = dcRaw as any;
@@ -432,7 +437,7 @@ export class ReportesService {
             if (String(dc.numero_trat) !== tratData.tratamiento) continue;
             if (dc.nombre_bloque !== tratData.bloque) continue;
             if (dc.nombre_momento !== nombreMomento) continue;
-
+  
             // Encontrado - llenar datos
             valorMomento = dc.valor ? String(dc.valor) : '';
             variableMomento = dc.nombre_variable || '';
@@ -442,30 +447,27 @@ export class ReportesService {
             contadorVariables++;
             break;
           }
-
+  
           filaMediciones.push(valorMomento);
           filaMediciones.push(fechaMomento);
           filaMediciones.push(variableMomento);
         }
-
+  
         filaMediciones.push(String(contadorVariables));
         evaluacionesDetalle.push(filaMediciones);
       }
-
+  
       // Obtener protocolo y diseño desde BD
-      const protocolo = ensayo.protocolo ? {
-        id: (ensayo.protocolo as any).protocolo_id,
-        descripcion: (ensayo.protocolo as any).descripcion || 'Sin descripción',
-      } : { descripcion: 'Sin protocolo definido' };
-
-      const diseno = {
-        nombre: ensayo.nombreEnsayo || 'No especificado',
-        // Obtener cantidad real de bloques desde parcelas únicas
-        repeticiones: new Set(ensayo.parcelas?.map((p: any) => p.bloque?.bloque_id)).size || 0,
-        // Obtener cantidad real de tratamientos
-        tratamientos: new Set(ensayo.parcelas?.map((p: any) => p.tratamiento?.tratamiento_id)).size || 0,
+      const protocolo = {
+        descripcion: ensayo.protocolo_descripcion || 'Sin protocolo definido',
       };
-
+  
+      const diseno = {
+        nombre: ensayo.nombre_ensayo || 'No especificado',
+        repeticiones: [...new Set(datosTrilla.map((dt: any) => dt.nombre_bloque))].length,
+        tratamientos: [...new Set(datosTrilla.map((dt: any) => dt.numero_trat))].length,
+      };
+  
       return {
         datosCampo: datosCampoProcessed,
         datosTrilla: datosTrillaProcessed,
@@ -702,19 +704,19 @@ export class ReportesService {
     try {
       // USAR obtenerDatosEnsayoRaw que trae TODOS los campos incluyendo larvas_porurf
       const datosRaw = await this.obtenerDatosEnsayoRaw(ensayoId);
-
+  
       if (!datosRaw) {
         throw new Error(`Ensayo ${ensayoId} no encontrado`);
       }
-
+  
       const resumen = this.generarResumenEjecutivo(
         datosRaw.datosCampo || [],
         datosRaw.datosTrilla || [],
         datosRaw.metadadatos,
       );
-
+  
       const pdfData = {
-        metadatos: datosRaw.metadadatos,
+        metadatos: datosRaw.metadatos,
         datosCampo: datosRaw.datosCampo || [],
         datosTrilla: datosRaw.datosTrilla || [],
         estadisticas: datosRaw.estadisticas,
@@ -723,10 +725,12 @@ export class ReportesService {
         evaluacionesFechas: datosRaw.evaluacionesFechas || [],
         evaluacionesDetalle: datosRaw.evaluacionesDetalle || [],
         headerEvaluaciones: datosRaw.headerEvaluaciones || [],
+        protocolo: datosRaw.protocolo, // <-- Pasar protocolo
+        diseno: datosRaw.diseno,       // <-- Pasar diseno
       };
-
+  
       const buffer = await PdfReportGenerator.generarReporteEnsayo(pdfData);
-
+  
       return buffer;
     } catch (error) {
       console.error('❌ Error generando PDF:', error);
@@ -748,7 +752,7 @@ export class ReportesService {
 
       // Construir objeto de datos completo para Excel
       const excelData = {
-        metadatos: datosRaw.metadadatos,
+        metadatos: datosRaw.metadatos,
         datosCampo: datosRaw.datosCampo || [],
         datosTrilla: datosRaw.datosTrilla || [],
         estadisticas: datosRaw.estadisticas,

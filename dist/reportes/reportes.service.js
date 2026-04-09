@@ -177,16 +177,21 @@ let ReportesService = class ReportesService {
      */
     obtenerDatosEnsayoRaw(ensayoId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f;
+            var _a, _b, _c, _d;
             try {
                 const manager = this.ensayoRepository.manager;
                 // 1. ENSAYO COMPLETO
                 const ensayoRaw = yield manager.query(`
-        SELECT e.*, c.nombre as cultivo_nombre, v.nombre as variedad_nombre, ts.nombre as tipo_siembra_nombre
+        SELECT e.*, 
+               c.nombre as cultivo_nombre, 
+               v.nombre as variedad_nombre, 
+               ts.nombre as tipo_siembra_nombre,
+               p.descripcion as protocolo_descripcion
         FROM Ensayo e
         LEFT JOIN Cultivo c ON e.cultivo_id = c.cultivo_id
         LEFT JOIN Cultivo_Variedad v ON e.variedad_id = v.variedad_id
         LEFT JOIN TipoSiembra ts ON e.tipo_siembra_id = ts.id
+        LEFT JOIN Protocolo p ON e.protocolo_id_fk = p.protocolo_id
         WHERE e.ensayo_id = ?
       `, [ensayoId]);
                 if (!ensayoRaw.length)
@@ -435,16 +440,13 @@ let ReportesService = class ReportesService {
                     evaluacionesDetalle.push(filaMediciones);
                 }
                 // Obtener protocolo y diseño desde BD
-                const protocolo = ensayo.protocolo ? {
-                    id: ensayo.protocolo.protocolo_id,
-                    descripcion: ensayo.protocolo.descripcion || 'Sin descripción',
-                } : { descripcion: 'Sin protocolo definido' };
+                const protocolo = {
+                    descripcion: ensayo.protocolo_descripcion || 'Sin protocolo definido',
+                };
                 const diseno = {
-                    nombre: ensayo.nombreEnsayo || 'No especificado',
-                    // Obtener cantidad real de bloques desde parcelas únicas
-                    repeticiones: new Set((_e = ensayo.parcelas) === null || _e === void 0 ? void 0 : _e.map((p) => { var _a; return (_a = p.bloque) === null || _a === void 0 ? void 0 : _a.bloque_id; })).size || 0,
-                    // Obtener cantidad real de tratamientos
-                    tratamientos: new Set((_f = ensayo.parcelas) === null || _f === void 0 ? void 0 : _f.map((p) => { var _a; return (_a = p.tratamiento) === null || _a === void 0 ? void 0 : _a.tratamiento_id; })).size || 0,
+                    nombre: ensayo.nombre_ensayo || 'No especificado',
+                    repeticiones: [...new Set(datosTrilla.map((dt) => dt.nombre_bloque))].length,
+                    tratamientos: [...new Set(datosTrilla.map((dt) => dt.numero_trat))].length,
                 };
                 return {
                     datosCampo: datosCampoProcessed,
@@ -640,7 +642,7 @@ let ReportesService = class ReportesService {
                 }
                 const resumen = this.generarResumenEjecutivo(datosRaw.datosCampo || [], datosRaw.datosTrilla || [], datosRaw.metadadatos);
                 const pdfData = {
-                    metadatos: datosRaw.metadadatos,
+                    metadatos: datosRaw.metadatos,
                     datosCampo: datosRaw.datosCampo || [],
                     datosTrilla: datosRaw.datosTrilla || [],
                     estadisticas: datosRaw.estadisticas,
@@ -649,6 +651,8 @@ let ReportesService = class ReportesService {
                     evaluacionesFechas: datosRaw.evaluacionesFechas || [],
                     evaluacionesDetalle: datosRaw.evaluacionesDetalle || [],
                     headerEvaluaciones: datosRaw.headerEvaluaciones || [],
+                    protocolo: datosRaw.protocolo, // <-- Pasar protocolo
+                    diseno: datosRaw.diseno, // <-- Pasar diseno
                 };
                 const buffer = yield pdf_generator_1.PdfReportGenerator.generarReporteEnsayo(pdfData);
                 return buffer;
@@ -672,7 +676,7 @@ let ReportesService = class ReportesService {
                 }
                 // Construir objeto de datos completo para Excel
                 const excelData = {
-                    metadatos: datosRaw.metadadatos,
+                    metadatos: datosRaw.metadatos,
                     datosCampo: datosRaw.datosCampo || [],
                     datosTrilla: datosRaw.datosTrilla || [],
                     estadisticas: datosRaw.estadisticas,
