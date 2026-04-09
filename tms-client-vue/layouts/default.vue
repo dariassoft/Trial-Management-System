@@ -2,23 +2,23 @@
 import { useAuthStore } from '~/stores/auth'
 import { useTheme } from '~/composables/useTheme'
 import { useNotificacionesStore } from '~/stores/notificaciones'
+import { useMenuStore } from '~/stores/menu'
 import { ref, onMounted, onUnmounted } from 'vue'
-import ModuleMenu from '~/components/navigation/ModuleMenu.vue'
+import SideMenu from '~/components/navigation/SideMenu.vue'
 import TheToast from '~/components/common/TheToast.vue'
 import OfflineIndicator from '~/components/common/OfflineIndicator.vue'
 
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()
 const notificacionesStore = useNotificacionesStore()
-const showMenu = ref(false)
+const menuStore = useMenuStore()
+const showUserMenu = ref(false)
 let pollInterval: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
   useTheme().initializeTheme()
-  // Cargar el conteo de notificaciones no leídas
   if (authStore.isAuthenticated) {
     notificacionesStore.fetchUnreadCount()
-    // Polling cada 60 segundos
     pollInterval = setInterval(() => {
       if (authStore.isAuthenticated) {
         notificacionesStore.fetchUnreadCount()
@@ -30,130 +30,82 @@ onMounted(() => {
 onUnmounted(() => {
   if (pollInterval) {
     clearInterval(pollInterval)
-    pollInterval = null
   }
 })
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
-    <!-- Toast Notification -->
-    <TheToast />
+  <div class="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+    <!-- Mobile Menu (Drawer) -->
+    <div class="md:hidden">
+      <SideMenu />
+    </div>
 
-    <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-md">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <!-- Logo -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-            <span class="text-white font-bold">TMS</span>
-          </div>
-          <span class="text-xl font-bold text-gray-900 dark:text-white">Trial Management System</span>
+    <!-- Desktop Menu (Permanent) -->
+    <div class="hidden md:flex md:w-64 md:flex-shrink-0">
+      <div class="flex flex-col w-64">
+        <div class="flex flex-col flex-1 h-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+          <SideMenu />
         </div>
+      </div>
+    </div>
 
-        <!-- Navigation y User Menu -->
-        <div class="flex items-center gap-4">
-          <!-- Theme Toggle -->
-          <button
-            @click="toggleTheme"
-            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            :title="isDark ? 'Light mode' : 'Dark mode'"
-          >
-            <svg v-if="!isDark" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8 0 1010.586 10.586z" />
-            </svg>
-            <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm5.657-9.193a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zM5 8a1 1 0 100-2H4a1 1 0 000 2h1z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
-
-          <!-- Notification Bell -->
-          <NuxtLink
-            to="/notificaciones"
-            class="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            title="Notificaciones"
-          >
-            <!-- Bell icon -->
-            <svg
-              class="w-6 h-6"
-              :class="notificacionesStore.unreadCount > 0 ? 'text-yellow-500' : 'text-gray-600 dark:text-gray-300'"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-            </svg>
-            <!-- Badge -->
-            <span
-              v-if="notificacionesStore.unreadCount > 0"
-              class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full"
-            >
-              {{ notificacionesStore.unreadCount > 99 ? '99+' : notificacionesStore.unreadCount }}
-            </span>
-          </NuxtLink>
-
-          <!-- User Menu -->
-          <div class="relative">
-            <button
-              @click="showMenu = !showMenu"
-              class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {{ authStore.user?.nombre?.[0]?.toUpperCase() || 'U' }}
-              </div>
-              <span class="text-sm text-gray-900 dark:text-white">{{ authStore.user?.nombre }}</span>
+    <div class="flex flex-col flex-1 w-0 overflow-hidden">
+      <!-- Header -->
+      <header class="relative z-10 flex-shrink-0 flex h-16 bg-white dark:bg-gray-800 shadow">
+        <button
+          @click="menuStore.open()"
+          class="px-4 border-r border-gray-200 dark:border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+        >
+          <span class="sr-only">Open sidebar</span>
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+        </button>
+        <div class="flex-1 px-4 flex justify-between">
+          <div class="flex-1 flex">
+            <!-- You can add a search bar here if needed -->
+          </div>
+          <div class="ml-4 flex items-center md:ml-6">
+            <button @click="toggleTheme" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
+              <svg v-if="!isDark" class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8 0 1010.586 10.586z" /></svg>
+              <svg v-else class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm5.657-9.193a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zM5 8a1 1 0 100-2H4a1 1 0 000 2h1z" clip-rule="evenodd" /></svg>
             </button>
-
-            <!-- Dropdown -->
-            <transition
-              enter-active-class="transition ease-out duration-100"
-              enter-from-class="transform opacity-0 scale-95"
-              enter-to-class="transform opacity-100 scale-100"
-              leave-active-class="transition ease-in duration-75"
-              leave-from-class="transform opacity-100 scale-100"
-              leave-to-class="transform opacity-0 scale-95"
-            >
-              <div
-                v-show="showMenu"
-                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg py-2 z-10"
-              >
-                <div class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300">
-                  {{ authStore.userRole }}
-                </div>
-                <button
-                  @click="authStore.logout(); navigateTo('/login'); showMenu = false"
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  Cerrar sesión
+            <NuxtLink to="/notificaciones" class="p-1 ml-3 rounded-full text-gray-400 hover:text-gray-500 relative">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a2 2 0 10-4 0v.083A6 6 0 004 11v3.159c0 .538-.214 1.055-.595 1.436L2 17h5m10 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+              <span v-if="notificacionesStore.unreadCount > 0" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
+            </NuxtLink>
+            <!-- Profile dropdown -->
+            <div class="ml-3 relative">
+              <div>
+                <button @click="showUserMenu = !showUserMenu" class="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <span class="sr-only">Open user menu</span>
+                  <div class="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-bold">
+                    {{ authStore.user?.nombre?.[0]?.toUpperCase() || 'U' }}
+                  </div>
                 </button>
               </div>
-            </transition>
+              <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+                <div v-show="showUserMenu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
+                  <div class="px-4 py-2 text-sm text-gray-700">{{ authStore.userRole }}</div>
+                  <a @click="authStore.logout(); navigateTo('/login'); showUserMenu = false" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cerrar sesión</a>
+                </div>
+              </transition>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- Navigation Menu -->
-    <ModuleMenu />
-
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
-      <slot />
-    </main>
-
-    <!-- Indicador de estado offline/sync -->
+      <!-- Main Content -->
+      <main class="flex-1 relative overflow-y-auto focus:outline-none" tabindex="0">
+        <div class="py-6">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+            <slot />
+          </div>
+        </div>
+      </main>
+    </div>
+    <TheToast />
     <OfflineIndicator />
-
-    <!-- Footer -->
-    <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-8">
-      <div class="max-w-7xl mx-auto px-4 py-6 text-center text-gray-600 dark:text-gray-400 text-sm">
-        <p>&copy; 2024 Trial Management System. All rights reserved.</p>
-      </div>
-    </footer>
   </div>
 </template>
