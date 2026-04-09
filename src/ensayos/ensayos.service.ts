@@ -59,6 +59,28 @@ export class EnsayosService {
 
     return this.ensayoRepo.save(entity);
   }
+  
+  async findForSelect(term: string) {
+    const { isInvitado, labIds } = this.auth;
+    const qb = this.ensayoRepo.createQueryBuilder('e');
+  
+    if (term && term.length >= 3) {
+      qb.where('LOWER(e.nombreEnsayo) LIKE LOWER(:term)', { term: `%${term}%` });
+    }
+  
+    if (isInvitado) {
+      qb.leftJoin('e.tratamientos', 't')
+        .leftJoin('t.productos', 'tp')
+        .leftJoin('tp.producto', 'p')
+        .andWhere('p.laboratorio.id IN (:...labIds)', { labIds })
+        .distinct(true);
+    }
+  
+    // Select only the necessary fields
+    qb.select(['e.id', 'e.nombreEnsayo']);
+  
+    return qb.getMany();
+  }
 
   async findAll(query: { page?: number; limit?: number; sort?: string; order?: 'ASC'|'DESC'; q?: string; fechaSiembraStart?: string; fechaSiembraEnd?: string; laboratorio?: string; variedad?: string; }) {
     const page = query.page ?? 1;

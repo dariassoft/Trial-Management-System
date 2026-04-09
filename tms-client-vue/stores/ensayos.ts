@@ -115,6 +115,16 @@ export const useEnsayosStore = defineStore('ensayos', () => {
     }
   }
 
+  const fetchEnsayosForSelect = async (term: string) => {
+    try {
+      const response = await api.get(`/ensayos/select?term=${term}`);
+      return response; // Devuelve directamente la respuesta de la API
+    } catch (err) {
+      console.error('Error en fetchEnsayosForSelect:', err);
+      throw err;
+    }
+  };
+
   const createEnsayo = async (data: Ensayo) => {
     loading.value = true
     error.value = null
@@ -166,5 +176,6 @@ export const useEnsayosStore = defineStore('ensayos', () => {
     createEnsayo,
     updateEnsayo,
     deleteEnsayo,
+    fetchEnsayosForSelect,
   }
 })

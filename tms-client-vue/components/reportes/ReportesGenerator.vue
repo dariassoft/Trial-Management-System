@@ -1,24 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useReportesStore } from '~/stores/reportes'
-import { useEnsayosStore } from '~/stores/ensayos'
+import EnsayoSearchSelect from './EnsayoSearchSelect.vue'
 
 const reportesStore = useReportesStore()
-const ensayosStore = useEnsayosStore()
 
 const ensayoSeleccionado = ref<number | null>(null)
 const tipoReporte = ref<'pdf' | 'excel'>('pdf')
-const vistaPreviaData = ref<any>(null)
-const mostrarVistaPrevia = ref(false)
 
-const ensayos = computed(() => ensayosStore.ensayos)
 const generando = computed(() => reportesStore.generando)
 const error = computed(() => reportesStore.error)
 const success = computed(() => reportesStore.success)
-
-onMounted(async () => {
-  await ensayosStore.fetchEnsayos()
-})
 
 const generarReporte = async () => {
   if (!ensayoSeleccionado.value) {
@@ -67,23 +59,7 @@ const generarReporte = async () => {
     <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
       <div class="space-y-6">
         <!-- Seleccionar Ensayo -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            🌾 Seleccionar Ensayo
-          </label>
-          <select
-            v-model.number="ensayoSeleccionado"
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option :value="null">-- Elige un ensayo --</option>
-            <option v-for="ensayo in ensayos" :key="ensayo.id" :value="ensayo.id">
-              {{ `Ensayo #${ensayo.id} - ${ensayo.nombreEnsayo}` }}
-            </option>
-          </select>
-          <p v-if="ensayos.length === 0" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            No hay ensayos disponibles
-          </p>
-        </div>
+        <EnsayoSearchSelect v-model="ensayoSeleccionado" />
 
         <!-- Tipo de Reporte -->
         <div>
@@ -173,4 +149,3 @@ const generarReporte = async () => {
     </div>
   </div>
 </template>
-

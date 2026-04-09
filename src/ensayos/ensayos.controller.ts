@@ -56,6 +56,14 @@ export class EnsayosController {
     return this.ensayosService.create(dto);
   }
 
+  @Get('select')
+  @ApiOperation({ summary: 'Buscar ensayos para un select/autocomplete' })
+  @ApiOkResponse({ description: 'Lista de ensayos que coinciden con el término de búsqueda.', isArray: true })
+  @ApiQuery({ name: 'term', required: false, type: String, description: 'Término de búsqueda (mínimo 3 caracteres).' })
+  findForSelect(@Query('term') term: string) {
+    return this.ensayosService.findForSelect(term);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Listar todos los ensayos (paginado y filtrado)' })
   @ApiOkResponse({ description: 'Lista paginada de ensayos.', schema: { example: { data: [], meta: { total: 0, page: 1, limit: 10, pageCount: 0 } } } })

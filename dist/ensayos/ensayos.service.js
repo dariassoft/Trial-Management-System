@@ -74,6 +74,25 @@ let EnsayosService = class EnsayosService {
             return this.ensayoRepo.save(entity);
         });
     }
+    findForSelect(term) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { isInvitado, labIds } = this.auth;
+            const qb = this.ensayoRepo.createQueryBuilder('e');
+            if (term && term.length >= 3) {
+                qb.where('LOWER(e.nombreEnsayo) LIKE LOWER(:term)', { term: `%${term}%` });
+            }
+            if (isInvitado) {
+                qb.leftJoin('e.tratamientos', 't')
+                    .leftJoin('t.productos', 'tp')
+                    .leftJoin('tp.producto', 'p')
+                    .andWhere('p.laboratorio.id IN (:...labIds)', { labIds })
+                    .distinct(true);
+            }
+            // Select only the necessary fields
+            qb.select(['e.id', 'e.nombreEnsayo']);
+            return qb.getMany();
+        });
+    }
     findAll(query) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c, _d;

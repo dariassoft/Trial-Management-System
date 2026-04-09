@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="ajuste en notificaciones">
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" afterDir="false" />
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="nuevo menu">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/ensayos/ensayos.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ensayos/ensayos.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/reportes/ReportesGenerator.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/reportes/ReportesGenerator.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/ensayos.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +46,9 @@
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
@@ -347,7 +356,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775708279861</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="nuevo menu">
+      <option name="closed" value="true" />
+      <created>1775708788989</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1775708788989</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -376,7 +393,8 @@
     <MESSAGE value="compilacion de reportes." />
     <MESSAGE value="backups" />
     <MESSAGE value="ajuste en notificaciones" />
-    <option name="LAST_COMMIT_MESSAGE" value="ajuste en notificaciones" />
+    <MESSAGE value="nuevo menu" />
+    <option name="LAST_COMMIT_MESSAGE" value="nuevo menu" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

@@ -28,6 +28,9 @@ let EnsayosController = class EnsayosController {
     create(dto) {
         return this.ensayosService.create(dto);
     }
+    findForSelect(term) {
+        return this.ensayosService.findForSelect(term);
+    }
     findAll(query) {
         return this.ensayosService.findAll(query);
     }
@@ -84,6 +87,16 @@ __decorate([
     __metadata("design:paramtypes", [create_ensayo_dto_1.CreateEnsayoDto]),
     __metadata("design:returntype", void 0)
 ], EnsayosController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('select'),
+    (0, swagger_1.ApiOperation)({ summary: 'Buscar ensayos para un select/autocomplete' }),
+    (0, swagger_1.ApiOkResponse)({ description: 'Lista de ensayos que coinciden con el término de búsqueda.', isArray: true }),
+    (0, swagger_1.ApiQuery)({ name: 'term', required: false, type: String, description: 'Término de búsqueda (mínimo 3 caracteres).' }),
+    __param(0, (0, common_1.Query)('term')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], EnsayosController.prototype, "findForSelect", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar todos los ensayos (paginado y filtrado)' }),
