@@ -79,12 +79,18 @@ export class ReportesEspecializadosService {
       y: t.rendimientoCV,
     }));
 
+    const datosGIE = tabla.map(t => ({
+      x: t.tratamiento,
+      y: t.giePromedio,
+    }));
+
     return {
       nombre: 'Rendimiento y Calidad por Tratamiento',
       tabla,
       graficos: {
         barras: datosBarras,
         variabilidad: datosCV,
+        gie: datosGIE,
       },
       analisis: this.analizarRendimiento(tabla),
     };
@@ -581,4 +587,3 @@ export class ReportesEspecializadosService {
     return `En el ensayo de ${cultivo} realizado en ${provincia}, el tratamiento ${mejorFicha.tratamiento} mostró el mejor desempeño general. Se recomienda evaluar su implementación en producción considerando las condiciones específicas del lote.`;
   }
 }
-

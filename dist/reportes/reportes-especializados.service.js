@@ -80,12 +80,17 @@ let ReportesEspecializadosService = class ReportesEspecializadosService {
             x: t.tratamiento,
             y: t.rendimientoCV,
         }));
+        const datosGIE = tabla.map(t => ({
+            x: t.tratamiento,
+            y: t.giePromedio,
+        }));
         return {
             nombre: 'Rendimiento y Calidad por Tratamiento',
             tabla,
             graficos: {
                 barras: datosBarras,
                 variabilidad: datosCV,
+                gie: datosGIE,
             },
             analisis: this.analizarRendimiento(tabla),
         };

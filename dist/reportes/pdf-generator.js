@@ -306,51 +306,46 @@ class PdfReportGenerator {
         // GRÁFICO 1: RENDIMIENTO
         const rendimientos = labels.map(t => parseFloat(String(estadisticas[t].promedio || 0)));
         if (rendimientos.some(v => v > 0)) {
-            // Calcular rango dinámico
             const maxRendimiento = Math.max(...rendimientos);
             const minRendimiento = Math.min(...rendimientos);
             const rangoRendimiento = maxRendimiento - minRendimiento;
-            // Agregar 10% de margen arriba y abajo
             const margen = rangoRendimiento * 0.1 || 100;
             const minVal = Math.max(0, minRendimiento - margen);
             const maxVal = maxRendimiento + margen;
-            // Verificar espacio en página - altura necesaria: título(30) + gráfico(200) + margen(50) = 280px
-            if (doc.y > 550) {
+            if (doc.y > 550)
                 doc.addPage();
-            }
             doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('Rendimiento Promedio por Tratamiento (kg/ha)', doc.page.margins.left, doc.y);
             doc.moveDown(0.8);
             PdfReportGenerator.dibujarGraficoBarras(doc, labels, rendimientos, minVal, maxVal, 450, 200);
             doc.moveDown(1);
             paginasGeneradas++;
         }
-        // GRÁFICO 2: GIE - NUEVA PÁGINA SOLO SI HAY DATOS
+        // GRÁFICO 2: GIE
         const gieValues = labels.map(t => parseFloat(String(estadisticas[t].gie || 0)));
-        if (gieValues.some(v => v > 0)) {
-            // Siempre crear nueva página para GIE
+        if (gieValues.some(v => !isNaN(v))) {
             doc.addPage();
-            doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
-                .text('GIE Promedio por Tratamiento (%)', 50, 80);
-            doc.moveDown(0.5);
-            PdfReportGenerator.dibujarGraficoGIESimple(doc, labels, gieValues);
+            const maxGie = Math.max(...gieValues);
+            const minGie = Math.min(...gieValues);
+            const rangoGie = maxGie - minGie;
+            const margen = rangoGie * 0.1 || 5;
+            const minVal = minGie - margen;
+            const maxVal = maxGie + margen;
+            doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('GIE Promedio por Tratamiento (%)', doc.page.margins.left, doc.y);
+            doc.moveDown(0.8);
+            PdfReportGenerator.dibujarGraficoBarras(doc, labels, gieValues, minVal, maxVal, 450, 200);
+            doc.moveDown(1);
             paginasGeneradas++;
         }
-        // GRÁFICO 3: PLAGAS VS BENÉFICOS - NUEVA PÁGINA SOLO SI HAY DATOS
+        // GRÁFICO 3: PLAGAS VS BENÉFICOS
         const larvas = labels.map(t => parseFloat(String(estadisticas[t].larvas_porurf || 0)));
         const beneficos = labels.map(t => parseFloat(String(estadisticas[t].insectos_beneficios_porurf || 0)));
         if (larvas.some(v => v > 0) || beneficos.some(v => v > 0)) {
-            // Siempre crear nueva página para plagas
             doc.addPage();
-            doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
-                .text('Plagas vs Insectos Benéficos (por m²)', 50, 80);
+            doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000').text('Plagas vs Insectos Benéficos (por m²)', 50, 80);
             doc.moveDown(0.5);
-            console.log(`🐛 GRÁFICO PLAGAS - Labels: ${JSON.stringify(labels)}`);
-            console.log(`🐛 GRÁFICO PLAGAS - Larvas: ${JSON.stringify(larvas)}`);
-            console.log(`🐛 GRÁFICO PLAGAS - Benéficos: ${JSON.stringify(beneficos)}`);
             PdfReportGenerator.dibujarGraficoPlayasSimple(doc, labels, larvas, beneficos);
             paginasGeneradas++;
         }
-        // Si no se generó ningún gráfico, no agregues nada (no dejar página en blanco)
         console.log(`📊 Gráficos generados: ${paginasGeneradas}`);
     }
     /**

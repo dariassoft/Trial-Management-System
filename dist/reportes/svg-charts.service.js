@@ -59,19 +59,20 @@ let SvgChartsService = class SvgChartsService {
         const padding = 60;
         const anchoGrafico = ancho - padding * 2;
         const altoGrafico = alto - padding * 2;
-        // Encontrar máximo para escala
-        const maximo = Math.max(...datos.map(d => d.y + (d.error || 0)));
-        const escala = altoGrafico / maximo;
+        // Determinar el rango de datos (mínimo y máximo)
+        const valoresY = datos.map(d => d.y);
+        const minVal = Math.min(0, ...valoresY); // Asegurarse de que el 0 esté incluido
+        const maxVal = Math.max(...valoresY.map((y, i) => y + (datos[i].error || 0)));
+        const rango = maxVal - minVal;
+        // Si el rango es 0, evitar división por cero
+        const escala = rango === 0 ? 1 : altoGrafico / rango;
+        // Posición del eje Y cero
+        const yCero = alto - padding - (-minVal * escala);
         // Ancho de cada barra
         const anchoBarraItem = anchoGrafico / (datos.length * 1.5);
         // Colores
         const colores = [
-            '#1f77b4',
-            '#ff7f0e',
-            '#2ca02c',
-            '#d62728',
-            '#9467bd',
-            '#8c564b',
+            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b',
         ];
         let svg = `
       <svg width="${ancho}" height="${alto}" xmlns="http://www.w3.org/2000/svg">
@@ -87,24 +88,28 @@ let SvgChartsService = class SvgChartsService {
         <rect width="${ancho}" height="${alto}" fill="white" stroke="none"/>
         
         <!-- Título -->
-        <text x="${ancho / 2}" y="30" text-anchor="middle" class="titulo">
-          ${titulo}
-        </text>
+        <text x="${ancho / 2}" y="30" text-anchor="middle" class="titulo">${titulo}</text>
         
-        <!-- Ejes -->
+        <!-- Eje Y -->
         <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${alto - padding}" stroke="black" stroke-width="2"/>
-        <line x1="${padding}" y1="${alto - padding}" x2="${ancho - padding}" y2="${alto - padding}" stroke="black" stroke-width="2"/>
+        
+        <!-- Eje X (línea del cero) -->
+        <line x1="${padding}" y1="${yCero}" x2="${ancho - padding}" y2="${yCero}" stroke="black" stroke-width="2"/>
         
         <!-- Etiqueta eje Y -->
-        <text x="20" y="${(alto + padding) / 2}" text-anchor="middle" transform="rotate(-90 20 ${(alto + padding) / 2})" class="etiqueta">
-          ${ejeY}
-        </text>
+        <text x="20" y="${(alto + padding) / 2}" text-anchor="middle" transform="rotate(-90 20 ${(alto + padding) / 2})" class="etiqueta">${ejeY}</text>
     `;
         // Generar barras
         datos.forEach((punto, indice) => {
             const x = padding + (indice + 0.5) * (anchoGrafico / datos.length);
-            const altoBarra = punto.y * escala;
-            const y = alto - padding - altoBarra;
+            const altoBarra = Math.abs(punto.y * escala);
+            let y;
+            if (punto.y < 0) {
+                y = yCero;
+            }
+            else {
+                y = yCero - altoBarra;
+            }
             const color = colores[indice % colores.length];
             // Barra
             svg += `
@@ -115,9 +120,10 @@ let SvgChartsService = class SvgChartsService {
           stroke="#333" stroke-width="1"
         />
       `;
-            // Valor encima de la barra
+            // Valor encima o debajo de la barra
+            const yTexto = punto.y >= 0 ? y - 10 : y + altoBarra + 20;
             svg += `
-        <text x="${x}" y="${y - 10}" text-anchor="middle" class="etiqueta" font-weight="bold">
+        <text x="${x}" y="${yTexto}" text-anchor="middle" class="etiqueta" font-weight="bold">
           ${punto.y.toFixed(0)}
         </text>
       `;
@@ -128,9 +134,7 @@ let SvgChartsService = class SvgChartsService {
         </text>
       `;
         });
-        svg += `
-      </svg>
-    `;
+        svg += `</svg>`;
         return svg;
     }
     /**
