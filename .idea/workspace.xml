@@ -4,20 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="reporte pdf pagina 4 algunos datos arreglados pero se rompieron 1,2,3, y 4">
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="wizard o asistente primnera version.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/reportes/pdf-generator.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/pdf-generator.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/reportes/reportes.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/reportes.service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportes/pdf-generator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/pdf-generator.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportes/reportes.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/reportes.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-backend-old.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-backend-old.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-backend-old.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-backend-prod.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-backend.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-backend.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-backend.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-backend_production_old.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-old.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-old.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-old.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod-old.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue-prod.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue.zip" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tms-client-vue.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tms-client-vue.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +37,7 @@
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="542" />
+    <option name="cachedIndexableFilesCount" value="743" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -217,7 +214,10 @@
       <workItem from="1773368987042" duration="1228000" />
       <workItem from="1773684153590" duration="106000" />
       <workItem from="1774961012988" duration="815000" />
-      <workItem from="1775747149681" duration="445000" />
+      <workItem from="1775747149681" duration="9098000" />
+      <workItem from="1775947725786" duration="1001000" />
+      <workItem from="1776209689829" duration="1286000" />
+      <workItem from="1776213460699" duration="359000" />
     </task>
     <task id="LOCAL-00001" summary="resueltos algunos errores grales">
       <option name="closed" value="true" />
@@ -395,7 +395,39 @@
       <option name="project" value="LOCAL" />
       <updated>1775712045583</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="fix bugs en reporte pdf">
+      <option name="closed" value="true" />
+      <created>1775747895843</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1775747895843</updated>
+    </task>
+    <task id="LOCAL-00024" summary="titulo y arreglos simples en el menu de navegacion.">
+      <option name="closed" value="true" />
+      <created>1775750271576</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1775750271576</updated>
+    </task>
+    <task id="LOCAL-00025" summary="titulo y arreglos simples en el menu de navegacion.">
+      <option name="closed" value="true" />
+      <created>1775750355189</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1775750355189</updated>
+    </task>
+    <task id="LOCAL-00026" summary="wizard o asistente primnera version.">
+      <option name="closed" value="true" />
+      <created>1775754564098</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1775754564098</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -428,7 +460,10 @@
     <MESSAGE value="busqueda de ensayos en reportes" />
     <MESSAGE value="grafica en reporte pdf arreglada" />
     <MESSAGE value="reporte pdf pagina 4 algunos datos arreglados pero se rompieron 1,2,3, y 4" />
-    <option name="LAST_COMMIT_MESSAGE" value="reporte pdf pagina 4 algunos datos arreglados pero se rompieron 1,2,3, y 4" />
+    <MESSAGE value="fix bugs en reporte pdf" />
+    <MESSAGE value="titulo y arreglos simples en el menu de navegacion." />
+    <MESSAGE value="wizard o asistente primnera version." />
+    <option name="LAST_COMMIT_MESSAGE" value="wizard o asistente primnera version." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

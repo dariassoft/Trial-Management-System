@@ -7,10 +7,27 @@
       </h3>
       <button
         @click="abrirNuevaParcela"
-        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition flex items-center gap-2"
+        :disabled="isBloqueCompleto"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         <span>+</span> Nueva Parcela
       </button>
+    </div>
+
+    <!-- Notas informativas -->
+    <div v-if="ensayoActual" class="space-y-2">
+      <div class="p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-200">
+        <p><span class="font-semibold">Nota:</span> Este bloque debe tener {{ parcelasEsperadasPorBloque }} parcelas (una por cada tratamiento).</p>
+      </div>
+      <div v-if="!isBloqueCompleto && parcelasEsperadasPorBloque > 0" class="p-3 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded text-sm text-yellow-800 dark:text-yellow-200">
+        <p><span class="font-semibold">Atención:</span> Faltan por definir {{ parcelasEsperadasPorBloque - parcelas.length }} parcelas para completar este bloque.</p>
+      </div>
+      <div v-if="parcelas.length > parcelasEsperadasPorBloque && parcelasEsperadasPorBloque > 0" class="p-3 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded text-sm text-red-800 dark:text-red-200">
+        <p><span class="font-semibold">Atención:</span> Se han definido {{ parcelas.length - parcelasEsperadasPorBloque }} parcelas de más para este bloque.</p>
+      </div>
+      <div v-if="isBloqueCompleto" class="p-3 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-200">
+        <p><span class="font-semibold">Bloque Completo:</span> Se han definido todas las parcelas para este bloque ({{ parcelas.length }}/{{ parcelasEsperadasPorBloque }}).</p>
+      </div>
     </div>
 
     <!-- Cargando -->
@@ -80,7 +97,7 @@
               {{ parcela.nombreParcela || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
-              {{ parcela.tratamiento?.nombreTratamiento || '-' }}
+              {{ parcela.tratamiento?.descripcion || parcela.tratamiento?.nombreTratamiento || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
               {{ parcela.posXGrid || '-' }}, {{ parcela.posYGrid || '-' }}
@@ -114,6 +131,7 @@
       :ensayo="ensayoActual"
       :bloque="bloqueActual"
       :parcelasExistentes="parcelas"
+      :is-bloque-completo="isBloqueCompleto"
       @save="guardarParcela"
       @close="cerrarFormParcela"
     />
@@ -167,6 +185,16 @@ const ensayoActual = computed(() => {
   const storeEnsayo = ensayosStore.currentEnsayo as Ensayo | null
   if (storeEnsayo && Number(storeEnsayo?.id) === Number(props.ensayoId)) return storeEnsayo
   return null
+})
+
+const parcelasEsperadasPorBloque = computed(() => {
+  if (!ensayoActual.value) return 0
+  return ensayoActual.value.columnas || 0
+})
+
+const isBloqueCompleto = computed(() => {
+  if (!parcelasEsperadasPorBloque.value) return false
+  return parcelas.value.length >= parcelasEsperadasPorBloque.value
 })
 
 // Obtener bloque actual - DESDE PROPS O STORES
@@ -376,4 +404,3 @@ async function eliminarParcela(id: number) {
   await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
 }
 </script>
-

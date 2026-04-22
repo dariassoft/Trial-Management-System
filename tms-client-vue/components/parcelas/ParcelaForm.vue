@@ -163,7 +163,7 @@
           </button>
           <button
             type="submit"
-            :disabled="!form.tratamientoId"
+            :disabled="!form.tratamientoId || (isBloqueCompleto && !parcela?.id)"
             class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition"
           >
             {{ parcela?.id ? 'Actualizar' : 'Crear' }}
@@ -432,6 +432,7 @@ interface Props {
     tipoEnsayo?: { id?: number; nombre: string } | null
     protocolo?: { id: number; nombre: string } | null
     protocoloId?: number | null
+    parcelas?: any[]
   } | null
   bloque?: { id: number; nombreBloque: string } | null
   parcelasExistentes?: Array<{
@@ -441,6 +442,7 @@ interface Props {
     bloqueId?: number
     bloque?: { id: number; nombreBloque?: string } | null
   }> | null
+  isBloqueCompleto?: boolean // New prop
 }
 
 interface Emits {
@@ -450,6 +452,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   parcelasExistentes: () => [],
+  isBloqueCompleto: false, // Default value for new prop
 })
 const emit = defineEmits<Emits>()
 
@@ -490,43 +493,6 @@ const nombreBloque = computed(() => {
 // Filas y columnas del ensayo
 const filasEnsayo = computed(() => props.ensayo?.filas || null)
 const columnasEnsayo = computed(() => props.ensayo?.columnas || null)
-
-// Parcelas ocupadas en el bloque actual (excluyendo la que se está editando)
-const parcelasOcupadas = computed(() => {
-  console.log('📍 parcelasOcupadas COMPUTED called')
-
-  if (!props.parcelasExistentes) {
-    console.log('⚠️ parcelasOcupadas: props.parcelasExistentes es null/undefined')
-    return []
-  }
-
-  console.log('🔍 Calculando parcelasOcupadas:')
-  console.log('   - props.parcelasExistentes:', props.parcelasExistentes?.length || 0, 'parcelas totales')
-  console.log('   - Estructura de parcela[0]:', props.parcelasExistentes[0])
-  console.log('   - props.bloque?.id:', props.bloque?.id)
-  console.log('   - props.parcela?.id (la que se edita):', props.parcela?.id)
-
-  const parcelas = props.parcelasExistentes
-    .filter(p => {
-      // La estructura viene como: { id, bloque: { id, nombreBloque }, posXGrid, posYGrid, ... }
-      const bloqueId = p.bloque?.id || p.bloqueId  // Intenta ambas estructuras
-      const bloqueIdComparison = Number(bloqueId) === Number(props.bloque?.id)
-      const noEsLaActual = p.id !== props.parcela?.id
-      const tieneUbicacion = p.posXGrid && p.posYGrid
-
-      console.log(`   📦 Parcela ${p.id}: bloque.id=${bloqueId}, mismoBloque=${bloqueIdComparison}, noEsLaActual=${noEsLaActual}, X=${p.posXGrid}, Y=${p.posYGrid}, tieneUbicacion=${tieneUbicacion}`)
-
-      if (bloqueIdComparison && noEsLaActual && tieneUbicacion) {
-        console.log(`      ✓ INCLUIDA: Parcela ${p.id}: X=${p.posXGrid}, Y=${p.posYGrid}`)
-      }
-
-      return bloqueIdComparison && noEsLaActual && tieneUbicacion
-    })
-    .map(p => ({ x: p.posXGrid as number, y: p.posYGrid as number }))
-
-  console.log('   → Parcelas ocupadas FINALES:', parcelas)
-  return parcelas
-})
 
 const tratamientosDelEnsayo = computed(() => {
   console.log('==== tratamientosDelEnsayo computed ====')
@@ -936,6 +902,12 @@ function enviar() {
   console.log('  - form.posXGrid:', form.posXGrid)
   console.log('  - form.posYGrid:', form.posYGrid)
 
+  // If creating a new parcel and the block is already complete, prevent submission
+  if (props.isBloqueCompleto && !props.parcela?.id) {
+    alert('Este bloque ya está completo. No se pueden crear más parcelas en él.')
+    return
+  }
+
   // Validar que tratamientoId esté definido
   if (form.tratamientoId === null || form.tratamientoId === undefined) {
     console.error('❌ Error: tratamientoId es requerido')
@@ -990,4 +962,3 @@ function enviar() {
   emit('save', datos)
 }
 </script>
-

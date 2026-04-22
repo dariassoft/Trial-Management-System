@@ -7,10 +7,16 @@
       </h3>
       <button
         @click="abrirFormBloque()"
-        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition flex items-center gap-2"
+        :disabled="isMaxBloquesAlcanzado"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         <span>+</span> Nuevo Bloque
       </button>
+    </div>
+
+    <!-- Nota informativa sobre el límite de bloques -->
+    <div v-if="isMaxBloquesAlcanzado" class="p-3 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-200">
+      <p><span class="font-semibold">Límite alcanzado:</span> Ya se han creado todos los bloques definidos en el ensayo ({{ ensayo.filas }}).</p>
     </div>
 
     <!-- Cargando -->
@@ -152,6 +158,11 @@ const bloques = computed(() => {
 })
 const bloqueExpandido = ref<number | null>(null)
 
+const isMaxBloquesAlcanzado = computed(() => {
+  if (!props.ensayo || !props.ensayo.filas) return false
+  return bloques.value.length >= props.ensayo.filas
+})
+
 // Inicializar
 onMounted(async () => {
   setEnsayoId(props.ensayoId)
@@ -187,4 +198,3 @@ async function eliminarBloque(id: number) {
   await cargarBloques({ ensayoId: props.ensayoId })
 }
 </script>
-

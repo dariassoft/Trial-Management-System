@@ -226,6 +226,9 @@
                 class="w-full border p-2 rounded dark:text-black dark:bg-gray-200"
               />
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Min: 1, Max: 100</p>
+              <div class="mt-2 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-200">
+                <p><span class="font-semibold">Nota:</span> El número de filas define la cantidad de bloques que se deben crear posteriormente en la página de "Bloques y Parcelas".</p>
+              </div>
             </div>
             <div>
               <label class="block font-medium mb-1">
@@ -240,6 +243,9 @@
                 class="w-full border p-2 rounded dark:text-black dark:bg-gray-200"
               />
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Min: 1, Max: 100</p>
+              <div class="mt-2 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-200">
+                <p><span class="font-semibold">Nota:</span> El número de columnas debe ser igual al número de tratamientos definidos en el protocolo seleccionado ({{ selectedProtocolo?.tratamientos?.length || 0 }} tratamientos).</p>
+              </div>
             </div>
             <div>
               <label class="block font-medium mb-1">Total de Parcelas Esperadas</label>
@@ -456,7 +462,7 @@ const positionPopover = () => {
     if (left < 0 || left + popoverRect.width > formRect.width) {
       top = buttonRect.bottom - formRect.top + 10; // Position below the button
       left = buttonRect.left - formRect.left; // Align with button's left edge
-      
+
       // Adjust if positioning below overflows right
       if (left + popoverRect.width > formRect.width) {
         left = formRect.width - popoverRect.width - 10; // 10px from right edge of form
@@ -550,6 +556,15 @@ const fillGeolocation = () => {
 }
 
 const handleSubmit = () => {
+  // Validation
+  if (form.value.protocoloId && form.value.columnas && selectedProtocolo.value) {
+    const numTratamientos = selectedProtocolo.value.tratamientos?.length || 0;
+    if (numTratamientos > 0 && form.value.columnas !== numTratamientos) {
+      showNotification(`El número de columnas (${form.value.columnas}) debe ser igual al número de tratamientos del protocolo (${numTratamientos}).`, 'error');
+      return;
+    }
+  }
+
   const lat = form.value.latitud ? parseFloat(String(form.value.latitud)) : null;
   const lon = form.value.longitud ? parseFloat(String(form.value.longitud)) : null;
   const dist = form.value.distSurcosCm ? parseFloat(String(form.value.distSurcosCm)) : null;
