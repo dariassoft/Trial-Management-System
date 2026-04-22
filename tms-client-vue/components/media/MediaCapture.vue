@@ -217,9 +217,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, computed } from 'vue'
+import { ref, onUnmounted, computed, watch } from 'vue'
 import { useSettingsStore } from '~/stores/settings'
 import { useOfflineStore } from '~/stores/offline'
+import { useNotifications } from '~/composables/useNotifications'
 
 interface CapturedFile {
   type: 'photo' | 'video'
@@ -251,6 +252,7 @@ const emit = defineEmits<{
 
 const settingsStore = useSettingsStore()
 const offlineStore = useOfflineStore()
+const { showNotification } = useNotifications()
 
 const settings = computed(() => settingsStore.settings)
 
@@ -272,6 +274,24 @@ let mediaStream: MediaStream | null = null
 let mediaRecorder: MediaRecorder | null = null
 let recordedChunks: Blob[] = []
 let recordingInterval: ReturnType<typeof setInterval> | null = null
+
+// Watchers for recording limits
+watch(recordingTime, (newTime) => {
+  const limit = settings.value.maxVideoSeconds
+  if (limit > 0 && newTime >= limit - 5 && newTime < limit) {
+    showNotification(`La grabación se detendrá en ${limit - newTime} segundos.`, 'warning')
+  }
+})
+
+watch(
+  () => recordedChunks.reduce((acc, chunk) => acc + chunk.size, 0),
+  (newSize) => {
+    const limit = settings.value.maxVideoSizeMB * 1024 * 1024
+    if (limit > 0 && newSize > limit * 0.9 && newSize < limit) {
+      showNotification(`Llegando al límite de tamaño del video.`, 'warning')
+    }
+  }
+)
 
 // Abrir cámara
 async function openCamera(mode: 'photo' | 'video') {
