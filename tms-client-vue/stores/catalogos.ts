@@ -4,9 +4,9 @@ import { useApi } from '~/composables/useApi';
 export const useCatalogosStore = defineStore('catalogos', () => {
   const api = useApi();
 
-  const usuarios = ref([]); // Renombrado de 'responsables' a 'usuarios'
+  const usuarios = ref([]);
   const provincias = ref([]);
-  const cultivos = ref([]); // Renombrado de 'especies' a 'cultivos' para consistencia
+  const cultivos = ref([]);
   const laboratorios = ref([]);
   const tiposEnsayo = ref([]);
   const tiposSiembra = ref([]);
@@ -14,12 +14,12 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const protocolos = ref([]);
   const productos = ref([]);
   const statusEnsayos = ref([]);
+  const roles = ref([]); // <-- Added roles state
 
-  const fetchUsuarios = async () => { // Renombrado de 'fetchResponsables' a 'fetchUsuarios'
+  const fetchUsuarios = async () => {
     try {
       const response = await api.get('/users?limit=100');
       if (response && response.data) {
-        // Guardar el objeto de usuario completo
         usuarios.value = response.data;
       }
     } catch (error) {
@@ -27,43 +27,47 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     }
   };
 
+  // Function to fetch roles from the backend
+  const fetchRoles = async (options: { limit?: number } = {}) => {
+    try {
+      const response = await api.get('/roles', { params: { limit: options.limit || 100 } });
+      if (response && response.data) {
+        roles.value = response.data;
+      } else if (Array.isArray(response)) {
+        roles.value = response;
+      }
+      console.log('✅ Roles cargados:', roles.value.length);
+      return roles.value;
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+      roles.value = [];
+      return [];
+    }
+  };
+
   const fetchProvincias = async () => {
     try {
       const response = await api.get('/locations/provincias');
-      // Manejar array directo o dentro de response
       if (Array.isArray(response)) {
         provincias.value = response;
       } else if (response && Array.isArray(response.data)) {
         provincias.value = response.data;
-      } else {
-        provincias.value = [];
       }
-      console.log('✅ Provincias cargadas:', provincias.value.length);
-      return provincias.value;
     } catch (error) {
       console.error('Error fetching provincias:', error);
-      provincias.value = [];
-      return [];
     }
   };
 
   const fetchEspecies = async () => {
     try {
       const response = await api.get('/catalogos/cultivos');
-      // Manejar array directo o dentro de response
       if (Array.isArray(response)) {
         cultivos.value = response;
       } else if (response && Array.isArray(response.data)) {
         cultivos.value = response.data;
-      } else {
-        cultivos.value = [];
       }
-      console.log('✅ Cultivos cargados:', cultivos.value.length);
-      return cultivos.value;
     } catch (error) {
       console.error('Error fetching cultivos:', error);
-      cultivos.value = [];
-      return [];
     }
   };
 
@@ -71,15 +75,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     if (!provincia) return [];
     try {
       const response = await api.get(`/locations/provincias/${provincia}/departamentos`);
-      // Manejar array directo o dentro de response
-      if (Array.isArray(response)) {
-        console.log('✅ Departamentos cargados:', response.length);
-        return response;
-      } else if (response && Array.isArray(response.data)) {
-        console.log('✅ Departamentos cargados:', response.data.length);
-        return response.data;
-      }
-      return [];
+      return Array.isArray(response) ? response : response.data || [];
     } catch (error) {
       console.error('Error fetching departamentos:', error);
       return [];
@@ -104,10 +100,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
         tiposEnsayo.value = response;
       } else if (response && Array.isArray(response.data)) {
         tiposEnsayo.value = response.data;
-      } else {
-        tiposEnsayo.value = [];
       }
-      console.log('✅ Tipos de ensayo cargados:', tiposEnsayo.value.length);
     } catch (error) {
       console.error('Error fetching tipos de ensayo:', error);
     }
@@ -120,10 +113,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
         tiposSiembra.value = response;
       } else if (response && Array.isArray(response.data)) {
         tiposSiembra.value = response.data;
-      } else {
-        tiposSiembra.value = [];
       }
-      console.log('✅ Tipos de siembra cargados:', tiposSiembra.value.length);
     } catch (error) {
       console.error('Error fetching tipos de siembra:', error);
     }
@@ -152,25 +142,18 @@ export const useCatalogosStore = defineStore('catalogos', () => {
   const fetchProtocolos = async () => {
     try {
       const response = await api.get('/protocolos');
-      // El endpoint ahora devuelve { data: [...], meta: {...} }
       if (response && response.data && Array.isArray(response.data)) {
         protocolos.value = response.data;
       } else if (Array.isArray(response)) {
-        // Fallback si devuelve un array directo
         protocolos.value = response;
-      } else {
-        protocolos.value = [];
       }
-      console.log('✅ Protocolos cargados:', protocolos.value.length);
     } catch (error) {
       console.error('Error fetching protocolos:', error);
-      protocolos.value = [];
     }
   };
 
   const fetchProductos = async () => {
     try {
-      // Traer todos los productos sin límite (limit=999 asegura que traerá todos)
       const response = await api.get('/productos?limit=999');
       if (response && response.data) {
         productos.value = response.data;
@@ -188,14 +171,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     if (!especieId) return [];
     try {
       const response = await api.get(`/catalogos/cultivos/${especieId}/variedades`);
-      if (Array.isArray(response)) {
-        console.log('✅ Variedades cargadas:', response.length);
-        return response;
-      } else if (response && Array.isArray(response.data)) {
-        console.log('✅ Variedades cargadas:', response.data.length);
-        return response.data;
-      }
-      return [];
+      return Array.isArray(response) ? response : response.data || [];
     } catch (error) {
       console.error('Error fetching variedades:', error);
       return [];
@@ -209,20 +185,14 @@ export const useCatalogosStore = defineStore('catalogos', () => {
         statusEnsayos.value = response;
       } else if (response && Array.isArray(response.data)) {
         statusEnsayos.value = response.data;
-      } else {
-        statusEnsayos.value = [];
       }
-      console.log('✅ Status Ensayos cargados:', statusEnsayos.value.length);
-      return statusEnsayos.value;
     } catch (error) {
       console.error('Error fetching status ensayos:', error);
-      statusEnsayos.value = [];
-      return [];
     }
   };
 
   const init = () => {
-    fetchUsuarios(); // Actualizado
+    fetchUsuarios();
     fetchProvincias();
     fetchEspecies();
     fetchLaboratorios();
@@ -231,7 +201,8 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     fetchTratamientos();
     fetchProtocolos();
     fetchStatusEnsayos();
-  }
+    fetchRoles();
+  };
 
   return {
     usuarios,
@@ -244,6 +215,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     protocolos,
     productos,
     statusEnsayos,
+    roles,
     fetchUsuarios,
     fetchProvincias,
     fetchEspecies,
@@ -253,6 +225,7 @@ export const useCatalogosStore = defineStore('catalogos', () => {
     fetchTratamientos,
     fetchProtocolos,
     fetchStatusEnsayos,
+    fetchRoles,
     fetchDepartamentos,
     fetchVariedades,
     fetchVariablesPorTipo,

@@ -106,16 +106,14 @@
               Rol *
             </label>
             <select
-              v-model="form.rolId"
+              v-model.number="form.rolId"
               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="">Seleccionar rol...</option>
-              <option value="1">Superadministrador</option>
-              <option value="2">Administrador</option>
-              <option value="3">Manager</option>
-              <option value="4">Técnico</option>
-              <option value="5">Invitado</option>
+              <option :value="undefined">Seleccionar rol...</option>
+              <option v-for="rol in roles" :key="rol.id" :value="rol.id">
+                {{ rol.nombre }}
+              </option>
             </select>
             <p v-if="errors.rolId" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ errors.rolId }}</p>
           </div>
@@ -204,9 +202,13 @@ const errors = ref<Record<string, string>>({})
 
 const isEditing = computed(() => !!props.usuario?.id)
 const laboratorios = computed(() => catalogosStore.laboratorios || [])
+const roles = computed(() => catalogosStore.roles || [])
 
 onMounted(async () => {
-  await catalogosStore.fetchLaboratorios()
+  await Promise.all([
+    catalogosStore.fetchLaboratorios(),
+    catalogosStore.fetchRoles({ limit: 100 }), // Fetch all roles
+  ])
 })
 
 watch(
@@ -293,4 +295,3 @@ function cerrar() {
   emit('cerrar')
 }
 </script>
-
