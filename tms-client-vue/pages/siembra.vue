@@ -225,6 +225,19 @@
               <p><strong>Tratamiento:</strong> {{ parcelaEditando?.tratamiento?.descripcion || '-' }}</p>
             </div>
 
+            <!-- Checkbox de autocompletar -->
+            <div class="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+              <input
+                id="autocompletar"
+                type="checkbox"
+                v-model="autocompletar"
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label for="autocompletar" class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Rellenar todas las parcelas de este ensayo con los mismos datos
+              </label>
+            </div>
+
             <!-- Campos de siembra -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -376,6 +389,7 @@ const error = ref('')
 const showModalSiembra = ref(false)
 const parcelaEditando = ref<any>(null)
 const guardandoSiembra = ref(false)
+const autocompletar = ref(false)
 
 const formSiembra = ref({
   fechaSiembra: '',
@@ -429,6 +443,7 @@ function irAPagina(page: number) {
 function abrirEditorSiembra(parcela: any) {
   console.log('🌱 Abriendo editor de siembra para parcela:', parcela.id)
   parcelaEditando.value = parcela
+  autocompletar.value = false // Reset checkbox
 
   // Cargar datos existentes si existen
   if (parcela.siembra) {
@@ -504,19 +519,25 @@ async function guardarSiembra() {
       observaciones: formSiembra.value.observaciones || null,
     }
 
-    // Verificar si ya existe siembra para esta parcela
-    const siembraId = parcelaEditando.value.siembra?.id
-
-    if (siembraId) {
-      // Actualizar siembra existente
-      console.log('📝 Actualizando siembra existente (ID:', siembraId, ') para parcela:', parcelaEditando.value.id)
-      console.log('   Datos:', dto)
-      await api.patch(`/datos-siembra/${siembraId}`, dto)
+    if (autocompletar.value) {
+      // Guardar para todas las parcelas del ensayo
+      const ensayoId = parcelaEditando.value.ensayo.id
+      console.log(`🔄 Guardando siembra para TODAS las parcelas del ensayo ${ensayoId}`)
+      await api.post(`/datos-siembra/ensayo/${ensayoId}`, dto)
     } else {
-      // Crear nueva siembra
-      console.log('➕ Creando nueva siembra para parcela:', parcelaEditando.value.id)
-      console.log('   Datos:', dto)
-      await api.post('/datos-siembra', dto)
+      // Guardar solo para la parcela actual
+      const siembraId = parcelaEditando.value.siembra?.id
+      if (siembraId) {
+        // Actualizar siembra existente
+        console.log('📝 Actualizando siembra existente (ID:', siembraId, ') para parcela:', parcelaEditando.value.id)
+        console.log('   Datos:', dto)
+        await api.patch(`/datos-siembra/${siembraId}`, dto)
+      } else {
+        // Crear nueva siembra
+        console.log('➕ Creando nueva siembra para parcela:', parcelaEditando.value.id)
+        console.log('   Datos:', dto)
+        await api.post('/datos-siembra', dto)
+      }
     }
 
     // IMPORTANTE: Recargar parcelas para actualizar la relación siembra en el store
@@ -575,4 +596,3 @@ useHead({
   title: 'Siembra - TMS',
 })
 </script>
-

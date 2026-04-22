@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { DatosSiembra } from '../entities/datos-siembra.entity';
 import { CreateDatosSiembraDto } from './dto/create-datos-siembra.dto';
 import { UpdateDatosSiembraDto } from './dto/update-datos-siembra.dto';
+import { Parcela } from '../entities/parcela.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DatosSiembraService {
@@ -15,6 +16,8 @@ export class DatosSiembraService {
     @Inject(REQUEST) private readonly req: Request,
     @InjectRepository(DatosSiembra)
     private readonly repo: Repository<DatosSiembra>,
+    @InjectRepository(Parcela)
+    private readonly parcelaRepo: Repository<Parcela>,
   ) {}
 
   private get auth() {
@@ -35,6 +38,41 @@ export class DatosSiembraService {
       observaciones: dto.observaciones,
     });
     return this.repo.save(entity);
+  }
+
+  async createOrUpdateForEnsayo(ensayoId: number, dto: CreateDatosSiembraDto) {
+    const parcelas = await this.parcelaRepo.find({ where: { ensayo: { id: ensayoId } } });
+    if (!parcelas.length) {
+      throw new NotFoundException(`No se encontraron parcelas para el ensayo ${ensayoId}`);
+    }
+
+    const promises = parcelas.map(async (parcela) => {
+      let siembra = await this.repo.findOne({ where: { parcela: { id: parcela.id } } });
+      if (siembra) {
+        // Update
+        siembra.fechaSiembra = dto.fechaSiembra ? new Date(dto.fechaSiembra) : undefined;
+        siembra.semillasPorMetro = dto.semillasPorMetro;
+        siembra.densidadSiembra = dto.densidadSiembra;
+        siembra.germinacionPct = dto.germinacionPct;
+        siembra.vigorPlantasEscala = dto.vigorPlantasEscala;
+        siembra.observaciones = dto.observaciones;
+        return this.repo.save(siembra);
+      } else {
+        // Create
+        const newSiembra = this.repo.create({
+          parcela: { id: parcela.id } as any,
+          fechaSiembra: dto.fechaSiembra ? new Date(dto.fechaSiembra) : undefined,
+          semillasPorMetro: dto.semillasPorMetro,
+          densidadSiembra: dto.densidadSiembra,
+          germinacionPct: dto.germinacionPct,
+          vigorPlantasEscala: dto.vigorPlantasEscala,
+          observaciones: dto.observaciones,
+        });
+        return this.repo.save(newSiembra);
+      }
+    });
+
+    return Promise.all(promises);
   }
 
   findAll() {
@@ -138,4 +176,3 @@ export class DatosSiembraService {
     return { deleted: true };
   }
 }
-

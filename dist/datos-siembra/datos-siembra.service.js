@@ -28,10 +28,12 @@ const rol_entity_1 = require("../entities/rol.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const datos_siembra_entity_1 = require("../entities/datos-siembra.entity");
+const parcela_entity_1 = require("../entities/parcela.entity");
 let DatosSiembraService = class DatosSiembraService {
-    constructor(req, repo) {
+    constructor(req, repo, parcelaRepo) {
         this.req = req;
         this.repo = repo;
+        this.parcelaRepo = parcelaRepo;
     }
     get auth() {
         var _a;
@@ -51,6 +53,41 @@ let DatosSiembraService = class DatosSiembraService {
             observaciones: dto.observaciones,
         });
         return this.repo.save(entity);
+    }
+    createOrUpdateForEnsayo(ensayoId, dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const parcelas = yield this.parcelaRepo.find({ where: { ensayo: { id: ensayoId } } });
+            if (!parcelas.length) {
+                throw new common_1.NotFoundException(`No se encontraron parcelas para el ensayo ${ensayoId}`);
+            }
+            const promises = parcelas.map((parcela) => __awaiter(this, void 0, void 0, function* () {
+                let siembra = yield this.repo.findOne({ where: { parcela: { id: parcela.id } } });
+                if (siembra) {
+                    // Update
+                    siembra.fechaSiembra = dto.fechaSiembra ? new Date(dto.fechaSiembra) : undefined;
+                    siembra.semillasPorMetro = dto.semillasPorMetro;
+                    siembra.densidadSiembra = dto.densidadSiembra;
+                    siembra.germinacionPct = dto.germinacionPct;
+                    siembra.vigorPlantasEscala = dto.vigorPlantasEscala;
+                    siembra.observaciones = dto.observaciones;
+                    return this.repo.save(siembra);
+                }
+                else {
+                    // Create
+                    const newSiembra = this.repo.create({
+                        parcela: { id: parcela.id },
+                        fechaSiembra: dto.fechaSiembra ? new Date(dto.fechaSiembra) : undefined,
+                        semillasPorMetro: dto.semillasPorMetro,
+                        densidadSiembra: dto.densidadSiembra,
+                        germinacionPct: dto.germinacionPct,
+                        vigorPlantasEscala: dto.vigorPlantasEscala,
+                        observaciones: dto.observaciones,
+                    });
+                    return this.repo.save(newSiembra);
+                }
+            }));
+            return Promise.all(promises);
+        });
     }
     findAll() {
         const { isInvitado, labIds } = this.auth;
@@ -167,5 +204,7 @@ exports.DatosSiembraService = DatosSiembraService = __decorate([
     (0, common_1.Injectable)({ scope: common_1.Scope.REQUEST }),
     __param(0, (0, common_1.Inject)(core_1.REQUEST)),
     __param(1, (0, typeorm_1.InjectRepository)(datos_siembra_entity_1.DatosSiembra)),
-    __metadata("design:paramtypes", [Object, typeorm_2.Repository])
+    __param(2, (0, typeorm_1.InjectRepository)(parcela_entity_1.Parcela)),
+    __metadata("design:paramtypes", [Object, typeorm_2.Repository,
+        typeorm_2.Repository])
 ], DatosSiembraService);

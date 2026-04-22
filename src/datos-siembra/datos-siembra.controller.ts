@@ -21,6 +21,15 @@ export class DatosSiembraController {
     return this.service.create(dto);
   }
 
+  @Roles(Role.TECNICO, Role.MANAGER, Role.ADMIN, Role.SUPERADMIN)
+  @Post('ensayo/:ensayoId')
+  @ApiOperation({ summary: 'Crear o actualizar datos de siembra para todas las parcelas de un ensayo' })
+  @ApiParam({ name: 'ensayoId', type: Number })
+  @ApiOkResponse({ type: DatosSiembra, isArray: true })
+  createOrUpdateForEnsayo(@Param('ensayoId', ParseIntPipe) ensayoId: number, @Body() dto: CreateDatosSiembraDto) {
+    return this.service.createOrUpdateForEnsayo(ensayoId, dto);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Listar datos de siembra (opcionalmente filtrar por parcelaId o ensayoId)' })
   @ApiQuery({ name: 'parcelaId', type: Number, required: false })
@@ -62,4 +71,3 @@ export class DatosSiembraController {
     return this.service.remove(id);
   }
 }
-

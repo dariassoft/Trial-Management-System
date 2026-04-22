@@ -28,6 +28,9 @@ let DatosSiembraController = class DatosSiembraController {
     create(dto) {
         return this.service.create(dto);
     }
+    createOrUpdateForEnsayo(ensayoId, dto) {
+        return this.service.createOrUpdateForEnsayo(ensayoId, dto);
+    }
     findAll(parcelaId, ensayoId) {
         if (parcelaId) {
             return this.service.findByParcelaId(parseInt(parcelaId, 10));
@@ -58,6 +61,18 @@ __decorate([
     __metadata("design:paramtypes", [create_datos_siembra_dto_1.CreateDatosSiembraDto]),
     __metadata("design:returntype", void 0)
 ], DatosSiembraController.prototype, "create", null);
+__decorate([
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.TECNICO, rol_entity_1.Role.MANAGER, rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN),
+    (0, common_1.Post)('ensayo/:ensayoId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Crear o actualizar datos de siembra para todas las parcelas de un ensayo' }),
+    (0, swagger_1.ApiParam)({ name: 'ensayoId', type: Number }),
+    (0, swagger_1.ApiOkResponse)({ type: datos_siembra_entity_1.DatosSiembra, isArray: true }),
+    __param(0, (0, common_1.Param)('ensayoId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, create_datos_siembra_dto_1.CreateDatosSiembraDto]),
+    __metadata("design:returntype", void 0)
+], DatosSiembraController.prototype, "createOrUpdateForEnsayo", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar datos de siembra (opcionalmente filtrar por parcelaId o ensayoId)' }),
