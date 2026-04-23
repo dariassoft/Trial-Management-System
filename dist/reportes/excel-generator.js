@@ -52,6 +52,7 @@ const svg_charts_service_1 = require("./svg-charts.service");
 class ExcelReportGenerator {
     static generarReporteEnsayo(datos) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
             const wb = new ExcelJS.Workbook();
             // Estilos comunes
             const headerFill = {
@@ -89,15 +90,27 @@ class ExcelReportGenerator {
                 { key: 'valor', width: 60 },
             ];
             const resumenData = [
-                { concepto: 'ID Ensayo', valor: meta.ensayoId || '' },
-                { concepto: 'Nombre', valor: meta.nombreEnsayo || '' },
-                { concepto: 'Cultivo', valor: meta.cultivo || '' },
-                { concepto: 'Variedad', valor: meta.variedad || '' },
-                { concepto: 'Provincia', valor: meta.provincia || '' },
-                { concepto: 'Fecha Siembra', valor: meta.fechaSiembra || '' },
-                { concepto: 'Fecha Cosecha', valor: meta.fechaCosecha || '' },
-                { concepto: 'Tratamientos', valor: meta.numeroTratamientos || 0 },
-                { concepto: 'Bloques', valor: meta.numeroBloques || 0 },
+                { concepto: 'ID Ensayo', valor: (_a = meta.ensayoId) !== null && _a !== void 0 ? _a : '' },
+                { concepto: 'Nombre Ensayo', valor: (_b = meta.nombreEnsayo) !== null && _b !== void 0 ? _b : '' },
+                { concepto: 'Cultivo', valor: (_c = meta.cultivo) !== null && _c !== void 0 ? _c : '' },
+                { concepto: 'Variedad', valor: (_d = meta.variedad) !== null && _d !== void 0 ? _d : '' },
+                { concepto: 'Tipo de Siembra', valor: (_e = meta.tipoSiembra) !== null && _e !== void 0 ? _e : '' },
+                { concepto: 'Provincia', valor: (_f = meta.provincia) !== null && _f !== void 0 ? _f : '' },
+                { concepto: 'Departamento', valor: (_g = meta.departamento) !== null && _g !== void 0 ? _g : '' },
+                { concepto: 'Establecimiento', valor: (_h = meta.establecimiento) !== null && _h !== void 0 ? _h : '' },
+                { concepto: 'Lote', valor: (_j = meta.lote) !== null && _j !== void 0 ? _j : '' },
+                { concepto: 'Fecha Siembra', valor: (_k = meta.fechaSiembra) !== null && _k !== void 0 ? _k : '' },
+                { concepto: 'Fecha Cosecha', valor: (_l = meta.fechaCosecha) !== null && _l !== void 0 ? _l : '' },
+                { concepto: 'Nº Tratamientos', valor: (_m = meta.numeroTratamientos) !== null && _m !== void 0 ? _m : '' },
+                { concepto: 'Nº Bloques', valor: (_o = meta.numeroBloques) !== null && _o !== void 0 ? _o : '' },
+                { concepto: 'Fecha Aplicación', valor: (_p = meta.fechaAplicacion) !== null && _p !== void 0 ? _p : '' },
+                { concepto: 'Estadio Aplicación', valor: (_q = meta.estadio) !== null && _q !== void 0 ? _q : '' },
+                { concepto: 'Temperatura', valor: meta.temperatura ? `${meta.temperatura}°C` : '' },
+                { concepto: 'Humedad', valor: meta.humedad ? `${meta.humedad}%` : '' },
+                { concepto: 'Viento', valor: meta.viento ? `${meta.viento} km/h` : '' },
+                { concepto: 'Equipo Aplicación', valor: (_r = meta.equipo) !== null && _r !== void 0 ? _r : '' },
+                { concepto: 'Pico', valor: (_s = meta.pico) !== null && _s !== void 0 ? _s : '' },
+                { concepto: 'Presión', valor: meta.presion ? `${meta.presion} bar` : '' },
             ];
             let currentRow = 3;
             resumenData.forEach((row) => {

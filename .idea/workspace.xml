@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="wizard o asistente primnera version." />
+    <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="wizard o asistente primnera version.">
+      <change beforePath="$PROJECT_DIR$/dist/reportes/excel-generator.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/excel-generator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/reportes/reportes.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/reportes/reportes.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportes/excel-generator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/excel-generator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportes/reportes.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportes/reportes.service.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

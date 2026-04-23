@@ -696,7 +696,7 @@ let ReportesService = class ReportesService {
                 }
                 // Construir objeto de datos completo para Excel
                 const excelData = {
-                    metadatos: datosRaw.metadatos,
+                    metadatos: datosRaw.metadadatos,
                     datosCampo: datosRaw.datosCampo || [],
                     datosTrilla: datosRaw.datosTrilla || [],
                     estadisticas: datosRaw.estadisticas,

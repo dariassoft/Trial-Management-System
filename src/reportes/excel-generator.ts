@@ -49,15 +49,27 @@ export class ExcelReportGenerator {
     ];
 
     const resumenData = [
-      { concepto: 'ID Ensayo', valor: (meta as any).ensayoId || '' },
-      { concepto: 'Nombre', valor: (meta as any).nombreEnsayo || '' },
-      { concepto: 'Cultivo', valor: (meta as any).cultivo || '' },
-      { concepto: 'Variedad', valor: (meta as any).variedad || '' },
-      { concepto: 'Provincia', valor: (meta as any).provincia || '' },
-      { concepto: 'Fecha Siembra', valor: (meta as any).fechaSiembra || '' },
-      { concepto: 'Fecha Cosecha', valor: (meta as any).fechaCosecha || '' },
-      { concepto: 'Tratamientos', valor: (meta as any).numeroTratamientos || 0 },
-      { concepto: 'Bloques', valor: (meta as any).numeroBloques || 0 },
+      { concepto: 'ID Ensayo', valor: meta.ensayoId ?? '' },
+      { concepto: 'Nombre Ensayo', valor: meta.nombreEnsayo ?? '' },
+      { concepto: 'Cultivo', valor: meta.cultivo ?? '' },
+      { concepto: 'Variedad', valor: meta.variedad ?? '' },
+      { concepto: 'Tipo de Siembra', valor: meta.tipoSiembra ?? '' },
+      { concepto: 'Provincia', valor: meta.provincia ?? '' },
+      { concepto: 'Departamento', valor: meta.departamento ?? '' },
+      { concepto: 'Establecimiento', valor: meta.establecimiento ?? '' },
+      { concepto: 'Lote', valor: meta.lote ?? '' },
+      { concepto: 'Fecha Siembra', valor: meta.fechaSiembra ?? '' },
+      { concepto: 'Fecha Cosecha', valor: meta.fechaCosecha ?? '' },
+      { concepto: 'Nº Tratamientos', valor: meta.numeroTratamientos ?? '' },
+      { concepto: 'Nº Bloques', valor: meta.numeroBloques ?? '' },
+      { concepto: 'Fecha Aplicación', valor: meta.fechaAplicacion ?? '' },
+      { concepto: 'Estadio Aplicación', valor: meta.estadio ?? '' },
+      { concepto: 'Temperatura', valor: meta.temperatura ? `${meta.temperatura}°C` : '' },
+      { concepto: 'Humedad', valor: meta.humedad ? `${meta.humedad}%` : '' },
+      { concepto: 'Viento', valor: meta.viento ? `${meta.viento} km/h` : '' },
+      { concepto: 'Equipo Aplicación', valor: meta.equipo ?? '' },
+      { concepto: 'Pico', valor: meta.pico ?? '' },
+      { concepto: 'Presión', valor: meta.presion ? `${meta.presion} bar` : '' },
     ];
 
     let currentRow = 3;
