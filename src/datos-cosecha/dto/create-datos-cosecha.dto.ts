@@ -93,4 +93,20 @@ export class CreateDatosCosechaDto {
   @IsString()
   @MaxLength(65535)
   observaciones?: string | null;
+
+  // CAMPOS PARA CÁLCULO DINÁMICO DE Kg/Ha CORREGIDO
+  @ApiPropertyOptional({ example: 15200.5, description: 'Peso total del grano cosechado por parcela en gramos' })
+  @IsOptional()
+  @IsNumber()
+  pesoGranoCosechado?: number | null;
+
+  @ApiPropertyOptional({ example: 14.2, description: 'Humedad del grano al momento de cosecha (%)' })
+  @IsOptional()
+  @IsNumber()
+  humedadGranoCosechado?: number | null;
+
+  @ApiPropertyOptional({ example: 30.0, description: 'Superficie cosechada en m² (para extrapolación a kg/ha)' })
+  @IsOptional()
+  @IsNumber()
+  superficieCosechadaM2?: number | null;
 }

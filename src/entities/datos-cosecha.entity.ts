@@ -61,6 +61,16 @@ export class DatosCosecha {
   @Column({ name: 'densidad_plantas_final', type: 'decimal', precision: 6, scale: 2, nullable: true })
   densidadPlantasFinal?: number | null;
 
+  // CAMPOS DE PESO Y HUMEDAD DE GRANO (para cálculo dinámico de kg/ha corregido)
+  @Column({ name: 'peso_grano_cosechado', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  pesoGranoCosechado?: number | null;
+
+  @Column({ name: 'humedad_grano_cosechado', type: 'decimal', precision: 5, scale: 2, nullable: true })
+  humedadGranoCosechado?: number | null;
+
+  @Column({ name: 'superficie_cosechada_m2', type: 'decimal', precision: 8, scale: 2, nullable: true })
+  superficieCosechadaM2?: number | null;
+
   @Column({ type: 'text', nullable: true })
   observaciones?: string | null;
 }

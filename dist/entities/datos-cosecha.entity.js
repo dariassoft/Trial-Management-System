@@ -89,6 +89,18 @@ __decorate([
     __metadata("design:type", Object)
 ], DatosCosecha.prototype, "densidadPlantasFinal", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'peso_grano_cosechado', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Object)
+], DatosCosecha.prototype, "pesoGranoCosechado", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'humedad_grano_cosechado', type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    __metadata("design:type", Object)
+], DatosCosecha.prototype, "humedadGranoCosechado", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'superficie_cosechada_m2', type: 'decimal', precision: 8, scale: 2, nullable: true }),
+    __metadata("design:type", Object)
+], DatosCosecha.prototype, "superficieCosechadaM2", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", Object)
 ], DatosCosecha.prototype, "observaciones", void 0);

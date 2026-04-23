@@ -258,17 +258,91 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Kg/ha (corregido)
+                  <span class="text-xs text-blue-500 ml-1">calculado</span>
                 </label>
                 <input
-                  v-model.number="formCosecha.kgHaCorregido"
+                  :value="kgHaCorregidoCalculado !== null ? kgHaCorregidoCalculado : (formCosecha.kgHaCorregido ?? '')"
+                  type="number"
+                  readonly
+                  placeholder="Se calcula automáticamente"
+                  class="w-full px-3 py-2 rounded-lg border border-blue-300 dark:border-blue-600
+                         bg-blue-50 dark:bg-blue-900/20 text-gray-900 dark:text-white cursor-not-allowed"
+                  title="Valor calculado a partir del peso del grano, la superficie cosechada y la humedad"
+                />
+              </div>
+            </div>
+
+            <!-- NUEVOS CAMPOS: Peso de grano cosechado y humedad del grano -->
+            <div class="border-t border-gray-300 dark:border-gray-600 pt-4 mt-4">
+              <h4 class="font-semibold text-gray-900 dark:text-white mb-3">⚖️ Rendimiento - Datos para Kg/Ha</h4>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                Ingrese el peso cosechado, la superficie y la humedad del grano para calcular el rendimiento
+                corregido a 13,5% de humedad. El campo <strong>Kg/ha (corregido)</strong> se actualiza automáticamente.
+              </p>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Peso Grano Cosechado (g)
+                  </label>
+                  <input
+                    v-model.number="formCosecha.pesoGranoCosechado"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="15200.5"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                  <p class="text-xs text-gray-400 mt-1">Peso total del grano cosechado por parcela en gramos</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Humedad Grano Cosechado (%)
+                  </label>
+                  <input
+                    v-model.number="formCosecha.humedadGranoCosechado"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="99.99"
+                    placeholder="14.2"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                  <p class="text-xs text-gray-400 mt-1">Humedad del grano al momento de la cosecha</p>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Superficie Cosechada (m²)
+                </label>
+                <input
+                  v-model.number="formCosecha.superficieCosechadaM2"
                   type="number"
                   step="0.01"
                   min="0"
-                  max="99999.99"
-                  placeholder="5000"
+                  placeholder="30.0"
                   class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
+                <p class="text-xs text-gray-400 mt-1">Superficie de la parcela cosechada en m² (para extrapolación a kg/ha)</p>
+              </div>
+
+              <!-- Preview del cálculo -->
+              <div v-if="kgHaCorregidoCalculado !== null" class="mt-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-3">
+                <p class="text-sm font-medium text-green-800 dark:text-green-300">
+                  ✅ Rendimiento calculado: <strong>{{ kgHaCorregidoCalculado }} kg/ha</strong> (corregido a 13,5% de humedad)
+                </p>
+                <p v-if="pesoKgHaSinCorregir !== null" class="text-xs text-green-600 dark:text-green-400 mt-1">
+                  Peso extrapolado sin corregir: {{ pesoKgHaSinCorregir }} kg/ha
+                </p>
+              </div>
+              <div v-else-if="formCosecha.pesoGranoCosechado || formCosecha.humedadGranoCosechado || formCosecha.superficieCosechadaM2" class="mt-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                <p class="text-xs text-yellow-700 dark:text-yellow-300">
+                  ⚠️ Complete los tres campos (peso, superficie y humedad del grano) para calcular el rendimiento.
+                </p>
               </div>
             </div>
 
@@ -571,27 +645,57 @@ const formCosecha = ref({
   kgHaCorregido: null as number | null,
   gie: null as number | null,
 
-  // Nuevos campos: Gramaje y calidad de grano
-  gramajePorGrano: null as number | null,  // Gramos por grano (para calcular calidad)
-  granosPorurf: null as number | null,     // Granos por m² (superficie)
-  pesoGranosPorUrf: null as number | null, // Peso de granos por m² (gramos)
+  // Nuevos campos para cálculo dinámico de kg/ha corregido
+  pesoGranoCosechado: null as number | null,     // Peso del grano por parcela en gramos
+  humedadGranoCosechado: null as number | null,  // Humedad del grano al cosechar (%)
+  superficieCosechadaM2: null as number | null,  // Superficie cosechada en m² (para extrapolación)
+
+  // Gramaje y calidad de grano
+  gramajePorGrano: null as number | null,
+  granosPorurf: null as number | null,
+  pesoGranosPorUrf: null as number | null,
 
   // Mediciones de la parcela
-  hojasPorUrf: null as number | null,      // Cantidad de hojas por m²
-  larvasPorUrf: null as number | null,     // Cantidad de larvas/plagas por m²
-  insectosBeneficiosPorUrf: null as number | null, // Insectos benéficos por m²
+  hojasPorUrf: null as number | null,
+  larvasPorUrf: null as number | null,
+  insectosBeneficiosPorUrf: null as number | null,
 
   // Calidad del grano
-  granosDanados: null as number | null,    // Porcentaje de granos dañados (%)
-  granosVerdes: null as number | null,     // Porcentaje de granos verdes (%)
-  granosVanos: null as number | null,      // Porcentaje de granos vanos (%)
+  granosDanados: null as number | null,
+  granosVerdes: null as number | null,
+  granosVanos: null as number | null,
 
   // Otras mediciones importantes
-  diametroEspiga: null as number | null,   // Diámetro espiga (mm)
-  alturaParcela: null as number | null,    // Altura de planta (cm)
-  densidadPlantasFinal: null as number | null, // Plantas/m² al final
+  diametroEspiga: null as number | null,
+  alturaParcela: null as number | null,
+  densidadPlantasFinal: null as number | null,
 
   observaciones: '',
+})
+
+/**
+ * Peso extrapolado a kg/ha SIN corrección de humedad.
+ * pesoKgHa = (peso_g / 1000) / superficie_m2 * 10000
+ */
+const pesoKgHaSinCorregir = computed<number | null>(() => {
+  const peso = formCosecha.value.pesoGranoCosechado
+  const superficie = formCosecha.value.superficieCosechadaM2
+  if (!peso || !superficie || superficie <= 0) return null
+  const kgHa = (peso / 1000) / superficie * 10000
+  return roundToDecimals(kgHa, 2)
+})
+
+/**
+ * Kg/Ha corregido a 13,5% de humedad.
+ * Fórmula: kgHa - (((humedad - 13.5) / (100 - 13.5)) * 100 * kgHa / 100)
+ * Simplificado: kgHa * (100 - humedad) / 86.5
+ */
+const kgHaCorregidoCalculado = computed<number | null>(() => {
+  const pesoKgHa = pesoKgHaSinCorregir.value
+  const humedad = formCosecha.value.humedadGranoCosechado
+  if (pesoKgHa === null || humedad === null) return null
+  const corregido = pesoKgHa - ((((humedad - 13.5) / (100 - 13.5)) * 100) * pesoKgHa / 100)
+  return roundToDecimals(corregido, 2)
 })
 
 const ensayos = computed(() => ensayosStore.items)
@@ -603,7 +707,6 @@ const parcelasFiltered = computed(() => {
   if (filtroEnsayoId.value) {
     filtered = filtered.filter((p: any) => p.ensayo?.id === filtroEnsayoId.value)
   }
-
 
   if (busqueda.value.trim()) {
     const q = busqueda.value.toLowerCase()
@@ -641,25 +744,26 @@ function abrirEditorCosecha(parcela: any) {
 
   // Cargar datos existentes si existen
   if (parcela.cosecha) {
-    // Redondear valores según precision/scale de la BD
-    // Estos valores corresponden a: precision (total dígitos) y scale (decimales)
     formCosecha.value = {
       fechaCosecha: parcela.cosecha.fechaCosecha ? new Date(parcela.cosecha.fechaCosecha).toISOString().split('T')[0] : '',
-      humedadPct: roundToDecimals(parcela.cosecha.humedadPct, 2),                           // precision: 5, scale: 2
-      kgHaCorregido: roundToDecimals(parcela.cosecha.kgHaCorregido, 2),                     // precision: 10, scale: 2
-      gie: roundToDecimals(parcela.cosecha.gie, 2),                                         // precision: 10, scale: 2
-      gramajePorGrano: roundToDecimals(parcela.cosecha.gramajePorGrano, 6),                 // precision: 8, scale: 6
-      granosPorurf: roundToDecimals(parcela.cosecha.granosPorurf, 1),                       // precision: 10, scale: 1
-      pesoGranosPorUrf: roundToDecimals(parcela.cosecha.pesoGranosPorUrf, 2),               // precision: 8, scale: 2
-      granosDanados: roundToDecimals(parcela.cosecha.granosDanados, 2),                     // precision: 5, scale: 2
-      granosVerdes: roundToDecimals(parcela.cosecha.granosVerdes, 2),                       // precision: 5, scale: 2
-      granosVanos: roundToDecimals(parcela.cosecha.granosVanos, 2),                         // precision: 5, scale: 2
-      hojasPorUrf: roundToDecimals(parcela.cosecha.hojasPorUrf, 1),                         // precision: 10, scale: 1
-      larvasPorUrf: roundToDecimals(parcela.cosecha.larvasPorUrf, 2),                       // precision: 8, scale: 2
-      insectosBeneficiosPorUrf: roundToDecimals(parcela.cosecha.insectosBeneficiosPorUrf, 2), // precision: 8, scale: 2
-      diametroEspiga: roundToDecimals(parcela.cosecha.diametroEspiga, 2),                   // precision: 5, scale: 2
-      alturaParcela: roundToDecimals(parcela.cosecha.alturaParcela, 1),                     // precision: 5, scale: 1
-      densidadPlantasFinal: roundToDecimals(parcela.cosecha.densidadPlantasFinal, 2),       // precision: 6, scale: 2
+      humedadPct: roundToDecimals(parcela.cosecha.humedadPct, 2),
+      kgHaCorregido: roundToDecimals(parcela.cosecha.kgHaCorregido, 2),
+      gie: roundToDecimals(parcela.cosecha.gie, 2),
+      pesoGranoCosechado: roundToDecimals(parcela.cosecha.pesoGranoCosechado, 2),
+      humedadGranoCosechado: roundToDecimals(parcela.cosecha.humedadGranoCosechado, 2),
+      superficieCosechadaM2: roundToDecimals(parcela.cosecha.superficieCosechadaM2, 2),
+      gramajePorGrano: roundToDecimals(parcela.cosecha.gramajePorGrano, 6),
+      granosPorurf: roundToDecimals(parcela.cosecha.granosPorurf, 1),
+      pesoGranosPorUrf: roundToDecimals(parcela.cosecha.pesoGranosPorUrf, 2),
+      granosDanados: roundToDecimals(parcela.cosecha.granosDanados, 2),
+      granosVerdes: roundToDecimals(parcela.cosecha.granosVerdes, 2),
+      granosVanos: roundToDecimals(parcela.cosecha.granosVanos, 2),
+      hojasPorUrf: roundToDecimals(parcela.cosecha.hojasPorUrf, 1),
+      larvasPorUrf: roundToDecimals(parcela.cosecha.larvasPorUrf, 2),
+      insectosBeneficiosPorUrf: roundToDecimals(parcela.cosecha.insectosBeneficiosPorUrf, 2),
+      diametroEspiga: roundToDecimals(parcela.cosecha.diametroEspiga, 2),
+      alturaParcela: roundToDecimals(parcela.cosecha.alturaParcela, 1),
+      densidadPlantasFinal: roundToDecimals(parcela.cosecha.densidadPlantasFinal, 2),
       observaciones: parcela.cosecha.observaciones || '',
     }
   } else {
@@ -669,6 +773,9 @@ function abrirEditorCosecha(parcela: any) {
       humedadPct: null,
       kgHaCorregido: null,
       gie: null,
+      pesoGranoCosechado: null,
+      humedadGranoCosechado: null,
+      superficieCosechadaM2: null,
       gramajePorGrano: null,
       granosPorurf: null,
       pesoGranosPorUrf: null,
@@ -696,6 +803,9 @@ function cerrarModalCosecha() {
     humedadPct: null,
     kgHaCorregido: null,
     gie: null,
+    pesoGranoCosechado: null,
+    humedadGranoCosechado: null,
+    superficieCosechadaM2: null,
     gramajePorGrano: null,
     granosPorurf: null,
     pesoGranosPorUrf: null,
@@ -718,16 +828,26 @@ async function guardarCosecha() {
   try {
     guardandoCosecha.value = true
 
+    // Si hay un valor calculado, lo usamos como kgHaCorregido; de lo contrario conservamos el manual.
+    const kgHaFinal = kgHaCorregidoCalculado.value !== null
+      ? kgHaCorregidoCalculado.value
+      : formCosecha.value.kgHaCorregido
+
     const dto = {
       parcelaId: parcelaEditando.value.id,
 
       // Campos básicos
       fechaCosecha: formCosecha.value.fechaCosecha || null,
       humedadPct: formCosecha.value.humedadPct,
-      kgHaCorregido: formCosecha.value.kgHaCorregido,
+      kgHaCorregido: kgHaFinal,
       gie: formCosecha.value.gie,
 
-      // Nuevos campos: Gramaje y calidad
+      // Nuevos campos para cálculo de kg/ha
+      pesoGranoCosechado: formCosecha.value.pesoGranoCosechado,
+      humedadGranoCosechado: formCosecha.value.humedadGranoCosechado,
+      superficieCosechadaM2: formCosecha.value.superficieCosechadaM2,
+
+      // Gramaje y calidad
       gramajePorGrano: formCosecha.value.gramajePorGrano,
       granosPorurf: formCosecha.value.granosPorurf,
       pesoGranosPorUrf: formCosecha.value.pesoGranosPorUrf,
@@ -735,7 +855,7 @@ async function guardarCosecha() {
       granosVerdes: formCosecha.value.granosVerdes,
       granosVanos: formCosecha.value.granosVanos,
 
-      // Nuevos campos: Mediciones de parcela
+      // Mediciones de parcela
       hojasPorUrf: formCosecha.value.hojasPorUrf,
       larvasPorUrf: formCosecha.value.larvasPorUrf,
       insectosBeneficiosPorUrf: formCosecha.value.insectosBeneficiosPorUrf,
@@ -747,17 +867,13 @@ async function guardarCosecha() {
     }
 
     if (parcelaEditando.value.cosecha?.id) {
-      // Actualizar
       console.log('📝 Actualizando cosecha:', parcelaEditando.value.cosecha.id)
       await api.patch(`/datos-cosecha/${parcelaEditando.value.cosecha.id}`, dto)
     } else {
-      // Crear
       console.log('➕ Creando nueva cosecha')
       await api.post('/datos-cosecha', dto)
     }
 
-    // IMPORTANTE: Recargar parcelas para actualizar la relación cosecha en el store
-    // Esperar un pequeño delay para que el servidor actualice la BD completamente
     await new Promise(resolve => setTimeout(resolve, 300))
     console.log('🔄 Recargando parcelas para actualizar cosecha...')
     await cargarParcelas()
@@ -781,7 +897,6 @@ function confirmarEliminar(parcelaId: number) {
 }
 
 onMounted(() => {
-  // Cargar parámetros desde URL
   const ensayoId = route.query.ensayoId as string
 
   if (ensayoId) {

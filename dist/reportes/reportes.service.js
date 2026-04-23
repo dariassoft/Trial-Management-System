@@ -132,6 +132,10 @@ let ReportesService = class ReportesService {
                         humedad: this.parseNumerico(c.humedadPct),
                         kgHa: this.parseNumerico(c.kgHaCorregido),
                         gje: this.parseNumerico(c.gie),
+                        // Nuevos campos para cálculo de rendimiento
+                        pesoGranoCosechado: this.parseNumerico(c.pesoGranoCosechado),
+                        humedadGranoCosechado: this.parseNumerico(c.humedadGranoCosechado),
+                        superficieCosechadaM2: this.parseNumerico(c.superficieCosechadaM2),
                     });
                 });
                 // 6. Metadatos - USAR VALORES DIRECTAMENTE DE ENSAYO QUE YA TIENE RELACIONES CARGADAS

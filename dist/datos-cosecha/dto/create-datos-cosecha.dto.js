@@ -123,3 +123,21 @@ __decorate([
     (0, class_validator_1.MaxLength)(65535),
     __metadata("design:type", Object)
 ], CreateDatosCosechaDto.prototype, "observaciones", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 15200.5, description: 'Peso total del grano cosechado por parcela en gramos' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "pesoGranoCosechado", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 14.2, description: 'Humedad del grano al momento de cosecha (%)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "humedadGranoCosechado", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 30.0, description: 'Superficie cosechada en m² (para extrapolación a kg/ha)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "superficieCosechadaM2", void 0);

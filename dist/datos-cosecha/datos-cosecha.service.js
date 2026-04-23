@@ -47,6 +47,24 @@ let DatosCosechaService = class DatosCosechaService {
             humedadPct: dto.humedadPct,
             kgHaCorregido: dto.kgHaCorregido,
             gie: dto.gie,
+            // Campos de gramaje y calidad
+            gramajePorGrano: dto.gramajePorGrano,
+            granosPorurf: dto.granosPorurf,
+            pesoGranosPorUrf: dto.pesoGranosPorUrf,
+            granosDanados: dto.granosDanados,
+            granosVerdes: dto.granosVerdes,
+            granosVanos: dto.granosVanos,
+            // Mediciones de parcela
+            hojasPorUrf: dto.hojasPorUrf,
+            larvasPorUrf: dto.larvasPorUrf,
+            insectosBeneficiosPorUrf: dto.insectosBeneficiosPorUrf,
+            diametroEspiga: dto.diametroEspiga,
+            alturaParcela: dto.alturaParcela,
+            densidadPlantasFinal: dto.densidadPlantasFinal,
+            // Nuevos campos para cálculo de kg/ha
+            pesoGranoCosechado: dto.pesoGranoCosechado,
+            humedadGranoCosechado: dto.humedadGranoCosechado,
+            superficieCosechadaM2: dto.superficieCosechadaM2,
             observaciones: dto.observaciones,
         });
         return this.repo.save(entity);
@@ -118,6 +136,24 @@ let DatosCosechaService = class DatosCosechaService {
                 humedadPct: dto.humedadPct,
                 kgHaCorregido: dto.kgHaCorregido,
                 gie: dto.gie,
+                // Campos de gramaje y calidad
+                gramajePorGrano: dto.gramajePorGrano,
+                granosPorurf: dto.granosPorurf,
+                pesoGranosPorUrf: dto.pesoGranosPorUrf,
+                granosDanados: dto.granosDanados,
+                granosVerdes: dto.granosVerdes,
+                granosVanos: dto.granosVanos,
+                // Mediciones de parcela
+                hojasPorUrf: dto.hojasPorUrf,
+                larvasPorUrf: dto.larvasPorUrf,
+                insectosBeneficiosPorUrf: dto.insectosBeneficiosPorUrf,
+                diametroEspiga: dto.diametroEspiga,
+                alturaParcela: dto.alturaParcela,
+                densidadPlantasFinal: dto.densidadPlantasFinal,
+                // Nuevos campos para cálculo de kg/ha
+                pesoGranoCosechado: dto.pesoGranoCosechado,
+                humedadGranoCosechado: dto.humedadGranoCosechado,
+                superficieCosechadaM2: dto.superficieCosechadaM2,
                 observaciones: dto.observaciones,
             };
             if (dto.parcelaId !== undefined)

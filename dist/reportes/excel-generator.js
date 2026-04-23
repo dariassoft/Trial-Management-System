@@ -219,7 +219,10 @@ class ExcelReportGenerator {
                 { header: 'Tratamiento', key: 'tratamiento', width: 15 },
                 { header: 'Bloque', key: 'bloque', width: 10 },
                 { header: 'Humedad %', key: 'humedad', width: 15 },
-                { header: 'kg/ha', key: 'kgha', width: 15 },
+                { header: 'kg/ha (corregido)', key: 'kgha', width: 20 },
+                { header: 'Peso Grano (g)', key: 'pesoGrano', width: 18 },
+                { header: 'Humedad Grano (%)', key: 'humedadGrano', width: 20 },
+                { header: 'Superficie (m²)', key: 'superficieM2', width: 18 },
                 { header: 'GIE %', key: 'gie', width: 15 },
                 { header: 'Larvas', key: 'larvas', width: 15 },
                 { header: 'Benéficos', key: 'beneficos', width: 15 },
@@ -229,16 +232,22 @@ class ExcelReportGenerator {
             headerRow5.fill = headerFill;
             headerRow5.alignment = { horizontal: 'center' };
             if (datos.datosTrilla && datos.datosTrilla.length > 0) {
-                const trillaRows = datos.datosTrilla.map((dt) => ({
-                    parcela: dt.parcela || '',
-                    tratamiento: dt.tratamiento || '',
-                    bloque: dt.bloque || '',
-                    humedad: dt.humedad || '',
-                    kgha: dt.kgHa || '',
-                    gie: dt.gje || dt.gie || '',
-                    larvas: dt.larvas || '',
-                    beneficos: dt.beneficos || '',
-                }));
+                const trillaRows = datos.datosTrilla.map((dt) => {
+                    var _a, _b, _c;
+                    return ({
+                        parcela: dt.parcela || '',
+                        tratamiento: dt.tratamiento || '',
+                        bloque: dt.bloque || '',
+                        humedad: dt.humedad || '',
+                        kgha: dt.kgHa || '',
+                        pesoGrano: (_a = dt.pesoGranoCosechado) !== null && _a !== void 0 ? _a : '',
+                        humedadGrano: (_b = dt.humedadGranoCosechado) !== null && _b !== void 0 ? _b : '',
+                        superficieM2: (_c = dt.superficieCosechadaM2) !== null && _c !== void 0 ? _c : '',
+                        gie: dt.gje || dt.gie || '',
+                        larvas: dt.larvas || '',
+                        beneficos: dt.beneficos || '',
+                    });
+                });
                 ws5.addRows(trillaRows);
                 ws5.eachRow((row, rowNumber) => {
                     if (rowNumber > 1) {
