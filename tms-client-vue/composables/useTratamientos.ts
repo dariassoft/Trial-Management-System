@@ -44,9 +44,7 @@ export function useTratamientos() {
   }
 
   async function eliminarTratamiento(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este tratamiento?')) {
-      await tratamientosStore.deleteTratamiento(id)
-    }
+    await tratamientosStore.deleteTratamiento(id)
   }
 
   // Productos en Tratamiento

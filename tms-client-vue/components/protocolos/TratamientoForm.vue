@@ -26,8 +26,12 @@
             min="1"
             required
             placeholder="1, 2, 3..."
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            :class="esNumeroTratDuplicado ? 'border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'"
           />
+          <p v-if="esNumeroTratDuplicado" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            El número de tratamiento ya existe en este protocolo.
+          </p>
         </div>
 
         <!-- Testigo checkbox -->
@@ -105,7 +109,7 @@
           <button
             type="button"
             @click="enviar"
-            :disabled="!form.numeroTrat"
+            :disabled="!form.numeroTrat || esNumeroTratDuplicado"
             class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition"
           >
             Guardar
@@ -195,6 +199,7 @@ import { useCatalogosStore } from '~/stores/catalogos'
 interface Props {
   protocoloId: number
   tratamiento?: { id: number; numeroTrat: number; descripcion?: string; esTestigo: boolean; productos?: any[] } | null
+  existingNumeros?: number[]
 }
 
 interface Emits {
@@ -214,12 +219,38 @@ const modoEdicion = computed(() => {
   return resultado
 })
 
+const nextNumeroTrat = computed(() => {
+  const numeros = props.existingNumeros || []
+  const sorted = [...numeros].sort((a, b) => a - b)
+  let nextNum = 1
+  for (let i = 0; i < sorted.length; i++) {
+    if (sorted[i] === nextNum) {
+      nextNum++
+    } else if (sorted[i] > nextNum) {
+      break
+    }
+  }
+  return nextNum
+})
+
+const esNumeroTratDuplicado = computed(() => {
+  const num = Number(form.numeroTrat)
+  if (!num) return false
+  
+  // Si estamos editando y el número ingresado es el mismo que el original, no es duplicado
+  if (props.tratamiento && props.tratamiento.id && num === props.tratamiento.numeroTrat) {
+    return false
+  }
+  
+  // De lo contrario, verificar si existe en la lista de números existentes
+  return (props.existingNumeros || []).includes(num)
+})
+
 const form = reactive({
   numeroTrat: 1,
   descripcion: '',
   esTestigo: false,
   productos: [] as any[],
-
 })
 
 const showProductoForm = ref(false)
@@ -277,9 +308,9 @@ watchEffect(async () => {
     // Marcar que el formulario ya fue llenado
     formularioLlenado.value = true
     console.log('🔐 Formulario marcado como llenado - cambios del usuario NO serán sobrescritos')
-  } else if (!newVal && formularioLlenado.value) {
+  } else if (!newVal) {
     console.log('🔄 Prop tratamiento se limpió - RESETEANDO formulario para nuevo tratamiento')
-    form.numeroTrat = 1
+    form.numeroTrat = nextNumeroTrat.value
     form.descripcion = ''
     form.esTestigo = false
     form.productos = []

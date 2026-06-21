@@ -422,6 +422,7 @@ npm run typecheck              # TypeScript check
 - **Frontend styling:** TailwindCSS utility classes, dark mode via `dark:` prefix.
 - **Swagger:** All endpoints documented with `@ApiTags`, `@ApiBearerAuth`, `@ApiProperty` decorators.
 - **Pagination:** All list endpoints use `PageQueryDto` and return `PaginatedResponse<T>`.
+- **No browser native alerts/confirms:** Do NOT use browser native alert or confirm dialogs (`alert()`, `confirm()`) anywhere in the application. Always use the application's styled components (such as `ConfirmDeleteModal` or custom styled modals/toasts) to handle notifications, confirmations, and warnings.
 
 ---
 

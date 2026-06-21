@@ -39,9 +39,7 @@ export function useProtocolos() {
   }
 
   async function eliminarProtocolo(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este protocolo? Se eliminarán también sus tratamientos.')) {
-      await protocolosStore.deleteProtocolo(id)
-    }
+    await protocolosStore.deleteProtocolo(id)
   }
 
   // Detalle

@@ -37,6 +37,7 @@ export class ProtocolosService {
     order?: 'ASC' | 'DESC';
     q?: string;
   }): Promise<PaginatedResponse<Protocolo>> {
+    const isPaginated = params?.page !== undefined;
     const page = params?.page ? parseInt(params.page as string) : 1;
     const limit = params?.limit ? parseInt(params.limit as string) : 10;
     const sort = params?.sort || 'nombre';
@@ -48,7 +49,7 @@ export class ProtocolosService {
     const validLimit = Math.max(1, Math.min(100, limit));
     const validSort = ['id', 'nombre', 'descripcion', 'createdAt'].includes(sort) ? sort : 'nombre';
 
-    console.log('🔍 findAll() Búsqueda de protocolos:', { searchQuery, sort: validSort, order, page: validPage, limit: validLimit });
+    console.log('🔍 findAll() Búsqueda de protocolos:', { searchQuery, sort: validSort, order, page: validPage, limit: validLimit, isPaginated });
 
     // ============================================
     // QUERY 1: Contar total con filtros
@@ -62,7 +63,7 @@ export class ProtocolosService {
     }
 
     const total = await countQb.getCount();
-    const pageCount = Math.ceil(total / validLimit);
+    const pageCount = isPaginated ? Math.ceil(total / validLimit) : 1;
     console.log('📊 Total registros después de filtrar:', total);
 
     // ============================================
@@ -83,10 +84,12 @@ export class ProtocolosService {
     console.log(`📊 Aplicando orden: p.${validSort} ${order}`);
     dataQb.orderBy(`p.${validSort}`, order);
 
-    // Aplicar paginación
-    const offset = (validPage - 1) * validLimit;
-    console.log(`📄 Paginación: offset=${offset}, limit=${validLimit}`);
-    dataQb.skip(offset).take(validLimit);
+    // Aplicar paginación si se especificó
+    if (isPaginated) {
+      const offset = (validPage - 1) * validLimit;
+      console.log(`📄 Paginación: offset=${offset}, limit=${validLimit}`);
+      dataQb.skip(offset).take(validLimit);
+    }
 
     const data = await dataQb.getMany();
     console.log('✅ Protocolos devueltos:', data.length);
@@ -95,8 +98,8 @@ export class ProtocolosService {
       data,
       meta: {
         total,
-        page: validPage,
-        limit: validLimit,
+        page: isPaginated ? validPage : 1,
+        limit: isPaginated ? validLimit : total,
         pageCount,
       },
     };

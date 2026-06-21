@@ -41,6 +41,7 @@ let ProtocolosService = class ProtocolosService {
      */
     findAll(params) {
         return __awaiter(this, void 0, void 0, function* () {
+            const isPaginated = (params === null || params === void 0 ? void 0 : params.page) !== undefined;
             const page = (params === null || params === void 0 ? void 0 : params.page) ? parseInt(params.page) : 1;
             const limit = (params === null || params === void 0 ? void 0 : params.limit) ? parseInt(params.limit) : 10;
             const sort = (params === null || params === void 0 ? void 0 : params.sort) || 'nombre';
@@ -50,7 +51,7 @@ let ProtocolosService = class ProtocolosService {
             const validPage = Math.max(1, page);
             const validLimit = Math.max(1, Math.min(100, limit));
             const validSort = ['id', 'nombre', 'descripcion', 'createdAt'].includes(sort) ? sort : 'nombre';
-            console.log('🔍 findAll() Búsqueda de protocolos:', { searchQuery, sort: validSort, order, page: validPage, limit: validLimit });
+            console.log('🔍 findAll() Búsqueda de protocolos:', { searchQuery, sort: validSort, order, page: validPage, limit: validLimit, isPaginated });
             // ============================================
             // QUERY 1: Contar total con filtros
             // ============================================
@@ -61,7 +62,7 @@ let ProtocolosService = class ProtocolosService {
                     .orWhere('LOWER(p.descripcion) LIKE LOWER(:q)', { q: `%${searchQuery}%` });
             }
             const total = yield countQb.getCount();
-            const pageCount = Math.ceil(total / validLimit);
+            const pageCount = isPaginated ? Math.ceil(total / validLimit) : 1;
             console.log('📊 Total registros después de filtrar:', total);
             // ============================================
             // QUERY 2: Obtener datos con filtros + relaciones + orden + paginación
@@ -77,18 +78,20 @@ let ProtocolosService = class ProtocolosService {
             // Aplicar ordenamiento
             console.log(`📊 Aplicando orden: p.${validSort} ${order}`);
             dataQb.orderBy(`p.${validSort}`, order);
-            // Aplicar paginación
-            const offset = (validPage - 1) * validLimit;
-            console.log(`📄 Paginación: offset=${offset}, limit=${validLimit}`);
-            dataQb.skip(offset).take(validLimit);
+            // Aplicar paginación si se especificó
+            if (isPaginated) {
+                const offset = (validPage - 1) * validLimit;
+                console.log(`📄 Paginación: offset=${offset}, limit=${validLimit}`);
+                dataQb.skip(offset).take(validLimit);
+            }
             const data = yield dataQb.getMany();
             console.log('✅ Protocolos devueltos:', data.length);
             return {
                 data,
                 meta: {
                     total,
-                    page: validPage,
-                    limit: validLimit,
+                    page: isPaginated ? validPage : 1,
+                    limit: isPaginated ? validLimit : total,
                     pageCount,
                 },
             };

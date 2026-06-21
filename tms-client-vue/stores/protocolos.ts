@@ -35,19 +35,18 @@ export const useProtocolosStore = defineStore('protocolos', () => {
         q: params.q ?? filtros.value.q,
       }
       const res = await api.get('/protocolos', { params: query })
-      const data = res && (res.data ?? res)
       
-      if (data?.data) {
-        items.value = data.data
-        if (data.meta) {
-          paginacion.value.total = data.meta.total
-          paginacion.value.pageCount = data.meta.pageCount
-          paginacion.value.page = data.meta.page
-        }
-      } else if (Array.isArray(data)) {
-        items.value = data
+      if (res && res.data && res.meta) {
+        items.value = res.data
+        paginacion.value.total = res.meta.total
+        paginacion.value.pageCount = res.meta.pageCount
+        paginacion.value.page = res.meta.page
+      } else if (Array.isArray(res)) {
+        items.value = res
+      } else if (res && Array.isArray(res.data)) {
+        items.value = res.data
       }
-      return data
+      return res
     } catch (err: any) {
       error.value = err.message || 'Error al cargar protocolos'
       console.error('Error fetchProtocolos:', err)
@@ -64,6 +63,15 @@ export const useProtocolosStore = defineStore('protocolos', () => {
       const res = await api.get(`/protocolos/${id}`)
       const data = res && (res.data ?? res)
       current.value = data
+      
+      // Keep the protocol inside the items list updated too
+      if (data && data.id) {
+        const idx = items.value.findIndex(p => p.id === data.id)
+        if (idx >= 0) {
+          items.value[idx] = data
+        }
+      }
+      
       return data
     } catch (err: any) {
       error.value = err.message || 'Error al cargar protocolo'

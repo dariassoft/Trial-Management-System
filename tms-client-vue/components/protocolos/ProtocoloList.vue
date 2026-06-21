@@ -169,7 +169,7 @@
                 Editar
               </button>
               <button
-                @click="eliminarProtocolo(protocolo.id)"
+                @click="confirmarEliminarProtocolo(protocolo.id, protocolo.nombre)"
                 class="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-medium transition"
               >
                 Eliminar
@@ -223,7 +223,7 @@
                             Editar
                           </button>
                           <button
-                            @click="eliminarTratamiento(trat.id)"
+                            @click="confirmarEliminarTratamiento(trat.id, trat.numeroTrat)"
                             class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-medium transition"
                           >
                             X
@@ -290,8 +290,17 @@
       v-if="showFormTratamiento"
       :protocolo-id="protocoloSeleccionado"
       :tratamiento="editingTratamiento"
+      :existing-numeros="obtenerNumerosTratamientos(protocoloSeleccionado)"
       @save="guardarTratamiento"
       @close="cerrarFormTratamiento"
+    />
+
+    <!-- Modal: Confirm Delete -->
+    <ConfirmDeleteModal
+      v-if="showDeleteConfirm"
+      :nombre="deleteTargetNombre"
+      @confirmar="ejecutarEliminacion"
+      @cancelar="cerrarDeleteConfirm"
     />
   </div>
 </template>
@@ -302,6 +311,7 @@ import { useProtocolos } from '~/composables/useProtocolos'
 import { useTratamientos } from '~/composables/useTratamientos'
 import ProtocoloForm from './ProtocoloForm.vue'
 import TratamientoForm from './TratamientoForm.vue'
+import ConfirmDeleteModal from '~/components/common/ConfirmDeleteModal.vue'
 
 definePageMeta({
   middleware: 'auth',
@@ -358,15 +368,57 @@ function editarProtocolo(protocolo: any) {
   abrirFormProtocolo(protocolo)
 }
 
-async function eliminarProtocolo(id: number) {
-  if (confirm('¿Estás seguro de que deseas eliminar este protocolo?')) {
-    try {
-      await eliminarProtocoloFn(id)
+// Refs para modal de confirmación de eliminación
+const showDeleteConfirm = ref(false)
+const deleteType = ref<'protocolo' | 'tratamiento' | null>(null)
+const deleteTargetId = ref<number | null>(null)
+const deleteTargetNombre = ref('')
+
+function confirmarEliminarProtocolo(id: number, nombre: string) {
+  deleteType.value = 'protocolo'
+  deleteTargetId.value = id
+  deleteTargetNombre.value = `el protocolo "${nombre}" y todos sus tratamientos`
+  showDeleteConfirm.value = true
+}
+
+function confirmarEliminarTratamiento(id: number, numeroTrat: number) {
+  deleteType.value = 'tratamiento'
+  deleteTargetId.value = id
+  deleteTargetNombre.value = `el tratamiento T${numeroTrat}`
+  showDeleteConfirm.value = true
+}
+
+function cerrarDeleteConfirm() {
+  showDeleteConfirm.value = false
+  deleteType.value = null
+  deleteTargetId.value = null
+  deleteTargetNombre.value = ''
+}
+
+async function ejecutarEliminacion() {
+  if (!deleteTargetId.value || !deleteType.value) return
+  
+  try {
+    if (deleteType.value === 'protocolo') {
+      await protocolosStore.deleteProtocolo(deleteTargetId.value)
       await cargarProtocolos()
-    } catch (err) {
-      console.error('Error al eliminar protocolo:', err)
+    } else if (deleteType.value === 'tratamiento') {
+      await tratamientosStore.deleteTratamiento(deleteTargetId.value)
+      if (expandedProtocoloId.value) {
+        await protocolosStore.fetchProtocoloById(expandedProtocoloId.value)
+      }
     }
+  } catch (err) {
+    console.error(`Error al eliminar ${deleteType.value}:`, err)
+  } finally {
+    cerrarDeleteConfirm()
   }
+}
+
+function obtenerNumerosTratamientos(protocoloId: number | null): number[] {
+  if (!protocoloId) return []
+  const prot = protocolosStore.items.find(p => p.id === protocoloId) || (protocolosStore.current?.id === protocoloId ? protocolosStore.current : null)
+  return (prot?.tratamientos || []).map((t: any) => Number(t.numeroTrat)).filter(n => !isNaN(n))
 }
 
 function abrirNuevoTratamiento(protocoloId: number) {
@@ -481,7 +533,7 @@ async function guardarTratamiento(datos: any) {
 
     // Recargar protocolo actual
     if (expandedProtocoloId.value) {
-      await abrirDetalleProtocolo(expandedProtocoloId.value)
+      await protocolosStore.fetchProtocoloById(expandedProtocoloId.value)
     }
 
     // Cerrar el modal
@@ -491,19 +543,7 @@ async function guardarTratamiento(datos: any) {
   }
 }
 
-async function eliminarTratamiento(id: number) {
-  if (confirm('¿Estás seguro de que deseas eliminar este tratamiento?')) {
-    try {
-      await eliminarTratamientoFn(id)
-      // Recargar protocolo actual
-      if (expandedProtocoloId.value) {
-        await abrirDetalleProtocolo(expandedProtocoloId.value)
-      }
-    } catch (err) {
-      console.error('Error al eliminar tratamiento:', err)
-    }
-  }
-}
+
 
 
 // Aplicar filtros de búsqueda, ordenamiento y orden
