@@ -217,7 +217,7 @@
           </div>
 
           <!-- Body Modal -->
-          <form @submit.prevent="guardarSiembra" class="p-4 space-y-4">
+          <form @submit.prevent="guardarSiembra" @keydown.enter="handleModalEnter" class="p-4 space-y-4">
             <!-- Información de la parcela -->
             <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-sm">
               <p><strong>Ensayo:</strong> {{ parcelaEditando?.ensayo?.nombreEnsayo }}</p>
@@ -246,7 +246,7 @@
               <input
                 v-model="formSiembra.fechaSiembra"
                 type="date"
-                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
@@ -263,7 +263,7 @@
                   min="0"
                   max="99999999.99"
                   placeholder="150"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -278,7 +278,7 @@
                   min="0"
                   max="99999999.99"
                   placeholder="300000"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -296,7 +296,7 @@
                   min="0"
                   max="999.99"
                   placeholder="85.5"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -311,7 +311,7 @@
                   min="1"
                   max="10"
                   placeholder="8"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -325,7 +325,7 @@
                 v-model="formSiembra.observaciones"
                 rows="3"
                 placeholder="Observaciones sobre la siembra..."
-                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               ></textarea>
             </div>
@@ -343,7 +343,7 @@
               <button
                 type="submit"
                 :disabled="guardandoSiembra"
-                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg
+                class="btn-guardar px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg
                        font-medium transition disabled:opacity-50"
               >
                 {{ guardandoSiembra ? 'Guardando...' : '✓ Guardar Siembra' }}
@@ -357,7 +357,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEnsayosStore } from '~/stores/ensayos'
 import { useParcelasStore } from '~/stores/parcelas'
@@ -466,6 +466,16 @@ function abrirEditorSiembra(parcela: any) {
   }
 
   showModalSiembra.value = true
+
+  nextTick(() => {
+    const firstInput = document.querySelector('.modal-input') as HTMLElement
+    if (firstInput) {
+      firstInput.focus()
+      if (typeof (firstInput as any).select === 'function') {
+        (firstInput as any).select()
+      }
+    }
+  })
 }
 
 function cerrarModalSiembra() {
@@ -586,6 +596,36 @@ onMounted(() => {
 
   cargarParcelas()
 })
+
+function handleModalEnter(event: KeyboardEvent) {
+  const target = event.target as HTMLElement
+  if (!target) return
+
+  // If the target is the submit/Guardar button, let it submit naturally
+  if (target.classList.contains('btn-guardar') || target.getAttribute('type') === 'submit') {
+    return
+  }
+
+  // Prevent default form submission on enter
+  event.preventDefault()
+
+  const form = event.currentTarget as HTMLFormElement
+  const inputs = Array.from(form.querySelectorAll('.modal-input')) as HTMLElement[]
+  const currentIndex = inputs.indexOf(target)
+
+  if (currentIndex !== -1 && currentIndex + 1 < inputs.length) {
+    const nextEl = inputs[currentIndex + 1]
+    nextEl.focus()
+    if (typeof (nextEl as any).select === 'function') {
+      (nextEl as any).select()
+    }
+  } else {
+    const submitBtn = form.querySelector('.btn-guardar') as HTMLElement
+    if (submitBtn) {
+      submitBtn.focus()
+    }
+  }
+}
 
 useHead({
   title: 'Siembra - TMS',

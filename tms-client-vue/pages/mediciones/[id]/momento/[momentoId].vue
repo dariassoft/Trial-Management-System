@@ -101,10 +101,11 @@
             v-model="formMediciones[variable.id]"
             rows="2"
             :placeholder="'Ingrese observación...'"
-            class="w-full px-4 py-3 text-base rounded-lg border-2
+            class="medicion-input w-full px-4 py-3 text-base rounded-lg border-2
                    border-gray-300 dark:border-gray-600
                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            @keydown.enter.prevent="enfoqueSiguiente(idx)"
           ></textarea>
 
           <!-- Input numérico para valores numéricos -->
@@ -114,12 +115,12 @@
             type="number"
             inputmode="decimal"
             :placeholder="getPlaceholder(variable)"
-            class="w-full px-4 py-4 text-2xl text-center rounded-lg border-2
+            class="medicion-input w-full px-4 py-4 text-2xl text-center rounded-lg border-2
                    border-gray-300 dark:border-gray-600
                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            @keydown.enter.prevent="enfoqueSiguiente(idx)"
           />
-
           <!-- Escala visual si aplica (solo si tiene 10 o menos valores) -->
           <div
             v-if="hasScale(variable) && getScaleRange(variable).length <= 10"
@@ -150,8 +151,9 @@
             v-model="formObservaciones"
             rows="3"
             placeholder="Notas adicionales..."
-            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+            class="medicion-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            @keydown.enter.prevent="enfoqueSiguiente(variables.length)"
           ></textarea>
         </div>
 
@@ -205,7 +207,7 @@
         <button
           @click="guardarYSiguiente"
           :disabled="guardando"
-          class="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg
+          class="btn-guardar flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg
                  font-medium transition disabled:opacity-50"
         >
           {{ guardando ? 'Guardando...' : (esUltimaParcela ? '✓ Finalizar' : '✓ Guardar →') }}
@@ -216,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted, reactive, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
 import { useDatosCampoStore } from '~/stores/datos-campo'
@@ -535,6 +537,34 @@ function cargarDatosParcela() {
     if (existente.fotos && existente.fotos.length > 0) {
       existingPhotos.value = existente.fotos
       console.log('📷 Fotos existentes cargadas:', existente.fotos.length)
+    }
+  }
+
+  // Autofocus the first variable input when a plot is loaded
+  nextTick(() => {
+    const inputs = document.querySelectorAll('.medicion-input')
+    if (inputs.length > 0) {
+      const firstEl = inputs[0] as HTMLElement
+      firstEl.focus()
+      if (typeof (firstEl as any).select === 'function') {
+        (firstEl as any).select()
+      }
+    }
+  })
+}
+
+function enfoqueSiguiente(currentIndex: number) {
+  const inputs = document.querySelectorAll('.medicion-input')
+  if (currentIndex + 1 < inputs.length) {
+    const nextEl = inputs[currentIndex + 1] as HTMLElement
+    nextEl.focus()
+    if (typeof (nextEl as any).select === 'function') {
+      (nextEl as any).select()
+    }
+  } else {
+    const guardarBtn = document.querySelector('.btn-guardar') as HTMLElement
+    if (guardarBtn) {
+      guardarBtn.focus()
     }
   }
 }

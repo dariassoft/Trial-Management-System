@@ -218,14 +218,13 @@
           </div>
 
           <!-- Body Modal -->
-          <form @submit.prevent="guardarCosecha" class="p-4 space-y-4">
+          <form @submit.prevent="guardarCosecha" @keydown.enter="handleModalEnter" class="p-4 space-y-4">
             <!-- Información de la parcela -->
             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-sm">
               <p><strong>Ensayo:</strong> {{ parcelaEditando?.ensayo?.nombreEnsayo }}</p>
               <p><strong>Bloque:</strong> Bloque {{ parcelaEditando?.bloque?.nombreBloque }}</p>
               <p><strong>Tratamiento:</strong> {{ parcelaEditando?.tratamiento?.descripcion || '-' }}</p>
             </div>
-
             <!-- Campos de cosecha -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -234,7 +233,7 @@
               <input
                 v-model="formCosecha.fechaCosecha"
                 type="date"
-                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
@@ -251,7 +250,7 @@
                   min="0"
                   max="99.99"
                   placeholder="12.5"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -291,7 +290,7 @@
                     step="0.01"
                     min="0"
                     placeholder="15200.5"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                   <p class="text-xs text-gray-400 mt-1">Peso total del grano cosechado por parcela en gramos</p>
@@ -307,7 +306,7 @@
                     min="0"
                     max="99.99"
                     placeholder="14.2"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                   <p class="text-xs text-gray-400 mt-1">Humedad del grano al momento de la cosecha</p>
@@ -324,7 +323,7 @@
                   step="0.01"
                   min="0"
                   placeholder="30.0"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
                 <p class="text-xs text-gray-400 mt-1">Superficie de la parcela cosechada en m² (para extrapolación a kg/ha)</p>
@@ -357,7 +356,7 @@
                 min="0"
                 max="99999.99"
                 placeholder="95.5"
-                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
@@ -378,7 +377,7 @@
                     min="0"
                     max="99.999999"
                     placeholder="0.050"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -393,7 +392,7 @@
                     min="0"
                     max="9999999999.9"
                     placeholder="50000"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -410,7 +409,7 @@
                   min="0"
                   max="999999.99"
                   placeholder="2500"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -427,7 +426,7 @@
                     min="0"
                     max="999.99"
                     placeholder="5.0"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -442,7 +441,7 @@
                     min="0"
                     max="999.99"
                     placeholder="2.5"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -457,7 +456,7 @@
                     min="0"
                     max="999.99"
                     placeholder="1.5"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -480,7 +479,7 @@
                     min="0"
                     max="9999999999.9"
                     placeholder="5000"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -495,7 +494,7 @@
                     min="0"
                     max="99999.99"
                     placeholder="10"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -513,7 +512,7 @@
                     min="0"
                     max="99999.99"
                     placeholder="25"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -528,7 +527,7 @@
                     min="0"
                     max="999.99"
                     placeholder="8.5"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -546,7 +545,7 @@
                     min="0"
                     max="999.9"
                     placeholder="75.5"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -561,7 +560,7 @@
                     min="0"
                     max="9999.99"
                     placeholder="8.5"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
@@ -573,7 +572,7 @@
                 v-model="formCosecha.observaciones"
                 rows="3"
                 placeholder="Observaciones sobre la cosecha..."
-                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               ></textarea>
             </div>
@@ -591,7 +590,7 @@
               <button
                 type="submit"
                 :disabled="guardandoCosecha"
-                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg
+                class="btn-guardar px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg
                        font-medium transition disabled:opacity-50"
               >
                 {{ guardandoCosecha ? 'Guardando...' : '✓ Guardar Cosecha' }}
@@ -605,7 +604,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEnsayosStore } from '~/stores/ensayos'
 import { useParcelasStore } from '~/stores/parcelas'
@@ -788,6 +787,16 @@ function abrirEditorCosecha(parcela: any) {
   }
 
   showModalCosecha.value = true
+
+  nextTick(() => {
+    const firstInput = document.querySelector('.modal-input') as HTMLElement
+    if (firstInput) {
+      firstInput.focus()
+      if (typeof (firstInput as any).select === 'function') {
+        (firstInput as any).select()
+      }
+    }
+  })
 }
 
 function cerrarModalCosecha() {
@@ -900,6 +909,36 @@ onMounted(() => {
 
   cargarParcelas()
 })
+
+function handleModalEnter(event: KeyboardEvent) {
+  const target = event.target as HTMLElement
+  if (!target) return
+
+  // If the target is the submit/Guardar button, let it submit naturally
+  if (target.classList.contains('btn-guardar') || target.getAttribute('type') === 'submit') {
+    return
+  }
+
+  // Prevent default form submission on enter
+  event.preventDefault()
+
+  const form = event.currentTarget as HTMLFormElement
+  const inputs = Array.from(form.querySelectorAll('.modal-input')) as HTMLElement[]
+  const currentIndex = inputs.indexOf(target)
+
+  if (currentIndex !== -1 && currentIndex + 1 < inputs.length) {
+    const nextEl = inputs[currentIndex + 1]
+    nextEl.focus()
+    if (typeof (nextEl as any).select === 'function') {
+      (nextEl as any).select()
+    }
+  } else {
+    const submitBtn = form.querySelector('.btn-guardar') as HTMLElement
+    if (submitBtn) {
+      submitBtn.focus()
+    }
+  }
+}
 
 useHead({
   title: 'Cosecha - TMS',
