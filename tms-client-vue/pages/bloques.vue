@@ -128,49 +128,7 @@
               leave-to-class="opacity-0"
             >
               <div v-if="ensayoExpandido === grupo.ensayo.id" class="p-6 bg-gray-50 dark:bg-gray-700">
-                <div class="space-y-4">
-                  <div
-                    v-for="bloque in grupo.bloques"
-                    :key="bloque.id"
-                    class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
-                  >
-                    <!-- Header del Bloque -->
-                    <div
-                      @click="toggleBloqueExpandido(bloque.id)"
-                      class="cursor-pointer p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition flex justify-between items-center"
-                    >
-                      <h3 class="font-semibold text-gray-900 dark:text-white">
-                        Bloque {{ bloque.nombreBloque }} (ID: {{ bloque.id }})
-                      </h3>
-                      <span
-                        class="transition transform"
-                        :class="bloqueExpandido === bloque.id ? 'rotate-180' : ''"
-                      >
-                        ▼
-                      </span>
-                    </div>
-
-                    <!-- Parcelas del Bloque -->
-                    <Transition
-                      enter-active-class="transition duration-200 ease-out"
-                      leave-active-class="transition duration-200 ease-in"
-                      enter-from-class="opacity-0"
-                      leave-to-class="opacity-0"
-                    >
-                      <div
-                        v-if="bloqueExpandido === bloque.id"
-                        class="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-700"
-                      >
-                        <ParcelasList
-                          :ensayo-id="grupo.ensayo.id"
-                          :bloque-id="bloque.id"
-                          :ensayo="grupo.ensayo"
-                          :bloque="bloque"
-                        />
-                      </div>
-                    </Transition>
-                  </div>
-                </div>
+                <BloquesList :ensayo-id="grupo.ensayo.id" :ensayo="grupo.ensayo" :is-global-page="true" />
               </div>
             </Transition>
           </div>
@@ -185,7 +143,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEnsayosStore } from '~/stores/ensayos'
 import { useBloquesStore } from '~/stores/bloques'
-import ParcelasList from '~/components/parcelas/ParcelasList.vue'
+import BloquesList from '~/components/bloques/BloquesList.vue'
 
 definePageMeta({
   middleware: 'auth',
@@ -275,6 +233,22 @@ onMounted(() => {
   }
   buscar()
 })
+
+// Volver a cargar y filtrar cuando cambie la query de la ruta (e.g. de /bloques?ensayoId=74 a /bloques)
+watch(
+  () => route.query.ensayoId,
+  (newEnsayoId) => {
+    if (newEnsayoId) {
+      filtroEnsayoId.value = parseInt(newEnsayoId as string, 10)
+      busquedaEnsayo.value = ''
+    } else {
+      filtroEnsayoId.value = null
+      busquedaEnsayo.value = ''
+      ensayoExpandido.value = null
+    }
+    buscar()
+  }
+)
 
 // Expandir automáticamente el primer ensayo si viene con filtro
 watch(bloquesPorEnsayo, (nuevosGrupos) => {

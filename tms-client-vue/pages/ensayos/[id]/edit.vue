@@ -8,6 +8,12 @@
       @submit="handleUpdate"
       @cancel="$router.back()"
     />
+
+    <!-- Bloques y Parcelas -->
+    <div v-if="ensayo" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Diseño Experimental</h2>
+      <BloquesList :ensayo-id="Number(ensayo.id)" :ensayo="ensayo" />
+    </div>
   </div>
 </template>
 
@@ -16,6 +22,7 @@ import { toRefs } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useEnsayosStore, type Ensayo } from '~/stores/ensayos'
 import EnsayoForm from '~/components/ensayos/EnsayoForm.vue'
+import BloquesList from '~/components/bloques/BloquesList.vue'
 import { useNotifications } from '~/composables/useNotifications'
 
 // --- PROPS ---

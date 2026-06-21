@@ -124,6 +124,14 @@
       @save="guardarBloque"
       @close="cerrarFormBloque"
     />
+
+    <!-- Modal: Confirm Delete -->
+    <ConfirmDeleteModal
+      v-if="showDeleteConfirm"
+      :nombre="deleteTargetNombre"
+      @confirmar="ejecutarEliminacion"
+      @cancelar="cerrarDeleteConfirm"
+    />
   </div>
 </template>
 
@@ -132,13 +140,17 @@ import { computed, ref, onMounted } from 'vue'
 import { useBloques } from '~/composables/useBloques'
 import BloqueForm from './BloqueForm.vue'
 import ParcelasList from '../parcelas/ParcelasList.vue'
+import ConfirmDeleteModal from '../common/ConfirmDeleteModal.vue'
 
 interface Props {
   ensayoId: number
   ensayo?: any
+  isGlobalPage?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  isGlobalPage: false,
+})
 
 const {
   showFormBloque,
@@ -154,9 +166,15 @@ const {
 } = useBloques()
 
 const bloques = computed(() => {
+  if (props.isGlobalPage) {
+    return (bloquesStore.items || []).filter((b: any) => b.ensayo?.id === props.ensayoId)
+  }
   return bloquesStore.items || []
 })
 const bloqueExpandido = ref<number | null>(null)
+const showDeleteConfirm = ref(false)
+const deleteTargetId = ref<number | null>(null)
+const deleteTargetNombre = ref('')
 
 const limitVal = computed(() => {
   if (props.ensayo?.cantBloques) return props.ensayo.cantBloques;
@@ -171,7 +189,9 @@ const isMaxBloquesAlcanzado = computed(() => {
 // Inicializar
 onMounted(async () => {
   setEnsayoId(props.ensayoId)
-  await cargarBloques({ ensayoId: props.ensayoId })
+  if (!props.isGlobalPage) {
+    await cargarBloques({ ensayoId: props.ensayoId })
+  }
 })
 
 function toggleBloqueExpandido(bloqueId: number) {
@@ -192,14 +212,42 @@ async function guardarBloque(datos: any) {
     } else {
       await crearBloque(datos)
     }
-    await cargarBloques({ ensayoId: props.ensayoId })
+    if (props.isGlobalPage) {
+      await bloquesStore.fetchBloques({ limit: 500 })
+    } else {
+      await cargarBloques({ ensayoId: props.ensayoId })
+    }
   } catch (err) {
     console.error('Error al guardar bloque:', err)
   }
 }
 
-async function eliminarBloque(id: number) {
-  await eliminarBloqueComposable(id)
-  await cargarBloques({ ensayoId: props.ensayoId })
+function eliminarBloque(id: number) {
+  const b = bloques.value.find((x: any) => x.id === id)
+  deleteTargetId.value = id
+  deleteTargetNombre.value = b ? `Bloque ${b.nombreBloque}` : `Bloque (ID: ${id})`
+  showDeleteConfirm.value = true
+}
+
+async function ejecutarEliminacion() {
+  if (deleteTargetId.value !== null) {
+    try {
+      await eliminarBloqueComposable(deleteTargetId.value)
+      showDeleteConfirm.value = false
+      deleteTargetId.value = null
+      if (props.isGlobalPage) {
+        await bloquesStore.fetchBloques({ limit: 500 })
+      } else {
+        await cargarBloques({ ensayoId: props.ensayoId })
+      }
+    } catch (err) {
+      console.error('Error al eliminar bloque:', err)
+    }
+  }
+}
+
+function cerrarDeleteConfirm() {
+  showDeleteConfirm.value = false
+  deleteTargetId.value = null
 }
 </script>

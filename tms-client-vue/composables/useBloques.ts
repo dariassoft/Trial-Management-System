@@ -36,9 +36,7 @@ export function useBloques() {
   }
 
   async function eliminarBloque(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este bloque?')) {
-      await bloquesStore.deleteBloque(id)
-    }
+    await bloquesStore.deleteBloque(id)
   }
 
   // Helpers
