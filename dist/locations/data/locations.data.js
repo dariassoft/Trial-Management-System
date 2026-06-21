@@ -7,7 +7,7 @@ exports.locationsData = {
     'Santa Fe': ['Rosario', 'La Capital', 'General López', 'Rafaela', 'Venado Tuerto'],
     'La Pampa': ['Capital', 'Maracó', 'Realicó', 'General Pico', 'Santa Rosa'],
     'Entre Ríos': ['Paraná', 'Concordia', 'Gualeguaychú', 'Colón', 'Uruguay'],
-    'Salta': ['Anta', 'Cachi', 'Cafayate', 'Capital', 'Cerrillos', 'Chicoana', 'General Güemes', 'Iruya', 'La Caldera', 'La Candelaria', 'La Poma', 'La Viña', 'Los Andes', 'Metán', 'Molinos', 'Orán', 'Rivadavia', 'Rosario de la Frontera', 'Rosario de Lerma', 'San Carlos', 'Santa Victoria'],
+    'Salta': ['Anta', 'Cachi', 'Cafayate', 'Capital', 'Cerrillos', 'Chicoana', 'General Güemes', 'Iruya', 'La Caldera', 'La Candelaria', 'La Poma', 'La Viña', 'Los Andes', 'Metán', 'Molinos', 'Orán', 'Rivadavia', 'Rosario de la Frontera', 'Rosario de Lerma', 'San Carlos', 'Santa Victoria', 'San Martin'],
     'Tucumán': ['Burruyacú', 'Capital', 'Chicligasta', 'Cruz Alta', 'Famaillá', 'Graneros', 'Juan Bautista Alberdi', 'La Cocha', 'Leales', 'Lules', 'Monteros', 'Río Chico', 'Simoca', 'Tafí del Valle', 'Tafí Viejo', 'Trancas', 'Yerba Buena']
 };
 exports.provincias = Object.keys(exports.locationsData);
