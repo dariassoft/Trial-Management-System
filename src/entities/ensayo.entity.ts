@@ -82,6 +82,9 @@ export class Ensayo {
   @Column({ name: 'columnas', type: 'int', unsigned: true, nullable: true })
   columnas?: number | null;
 
+  @Column({ name: 'cant_bloques', type: 'int', unsigned: true, nullable: true })
+  cantBloques?: number | null;
+
   // --- Date Fields Updated ---
   @Column({ name: 'fecha_inicio', type: 'date', nullable: true })
   fechaInicio?: Date | null;

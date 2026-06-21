@@ -109,6 +109,10 @@ __decorate([
     __metadata("design:type", Object)
 ], Ensayo.prototype, "columnas", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'cant_bloques', type: 'int', unsigned: true, nullable: true }),
+    __metadata("design:type", Object)
+], Ensayo.prototype, "cantBloques", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'fecha_inicio', type: 'date', nullable: true }),
     __metadata("design:type", Object)
 ], Ensayo.prototype, "fechaInicio", void 0);

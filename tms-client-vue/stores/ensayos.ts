@@ -22,6 +22,9 @@ export interface Ensayo {
   tipoSiembra?: { id: number; nombre: string } | null
   tipoSiembraId?: number | null
   distSurcosCm?: number
+  filas?: number | null
+  columnas?: number | null
+  cantBloques?: number | null
   fechaInicio?: string
   fechaSiembra: string
   fechaCosecha?: string

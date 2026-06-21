@@ -158,6 +158,14 @@ export class UpdateEnsayoDto {
   @Max(100)
   columnas?: number | null;
 
+  @ApiPropertyOptional({ description: 'Cantidad de bloques a crear', example: 3, type: Number, minimum: 1, maximum: 100 })
+  @IsOptional()
+  @ValidateIf(o => o.cantBloques !== null && o.cantBloques !== undefined && o.cantBloques !== '')
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  cantBloques?: number | null;
+
   @ApiPropertyOptional({ description: 'Fecha de Inicio (YYYY-MM-DD)', example: '2025-10-15' })
   @IsOptional()
   @ValidateIf(o => o.fechaInicio !== null && o.fechaInicio !== '')

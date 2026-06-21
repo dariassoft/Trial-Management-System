@@ -212,7 +212,21 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 class="text-lg font-semibold mb-4">📊 Estructura de la Matriz de Parcelas</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Define la forma de la matriz que determinará las posiciones X e Y de las parcelas</p>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label class="block font-medium mb-1">
+                Cantidad de Bloques <span class="text-gray-500 text-sm">(Opcional)</span>
+              </label>
+              <input
+                v-model.number="form.cantBloques"
+                type="number"
+                min="1"
+                max="100"
+                placeholder="Ej: 3"
+                class="w-full border p-2 rounded dark:text-black dark:bg-gray-200"
+              />
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Min: 1, Max: 100</p>
+            </div>
             <div>
               <label class="block font-medium mb-1">
                 Número de Filas <span class="text-gray-500 text-sm">(Opcional)</span>
@@ -260,6 +274,10 @@
                 </div>
               </div>
             </div>
+          </div>
+          <!-- Sugerencia de Matriz -->
+          <div v-if="sugerenciaMatriz" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded text-sm text-blue-800 dark:text-blue-200">
+            <p><span class="font-semibold">Sugerencia:</span> {{ sugerenciaMatriz }}</p>
           </div>
           <div class="mt-4 p-3 bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-700 rounded text-sm text-amber-800 dark:text-amber-200">
             <p><span class="font-semibold">Nota:</span> Estos campos son opcionales. Si los defines, el sistema esperará crear exactamente este número de parcelas.</p>
@@ -355,6 +373,7 @@ const form = ref<Partial<Ensayo>>({
   distSurcosCm: undefined,
   filas: undefined,
   columnas: undefined,
+  cantBloques: undefined,
   fechaInicio: '',
   fechaSiembra: '',
   fechaCosecha: '',
@@ -394,6 +413,14 @@ const selectedProtocolo = computed(() => {
 const totalParcelasEsperadas = computed(() => {
   if (!form.value.filas || !form.value.columnas) return 0;
   return form.value.filas * form.value.columnas;
+});
+
+const sugerenciaMatriz = computed(() => {
+  if (!form.value.cantBloques || !selectedProtocolo.value) return null;
+  const B = form.value.cantBloques;
+  const T = selectedProtocolo.value.tratamientos?.length || 0;
+  if (T === 0) return null;
+  return `Si vas a crear ${B} bloques y tienes un protocolo con ${T} tratamientos, entonces necesitas una matriz de ${B}x${T} (Filas: ${B}, Columnas: ${T}).`;
 });
 
 const formatDateForInput = (date: string | Date | undefined): string => {
@@ -565,11 +592,17 @@ const handleSubmit = () => {
     }
   }
 
+  if (form.value.cantBloques && form.value.filas && form.value.filas !== form.value.cantBloques) {
+    showNotification(`El número de filas (${form.value.filas}) debe ser igual a la cantidad de bloques definidos (${form.value.cantBloques}).`, 'error');
+    return;
+  }
+
   const lat = form.value.latitud ? parseFloat(String(form.value.latitud)) : null;
   const lon = form.value.longitud ? parseFloat(String(form.value.longitud)) : null;
   const dist = form.value.distSurcosCm ? parseFloat(String(form.value.distSurcosCm)) : null;
   const filas = form.value.filas ? parseInt(String(form.value.filas)) : null;
   const columnas = form.value.columnas ? parseInt(String(form.value.columnas)) : null;
+  const cantBloques = form.value.cantBloques ? parseInt(String(form.value.cantBloques)) : null;
 
   // Convertir fechas vacías a null
   const fechaInicio = form.value.fechaInicio && form.value.fechaInicio.trim() !== '' ? form.value.fechaInicio : null;
@@ -593,6 +626,7 @@ const handleSubmit = () => {
     distSurcosCm: isNaN(dist) ? null : dist,
     filas: isNaN(filas) ? null : filas,
     columnas: isNaN(columnas) ? null : columnas,
+    cantBloques: isNaN(cantBloques) ? null : cantBloques,
     fechaInicio,
     fechaSiembra,
     fechaCosecha,
@@ -637,6 +671,7 @@ const loadDependentData = async (data: Ensayo | null) => {
         variedadId: data.variedad?.id || null,
         tipoSiembraId: data.tipoSiembra?.id || null,
         statusId: data.status?.id || null,
+        cantBloques: data.cantBloques || null,
       };
 
       // Fetch dependent data based on initialData

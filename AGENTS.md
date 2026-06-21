@@ -423,6 +423,7 @@ npm run typecheck              # TypeScript check
 - **Swagger:** All endpoints documented with `@ApiTags`, `@ApiBearerAuth`, `@ApiProperty` decorators.
 - **Pagination:** All list endpoints use `PageQueryDto` and return `PaginatedResponse<T>`.
 - **No browser native alerts/confirms:** Do NOT use browser native alert or confirm dialogs (`alert()`, `confirm()`) anywhere in the application. Always use the application's styled components (such as `ConfirmDeleteModal` or custom styled modals/toasts) to handle notifications, confirmations, and warnings.
+- **Diseño Experimental y Restricción de Bloques:** Al crear o editar un ensayo se puede definir la cantidad planificada de bloques (`cantBloques`). Si este campo está definido, el backend (`BloquesService`) limita estrictamente la creación de nuevos bloques a esa cantidad, previniendo exceder el diseño planificado. Además, en el formulario de ensayos, si se selecciona un protocolo y se define la cantidad de bloques, se sugiere automáticamente la dimensión de la matriz de parcelas ($B \times T$, donde $B$ es la cantidad de bloques y $T$ es la cantidad de tratamientos). Se valida que el número de filas en la estructura de la matriz coincida exactamente con la cantidad de bloques planificada.
 
 ---
 

@@ -199,6 +199,15 @@ __decorate([
     __metadata("design:type", Object)
 ], UpdateEnsayoDto.prototype, "columnas", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Cantidad de bloques a crear', example: 3, type: Number, minimum: 1, maximum: 100 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateIf)(o => o.cantBloques !== null && o.cantBloques !== undefined && o.cantBloques !== ''),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(100),
+    __metadata("design:type", Object)
+], UpdateEnsayoDto.prototype, "cantBloques", void 0);
+__decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: 'Fecha de Inicio (YYYY-MM-DD)', example: '2025-10-15' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.ValidateIf)(o => o.fechaInicio !== null && o.fechaInicio !== ''),

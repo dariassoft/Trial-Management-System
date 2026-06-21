@@ -6,6 +6,7 @@ import { JwtPayload } from '../auth/jwt-payload.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Bloque } from '../entities/bloque.entity';
+import { Ensayo } from '../entities/ensayo.entity';
 import { CreateBloqueDto } from './dto/create-bloque.dto';
 import { UpdateBloqueDto } from './dto/update-bloque.dto';
 
@@ -15,6 +16,8 @@ export class BloquesService {
     @Inject(REQUEST) private readonly req: Request,
     @InjectRepository(Bloque)
     private readonly repo: Repository<Bloque>,
+    @InjectRepository(Ensayo)
+    private readonly ensayoRepo: Repository<Ensayo>,
   ) {}
 
   private get auth() {
@@ -33,6 +36,23 @@ export class BloquesService {
     // Validar que ensayoId esté presente
     if (!dto.ensayoId) {
       throw new BadRequestException('ensayoId es requerido');
+    }
+
+    // Obtener ensayo para validar cantidad de bloques
+    const ensayo = await this.ensayoRepo.findOne({ where: { id: dto.ensayoId } });
+    if (!ensayo) {
+      throw new NotFoundException(`Ensayo ${dto.ensayoId} no encontrado`);
+    }
+
+    if (ensayo.cantBloques) {
+      const currentBlocksCount = await this.repo.count({
+        where: { ensayo: { id: dto.ensayoId } },
+      });
+      if (currentBlocksCount >= ensayo.cantBloques) {
+        throw new BadRequestException(
+          `Límite alcanzado: Ya se han creado todos los bloques definidos en el ensayo (${ensayo.cantBloques}).`,
+        );
+      }
     }
 
     // Verificar si ya existe un bloque con este nombre para este ensayo

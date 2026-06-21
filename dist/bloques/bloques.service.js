@@ -28,10 +28,12 @@ const rol_entity_1 = require("../entities/rol.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const bloque_entity_1 = require("../entities/bloque.entity");
+const ensayo_entity_1 = require("../entities/ensayo.entity");
 let BloquesService = class BloquesService {
-    constructor(req, repo) {
+    constructor(req, repo, ensayoRepo) {
         this.req = req;
         this.repo = repo;
+        this.ensayoRepo = ensayoRepo;
     }
     get auth() {
         var _a;
@@ -49,6 +51,19 @@ let BloquesService = class BloquesService {
             // Validar que ensayoId esté presente
             if (!dto.ensayoId) {
                 throw new common_1.BadRequestException('ensayoId es requerido');
+            }
+            // Obtener ensayo para validar cantidad de bloques
+            const ensayo = yield this.ensayoRepo.findOne({ where: { id: dto.ensayoId } });
+            if (!ensayo) {
+                throw new common_1.NotFoundException(`Ensayo ${dto.ensayoId} no encontrado`);
+            }
+            if (ensayo.cantBloques) {
+                const currentBlocksCount = yield this.repo.count({
+                    where: { ensayo: { id: dto.ensayoId } },
+                });
+                if (currentBlocksCount >= ensayo.cantBloques) {
+                    throw new common_1.BadRequestException(`Límite alcanzado: Ya se han creado todos los bloques definidos en el ensayo (${ensayo.cantBloques}).`);
+                }
             }
             // Verificar si ya existe un bloque con este nombre para este ensayo
             const existente = yield this.repo.findOne({
@@ -175,5 +190,7 @@ exports.BloquesService = BloquesService = __decorate([
     (0, common_1.Injectable)({ scope: common_1.Scope.REQUEST }),
     __param(0, (0, common_1.Inject)(core_1.REQUEST)),
     __param(1, (0, typeorm_1.InjectRepository)(bloque_entity_1.Bloque)),
-    __metadata("design:paramtypes", [Object, typeorm_2.Repository])
+    __param(2, (0, typeorm_1.InjectRepository)(ensayo_entity_1.Ensayo)),
+    __metadata("design:paramtypes", [Object, typeorm_2.Repository,
+        typeorm_2.Repository])
 ], BloquesService);

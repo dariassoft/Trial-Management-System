@@ -8,6 +8,7 @@ const dotenv_1 = require("dotenv");
 exports.AppDataSource = new typeorm_1.DataSource({
     type: 'mysql',
     connectorPackage: 'mysql2',
+    host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '3306', 10),
     username: process.env.DB_USER || 'myuser',
     password: process.env.DB_PASSWORD || 'mypassword',
