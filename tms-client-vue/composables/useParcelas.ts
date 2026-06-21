@@ -44,9 +44,7 @@ export function useParcelas() {
   }
 
   async function eliminarParcela(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta parcela?')) {
-      await parcelasStore.deleteParcela(id)
-    }
+    await parcelasStore.deleteParcela(id)
   }
 
   // Helpers

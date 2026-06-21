@@ -42,7 +42,7 @@
         type="button"
         @click="seleccionarCelda(celda.x, celda.y)"
         :disabled="props.permitirSelecccionarOcupadas ? false : celda.ocupada"
-        :title="`Posición (${celda.x}, ${celda.y})`"
+        :title="celda.ocupada ? `Ocupada por Bloque ${celda.bloqueNombre} en (${celda.x}, ${celda.y})` : `Disponible en (${celda.x}, ${celda.y})`"
         :class="[
           'w-10 h-10 rounded text-xs font-semibold transition',
           'border-2',
@@ -115,11 +115,12 @@ const celdas = computed(() => {
   // Filas en orden DESCENDENTE (Y de filasTotal→1), columnas en orden ASCENDENTE (X de 1→columnasTotal)
   for (let y = filasTotal.value; y >= 1; y--) {
     for (let x = 1; x <= columnasTotal.value; x++) {
-      const ocupada = (props.parcelasOcupadas || []).some(p => p.x === x && p.y === y)
+      const pOcupada = (props.parcelasOcupadas || []).find(p => p.x === x && p.y === y)
+      const ocupada = !!pOcupada
       const seleccionada = x === props.posXSeleccionada && y === props.posYSeleccionada
 
       if (ocupada) {
-        console.log(`   ✓ Celda (${x}, ${y}) está OCUPADA`)
+        console.log(`   ✓ Celda (${x}, ${y}) está OCUPADA por ${pOcupada?.bloqueNombre}`)
       }
 
       resultado.push({
@@ -127,6 +128,7 @@ const celdas = computed(() => {
         y,
         ocupada,
         seleccionada,
+        bloqueNombre: pOcupada?.bloqueNombre || '',
       })
     }
   }

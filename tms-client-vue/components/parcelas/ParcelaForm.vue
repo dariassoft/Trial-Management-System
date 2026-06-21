@@ -28,7 +28,7 @@
           >
             <option value="">Seleccionar tratamiento...</option>
             <option v-for="t in tratamientosDelEnsayo" :key="t.id" :value="t.id">
-              {{ t.descripcion || `Tratamiento ${t.id}` }}
+              T{{ t.numeroTrat }} - {{ t.descripcion || 'Sin descripción' }}
             </option>
           </select>
           <p v-if="tratamientosDelEnsayo.length === 0" class="text-xs text-amber-500 mt-1">
@@ -139,6 +139,27 @@
           <!-- Mostrar errores de validación -->
           <div v-if="errorDuplicado" class="p-2 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded text-sm text-red-600 dark:text-red-400">
             ⚠️ {{ errorDuplicado }}
+          </div>
+
+          <!-- Resumen de Ocupación -->
+          <div class="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-xs space-y-2">
+            <h4 class="font-semibold text-gray-900 dark:text-white">Estado de la Grilla (Bloque Actual vs Otros):</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <p class="font-medium text-blue-600 dark:text-blue-400">Ocupadas por este bloque ({{ parcelasMismoBloque.length }}):</p>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 max-h-24 overflow-y-auto mt-1">
+                  <li v-for="p in parcelasMismoBloque" :key="p.id">Posición ({{ p.x }}, {{ p.y }})</li>
+                  <li v-if="!parcelasMismoBloque.length" class="italic text-gray-400">Ninguna</li>
+                </ul>
+              </div>
+              <div>
+                <p class="font-medium text-red-600 dark:text-red-400">Ocupadas por otros bloques ({{ parcelasOtrosBloques.length }}):</p>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 max-h-24 overflow-y-auto mt-1">
+                  <li v-for="p in parcelasOtrosBloques" :key="p.id">Bloque {{ p.bloqueNombre }}: ({{ p.x }}, {{ p.y }})</li>
+                  <li v-if="!parcelasOtrosBloques.length" class="italic text-gray-400">Ninguna</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -401,6 +422,9 @@
 import { reactive, watch, ref, computed } from 'vue'
 import QRCode from 'qrcode'
 import MatrizVisual from './MatrizVisual.vue'
+import { useNotifications } from '~/composables/useNotifications'
+
+const { showNotification } = useNotifications()
 
 interface QRInfo {
   ensayoNombre?: string
@@ -442,6 +466,13 @@ interface Props {
     bloqueId?: number
     bloque?: { id: number; nombreBloque?: string } | null
   }> | null
+  todasLasParcelas?: Array<{
+    id: number
+    posXGrid?: number | null
+    posYGrid?: number | null
+    bloqueId?: number
+    bloque?: { id: number; nombreBloque?: string } | null
+  }> | null
   isBloqueCompleto?: boolean // New prop
 }
 
@@ -452,6 +483,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   parcelasExistentes: () => [],
+  todasLasParcelas: () => [],
   isBloqueCompleto: false, // Default value for new prop
 })
 const emit = defineEmits<Emits>()
@@ -477,6 +509,31 @@ const qrInfo = reactive<QRInfo>({
   tratamientoNombre: '',
 })
 const errorDuplicado = ref('')
+
+// Computed properties for occupied layout
+const parcelasOcupadas = computed(() => {
+  const lista = (props.todasLasParcelas && props.todasLasParcelas.length > 0)
+    ? props.todasLasParcelas
+    : (props.parcelasExistentes || [])
+  return lista
+    .filter((p: any) => !props.parcela?.id || p.id !== props.parcela.id)
+    .map((p: any) => ({
+      x: p.posXGrid,
+      y: p.posYGrid,
+      bloqueId: p.bloque?.id || p.bloqueId,
+      bloqueNombre: p.bloque?.nombreBloque || '',
+      id: p.id
+    }))
+    .filter((p: any) => p.x !== null && p.y !== null)
+})
+
+const parcelasMismoBloque = computed(() => {
+  return parcelasOcupadas.value.filter((p: any) => Number(p.bloqueId) === Number(props.bloque?.id))
+})
+
+const parcelasOtrosBloques = computed(() => {
+  return parcelasOcupadas.value.filter((p: any) => Number(p.bloqueId) !== Number(props.bloque?.id))
+})
 
 // Propiedades calculadas
 const codigoLabor = computed(() => {
@@ -611,21 +668,22 @@ watch(
       return
     }
 
-    // Validar duplicados en el mismo bloque
-    if (posX && posY && props.parcelasExistentes) {
-      const duplicado = props.parcelasExistentes.some(
-        p => {
-          const bloqueId = p.bloque?.id || p.bloqueId  // Intenta ambas estructuras
-          return Number(bloqueId) === Number(props.bloque?.id) &&
-               p.posXGrid === posX &&
-               p.posYGrid === posY &&
-               p.id !== props.parcela?.id
-        }
+    // Validar duplicados en todo el ensayo (entre todos los bloques)
+    const listaParaValidar = (props.todasLasParcelas && props.todasLasParcelas.length > 0)
+      ? props.todasLasParcelas
+      : (props.parcelasExistentes || [])
+
+    if (posX && posY && listaParaValidar) {
+      const duplicado = listaParaValidar.find(
+        (p: any) => p.posXGrid === posX &&
+             p.posYGrid === posY &&
+             p.id !== props.parcela?.id
       )
 
       if (duplicado) {
-        console.warn(`⚠️ Posición (${posX}, ${posY}) ya existe en este bloque`)
-        errorDuplicado.value = `La posición (${posX}, ${posY}) ya está ocupada en este bloque`
+        const blNombre = duplicado.bloque?.nombreBloque || 'otro'
+        console.warn(`⚠️ Posición (${posX}, ${posY}) ya existe en el bloque ${blNombre}`)
+        errorDuplicado.value = `La posición (${posX}, ${posY}) ya está ocupada por el Bloque ${blNombre}`
       }
     }
   }
@@ -720,7 +778,7 @@ async function generarYMostrarQR() {
       (err) => {
         if (err) {
           console.error('❌ Error en QRCode.toCanvas:', err)
-          alert('Error al generar QR: ' + err.message)
+          showNotification('Error al generar QR: ' + err.message, 'error')
         } else {
           console.log('✅ QR generado exitosamente')
           // Limpiar div anterior y agregar el nuevo canvas
@@ -733,7 +791,7 @@ async function generarYMostrarQR() {
     )
   } catch (err) {
     console.error('❌ Error al generar QR:', err)
-    alert('Error: ' + (err instanceof Error ? err.message : 'Error desconocido'))
+    showNotification('Error: ' + (err instanceof Error ? err.message : 'Error desconocido'), 'error')
   }
 }
 
@@ -904,49 +962,50 @@ function enviar() {
 
   // If creating a new parcel and the block is already complete, prevent submission
   if (props.isBloqueCompleto && !props.parcela?.id) {
-    alert('Este bloque ya está completo. No se pueden crear más parcelas en él.')
+    showNotification('Este bloque ya está completo. No se pueden crear más parcelas en él.', 'error')
     return
   }
 
   // Validar que tratamientoId esté definido
   if (form.tratamientoId === null || form.tratamientoId === undefined) {
     console.error('❌ Error: tratamientoId es requerido')
-    alert('Por favor selecciona un tratamiento')
+    showNotification('Por favor selecciona un tratamiento', 'error')
     return
   }
 
   // Validar que al menos haya posiciones o nombre
   if (!form.nombreParcela && (!form.posXGrid || !form.posYGrid)) {
     console.error('❌ Error: Se requiere nombre o posiciones')
-    alert('Por favor ingresa un nombre o posiciones')
+    showNotification('Por favor ingresa un nombre o posiciones', 'error')
     return
   }
 
   // Validar límites de filas y columnas
   if (columnasEnsayo.value && form.posXGrid && form.posXGrid > columnasEnsayo.value) {
-    alert(`Posición X no puede ser mayor a ${columnasEnsayo.value}`)
+    showNotification(`Posición X no puede ser mayor a ${columnasEnsayo.value}`, 'error')
     return
   }
 
   if (filasEnsayo.value && form.posYGrid && form.posYGrid > filasEnsayo.value) {
-    alert(`Posición Y no puede ser mayor a ${filasEnsayo.value}`)
+    showNotification(`Posición Y no puede ser mayor a ${filasEnsayo.value}`, 'error')
     return
   }
 
-  // Validar duplicados dentro del mismo bloque
-  if (form.posXGrid && form.posYGrid && props.parcelasExistentes) {
-    const duplicado = props.parcelasExistentes.some(
-      p => {
-        const bloqueId = p.bloque?.id || p.bloqueId  // Intenta ambas estructuras
-        return Number(bloqueId) === Number(props.bloque?.id) &&
-             p.posXGrid === form.posXGrid &&
-             p.posYGrid === form.posYGrid &&
-             p.id !== props.parcela?.id
-      }
+  // Validar duplicados en todo el ensayo (entre todos los bloques)
+  const listaParaValidar = (props.todasLasParcelas && props.todasLasParcelas.length > 0)
+    ? props.todasLasParcelas
+    : (props.parcelasExistentes || [])
+
+  if (form.posXGrid && form.posYGrid && listaParaValidar) {
+    const duplicado = listaParaValidar.find(
+      (p: any) => p.posXGrid === form.posXGrid &&
+           p.posYGrid === form.posYGrid &&
+           p.id !== props.parcela?.id
     )
 
     if (duplicado) {
-      alert(`La posición (${form.posXGrid}, ${form.posYGrid}) ya está ocupada en este bloque`)
+      const blNombre = duplicado.bloque?.nombreBloque || 'otro'
+      showNotification(`La posición (${form.posXGrid}, ${form.posYGrid}) ya está ocupada por el Bloque ${blNombre}`, 'error')
       return
     }
   }

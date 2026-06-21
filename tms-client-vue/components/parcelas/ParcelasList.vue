@@ -97,6 +97,9 @@
               {{ parcela.nombreParcela || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
+              <span v-if="parcela.tratamiento" class="font-medium text-blue-600 dark:text-blue-400 mr-2">
+                T{{ parcela.tratamiento.numeroTrat }}
+              </span>
               {{ parcela.tratamiento?.descripcion || parcela.tratamiento?.nombreTratamiento || '-' }}
             </td>
             <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
@@ -110,8 +113,8 @@
                 >
                   Editar
                 </button>
-                <button
-                  @click="eliminarParcela(parcela.id)"
+                 <button
+                  @click="confirmarEliminarParcela(parcela.id, parcela.nombreParcela)"
                   class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-medium transition"
                 >
                   X
@@ -131,9 +134,18 @@
       :ensayo="ensayoActual"
       :bloque="bloqueActual"
       :parcelasExistentes="parcelas"
+      :todasLasParcelas="todasLasParcelasDelEnsayo"
       :is-bloque-completo="isBloqueCompleto"
       @save="guardarParcela"
       @close="cerrarFormParcela"
+    />
+
+    <!-- Modal: Confirm Delete -->
+    <ConfirmDeleteModal
+      v-if="showDeleteConfirm"
+      :nombre="deleteTargetNombre"
+      @confirmar="ejecutarEliminacion"
+      @cancelar="cerrarDeleteConfirm"
     />
   </div>
 </template>
@@ -145,6 +157,7 @@ import { useApi } from '~/composables/useApi'
 import { useEnsayosStore, type Ensayo } from '~/stores/ensayos'
 import { useBloquesStore } from '~/stores/bloques'
 import ParcelaForm from './ParcelaForm.vue'
+import ConfirmDeleteModal from '~/components/common/ConfirmDeleteModal.vue'
 
 interface Props {
   ensayoId: number
@@ -170,10 +183,24 @@ const {
 } = useParcelas()
 
 const api = useApi()
+import { useNotifications } from '~/composables/useNotifications'
+const { showNotification } = useNotifications()
+
 const tratamientos = ref<any[]>([])
 const ensayoCompleto = ref<any>(null)
 const ensayosStore = useEnsayosStore()
 const bloquesStore = useBloquesStore()
+const todasLasParcelasDelEnsayo = ref<any[]>([])
+
+async function cargarTodasLasParcelas() {
+  try {
+    const res = await api.get('/parcelas', { params: { ensayoId: props.ensayoId, limit: 1000 } })
+    const data = res && (res.data ?? res)
+    todasLasParcelasDelEnsayo.value = Array.isArray(data) ? data : data?.data || []
+  } catch (err) {
+    console.error('Error cargando todas las parcelas:', err)
+  }
+}
 
 // Obtener el ensayo con toda la info (de props o cargado)
 const ensayoActual = computed(() => {
@@ -305,6 +332,7 @@ onMounted(async () => {
     // Luego cargar tratamientos (que dependen del protocolo del ensayo)
     await Promise.all([
       cargarTratamientos(),
+      cargarTodasLasParcelas(),
       // Límite alto para que el mapa visual muestre TODAS las parcelas del bloque como ocupadas
       cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
     ])
@@ -381,7 +409,10 @@ async function guardarParcela(datos: any) {
       console.log('  ✅ Creación enviada')
     }
     console.log('✅ Parcela guardada, recargando listado...')
-    await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
+    await Promise.all([
+      cargarTodasLasParcelas(),
+      cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
+    ])
     console.log('✅ Listado recargado')
     cerrarFormParcela()
   } catch (err: any) {
@@ -390,17 +421,44 @@ async function guardarParcela(datos: any) {
     // Manejar error 409 (Conflict - duplicado)
     if (err.response?.status === 409 || err.status === 409) {
       const mensaje = err.response?.data?.message || err.message || 'Esta parcela ya existe en el bloque'
-      alert(`⚠️ Conflicto al guardar: ${mensaje}\n\nLa posición (X, Y) ya está ocupada en este bloque.`)
+      showNotification(`Conflict al guardar: ${mensaje}. La posición (X, Y) ya está ocupada en este bloque.`, 'error')
       console.log('🚫 Error 409 Conflict - Duplicado de parcela')
       return
     }
 
-    alert('❌ Error al guardar: ' + (err instanceof Error ? err.message : 'Error desconocido'))
+    showNotification('Error al guardar: ' + (err instanceof Error ? err.message : 'Error desconocido'), 'error')
   }
 }
 
-async function eliminarParcela(id: number) {
-  await eliminarParcelaComposable(id)
-  await cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
+// Confirmación de eliminación de parcela
+const showDeleteConfirm = ref(false)
+const deleteTargetId = ref<number | null>(null)
+const deleteTargetNombre = ref('')
+
+function confirmarEliminarParcela(id: number, nombre: string | null | undefined) {
+  deleteTargetId.value = id
+  deleteTargetNombre.value = `la parcela "${nombre || id}"`
+  showDeleteConfirm.value = true
+}
+
+function cerrarDeleteConfirm() {
+  showDeleteConfirm.value = false
+  deleteTargetId.value = null
+  deleteTargetNombre.value = ''
+}
+
+async function ejecutarEliminacion() {
+  if (!deleteTargetId.value) return
+  try {
+    await parcelasStore.deleteParcela(deleteTargetId.value)
+    await Promise.all([
+      cargarTodasLasParcelas(),
+      cargarParcelas({ ensayoId: props.ensayoId, bloqueId: props.bloqueId, limit: 500 })
+    ])
+  } catch (err) {
+    console.error('Error al eliminar parcela:', err)
+  } finally {
+    cerrarDeleteConfirm()
+  }
 }
 </script>
