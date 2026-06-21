@@ -68,7 +68,7 @@ let ParcelasService = class ParcelasService {
     }
     findAll() {
         return __awaiter(this, arguments, void 0, function* (params = {}) {
-            const { page = 1, limit = 10, sort = 'id', order = 'ASC', ensayoId, bloqueId } = params;
+            const { page = 1, limit = 10, sort = 'id', order = 'ASC', ensayoId, bloqueId, q } = params;
             const skip = (page - 1) * limit;
             const { isInvitado, labIds } = this.auth;
             const qb = this.repo.createQueryBuilder('pa')
@@ -88,6 +88,16 @@ let ParcelasService = class ParcelasService {
             }
             if (bloqueId) {
                 qb.andWhere('pa.bloque.id = :bloqueId', { bloqueId });
+            }
+            if (q && q.trim()) {
+                const searchTerm = `%${q.trim()}%`;
+                qb.andWhere(`(
+        LOWER(pa.nombreParcela) LIKE LOWER(:q) OR
+        LOWER(ensayo.nombreEnsayo) LIKE LOWER(:q) OR
+        LOWER(ensayo.codigoLabor) LIKE LOWER(:q) OR
+        LOWER(tratamiento.descripcion) LIKE LOWER(:q) OR
+        LOWER(bloque.nombreBloque) LIKE LOWER(:q)
+      )`, { q: searchTerm });
             }
             qb.orderBy(`pa.${sort}`, order)
                 .skip(skip)

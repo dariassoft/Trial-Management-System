@@ -80,19 +80,29 @@ export const useParcelasStore = defineStore('parcelas', () => {
       console.log('🔍 Query enviada al API:', query)
 
       const res = await api.get('/parcelas', { params: query })
-      const data = res && (res.data ?? res)
 
-      if (Array.isArray(data)) {
-        items.value = data
-        console.log('✅ Parcelas cargadas:', data.length)
-      } else if (data?.data) {
-        items.value = data.data
-        if (data.meta) {
-          paginacion.value.total = data.meta.total
-          paginacion.value.pageCount = data.meta.pageCount
-          paginacion.value.page = data.meta.page
+      let data: any = null
+      if (res && res.data && res.meta) {
+        items.value = res.data
+        paginacion.value.total = res.meta.total
+        paginacion.value.pageCount = res.meta.pageCount
+        paginacion.value.page = res.meta.page
+        data = res.data
+        console.log('✅ Parcelas cargadas (paginadas):', res.data.length)
+      } else {
+        data = res && (res.data ?? res)
+        if (Array.isArray(data)) {
+          items.value = data
+          console.log('✅ Parcelas cargadas (array):', data.length)
+        } else if (data?.data) {
+          items.value = data.data
+          if (data.meta) {
+            paginacion.value.total = data.meta.total
+            paginacion.value.pageCount = data.meta.pageCount
+            paginacion.value.page = data.meta.page
+          }
+          console.log('✅ Parcelas cargadas:', data.data.length)
         }
-        console.log('✅ Parcelas cargadas:', data.data.length)
       }
       return data
     } catch (err: any) {

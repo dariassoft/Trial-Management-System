@@ -54,8 +54,9 @@ export class ParcelasService {
     order?: 'ASC' | 'DESC';
     ensayoId?: number;
     bloqueId?: number;
+    q?: string;
   } = {}) {
-    const { page = 1, limit = 10, sort = 'id', order = 'ASC', ensayoId, bloqueId } = params;
+    const { page = 1, limit = 10, sort = 'id', order = 'ASC', ensayoId, bloqueId, q } = params;
     const skip = (page - 1) * limit;
 
     const { isInvitado, labIds } = this.auth;
@@ -79,6 +80,16 @@ export class ParcelasService {
     }
     if (bloqueId) {
       qb.andWhere('pa.bloque.id = :bloqueId', { bloqueId });
+    }
+    if (q && q.trim()) {
+      const searchTerm = `%${q.trim()}%`;
+      qb.andWhere(`(
+        LOWER(pa.nombreParcela) LIKE LOWER(:q) OR
+        LOWER(ensayo.nombreEnsayo) LIKE LOWER(:q) OR
+        LOWER(ensayo.codigoLabor) LIKE LOWER(:q) OR
+        LOWER(tratamiento.descripcion) LIKE LOWER(:q) OR
+        LOWER(bloque.nombreBloque) LIKE LOWER(:q)
+      )`, { q: searchTerm });
     }
 
     qb.orderBy(`pa.${sort}`, order as 'ASC' | 'DESC')

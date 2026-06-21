@@ -29,7 +29,7 @@ let ParcelasController = class ParcelasController {
     create(dto) {
         return this.service.create(dto);
     }
-    findAll(page, limit, sort, order, ensayoId, bloqueId) {
+    findAll(page, limit, sort, order, ensayoId, bloqueId, q) {
         const parsedOrder = ((order === null || order === void 0 ? void 0 : order.toUpperCase()) === 'DESC' ? 'DESC' : 'ASC');
         const params = {
             page: page ? parseInt(page, 10) : 1,
@@ -38,6 +38,7 @@ let ParcelasController = class ParcelasController {
             order: parsedOrder,
             ensayoId: ensayoId ? parseInt(ensayoId, 10) : undefined,
             bloqueId: bloqueId ? parseInt(bloqueId, 10) : undefined,
+            q,
         };
         return this.service.findAll(params);
     }
@@ -73,8 +74,9 @@ __decorate([
     __param(3, (0, common_1.Query)('order')),
     __param(4, (0, common_1.Query)('ensayoId')),
     __param(5, (0, common_1.Query)('bloqueId')),
+    __param(6, (0, common_1.Query)('q')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ParcelasController.prototype, "findAll", null);
 __decorate([

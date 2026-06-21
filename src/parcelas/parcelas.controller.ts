@@ -35,6 +35,7 @@ export class ParcelasController {
     @Query('order') order?: string,
     @Query('ensayoId') ensayoId?: string,
     @Query('bloqueId') bloqueId?: string,
+    @Query('q') q?: string,
   ) {
     const parsedOrder = (order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC') as 'ASC' | 'DESC';
     const params = {
@@ -44,6 +45,7 @@ export class ParcelasController {
       order: parsedOrder,
       ensayoId: ensayoId ? parseInt(ensayoId, 10) : undefined,
       bloqueId: bloqueId ? parseInt(bloqueId, 10) : undefined,
+      q,
     };
     return this.service.findAll(params);
   }

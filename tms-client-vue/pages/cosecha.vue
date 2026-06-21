@@ -27,7 +27,7 @@
               v-model="busqueda"
               type="text"
               placeholder="Nombre o código..."
-              @keyup.enter="cargarParcelas"
+              @keyup.enter="buscar"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -40,7 +40,7 @@
             <select
               v-model.number="filtroEnsayoId"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              @change="cargarParcelas"
+              @change="buscar"
             >
               <option :value="null">Todos</option>
               <option v-for="e in ensayos" :key="e.id" :value="e.id">
@@ -53,7 +53,7 @@
           <!-- Botón Buscar -->
           <div class="flex items-end">
             <button
-              @click="cargarParcelas"
+              @click="buscar"
               class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
             >
               🔍 Buscar
@@ -702,22 +702,7 @@ const ensayos = computed(() => ensayosStore.items)
 const parcelas = computed(() => parcelasStore.items)
 
 const parcelasFiltered = computed(() => {
-  let filtered = parcelas.value
-
-  if (filtroEnsayoId.value) {
-    filtered = filtered.filter((p: any) => p.ensayo?.id === filtroEnsayoId.value)
-  }
-
-  if (busqueda.value.trim()) {
-    const q = busqueda.value.toLowerCase()
-    filtered = filtered.filter((p: any) =>
-      p.nombreParcela?.toLowerCase().includes(q) ||
-      p.ensayo?.nombreEnsayo?.toLowerCase().includes(q) ||
-      p.ensayo?.codigoLabor?.toLowerCase().includes(q)
-    )
-  }
-
-  return filtered
+  return parcelas.value
 })
 
 async function cargarParcelas() {
@@ -725,12 +710,22 @@ async function cargarParcelas() {
   error.value = ''
   try {
     await ensayosStore.fetchEnsayos({ limit: 100 })
-    await parcelasStore.fetchParcelas({ limit: 100 })
+    await parcelasStore.fetchParcelas({
+      page: parcelasStore.paginacion.page,
+      limit: 10,
+      ensayoId: filtroEnsayoId.value || undefined,
+      q: busqueda.value.trim() || undefined,
+    })
   } catch (err: any) {
     error.value = err.message || 'Error al cargar datos'
   } finally {
     cargando.value = false
   }
+}
+
+function buscar() {
+  parcelasStore.resetPaginacion()
+  cargarParcelas()
 }
 
 function irAPagina(page: number) {
