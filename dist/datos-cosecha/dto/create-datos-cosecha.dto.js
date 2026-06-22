@@ -63,6 +63,12 @@ __decorate([
     __metadata("design:type", Object)
 ], CreateDatosCosechaDto.prototype, "pesoGranosPorUrf", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 45.2, description: 'Peso por 1000 semillas (g)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Object)
+], CreateDatosCosechaDto.prototype, "pesoMilSemillas", void 0);
+__decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: 4.2, description: '% de granos dañados' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),

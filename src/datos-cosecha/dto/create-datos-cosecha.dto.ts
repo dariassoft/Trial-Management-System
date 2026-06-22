@@ -42,6 +42,11 @@ export class CreateDatosCosechaDto {
   @IsNumber()
   pesoGranosPorUrf?: number | null;
 
+  @ApiPropertyOptional({ example: 45.2, description: 'Peso por 1000 semillas (g)' })
+  @IsOptional()
+  @IsNumber()
+  pesoMilSemillas?: number | null;
+
   @ApiPropertyOptional({ example: 4.2, description: '% de granos dañados' })
   @IsOptional()
   @IsNumber()

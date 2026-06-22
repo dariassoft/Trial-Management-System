@@ -49,6 +49,7 @@ export class DatosCosechaController {
     return this.service.findAll();
   }
 
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtener datos de cosecha por ID' })
   @ApiParam({ name: 'id', type: Number })

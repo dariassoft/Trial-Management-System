@@ -398,20 +398,37 @@
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Peso de Granos por m² (g)
-                </label>
-                <input
-                  v-model.number="formCosecha.pesoGranosPorUrf"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="999999.99"
-                  placeholder="2500"
-                  class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
+              <div class="grid grid-cols-2 gap-3 mt-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Peso de Granos por m² (g)
+                  </label>
+                  <input
+                    v-model.number="formCosecha.pesoGranosPorUrf"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="999999.99"
+                    placeholder="2500"
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Peso por 1000 semillas (g)
+                  </label>
+                  <input
+                    v-model.number="formCosecha.pesoMilSemillas"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="999999.99"
+                    placeholder="45.0"
+                    class="modal-input w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
               </div>
 
               <div class="grid grid-cols-3 gap-3 mt-3">
@@ -653,6 +670,7 @@ const formCosecha = ref({
   gramajePorGrano: null as number | null,
   granosPorurf: null as number | null,
   pesoGranosPorUrf: null as number | null,
+  pesoMilSemillas: null as number | null,
 
   // Mediciones de la parcela
   hojasPorUrf: null as number | null,
@@ -749,6 +767,7 @@ function abrirEditorCosecha(parcela: any) {
       gramajePorGrano: roundToDecimals(parcela.cosecha.gramajePorGrano, 6),
       granosPorurf: roundToDecimals(parcela.cosecha.granosPorurf, 1),
       pesoGranosPorUrf: roundToDecimals(parcela.cosecha.pesoGranosPorUrf, 2),
+      pesoMilSemillas: roundToDecimals(parcela.cosecha.pesoMilSemillas, 2),
       granosDanados: roundToDecimals(parcela.cosecha.granosDanados, 2),
       granosVerdes: roundToDecimals(parcela.cosecha.granosVerdes, 2),
       granosVanos: roundToDecimals(parcela.cosecha.granosVanos, 2),
@@ -773,6 +792,7 @@ function abrirEditorCosecha(parcela: any) {
       gramajePorGrano: null,
       granosPorurf: null,
       pesoGranosPorUrf: null,
+      pesoMilSemillas: null,
       granosDanados: null,
       granosVerdes: null,
       granosVanos: null,
@@ -813,6 +833,7 @@ function cerrarModalCosecha() {
     gramajePorGrano: null,
     granosPorurf: null,
     pesoGranosPorUrf: null,
+    pesoMilSemillas: null,
     granosDanados: null,
     granosVerdes: null,
     granosVanos: null,
@@ -855,6 +876,7 @@ async function guardarCosecha() {
       gramajePorGrano: formCosecha.value.gramajePorGrano,
       granosPorurf: formCosecha.value.granosPorurf,
       pesoGranosPorUrf: formCosecha.value.pesoGranosPorUrf,
+      pesoMilSemillas: formCosecha.value.pesoMilSemillas,
       granosDanados: formCosecha.value.granosDanados,
       granosVerdes: formCosecha.value.granosVerdes,
       granosVanos: formCosecha.value.granosVanos,

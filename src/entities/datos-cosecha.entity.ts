@@ -33,6 +33,9 @@ export class DatosCosecha {
   @Column({ name: 'peso_granos_porurf', type: 'decimal', precision: 8, scale: 2, nullable: true })
   pesoGranosPorUrf?: number | null;
 
+  @Column({ name: 'peso_mil_semillas', type: 'decimal', precision: 8, scale: 2, nullable: true })
+  pesoMilSemillas?: number | null;
+
   @Column({ name: 'granos_danados', type: 'decimal', precision: 5, scale: 2, nullable: true })
   granosDanados?: number | null;
 
