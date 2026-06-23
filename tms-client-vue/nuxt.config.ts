@@ -19,7 +19,7 @@ if (fs.existsSync(envPath)) {
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-11-27',
-  ssr: process.env.NODE_ENV === 'production', // SSR solo en producción, deshabilitado en desarrollo
+  ssr: false, // Deshabilitado SSR para evitar problemas de redirecciones offline y permitir ejecución SPA
   devtools: { enabled: process.env.NODE_ENV === 'development' },
 
   // Módulos

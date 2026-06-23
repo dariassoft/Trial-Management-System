@@ -5,11 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4327d235-74ab-4833-b4e9-0bd22dd81017" name="Changes" comment="Calculo de kg/ha">
-      <change beforePath="$PROJECT_DIR$/.idea/db-forest-config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/db-forest-config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/locations/data/locations.data.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/locations/data/locations.data.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/locations/data/locations.data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/locations/data/locations.data.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/components/media/MediaCapture.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/components/media/MediaCapture.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/layouts/default.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/nuxt.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/[id]/momento/[momentoId].vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/pages/mediciones/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/plugins/error-handler.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/plugins/error-handler.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/stores/offline.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/stores/offline.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tms-client-vue/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tms-client-vue/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +57,7 @@
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="547" />
+    <option name="cachedIndexableFilesCount" value="550" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -89,40 +96,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Docker.docker-compose.yml.client-vue: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;database.data.extractors.current.export.id&quot;: &quot;Comma-separated (CSV)_id&quot;,
-    &quot;disable.download.node.interpreter.editor.notification&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/docs/SQL_LLENAR_TODOS_LOS_DATOS.sql&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.android.studio.ml.bot.mainConfigurable&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Docker.docker-compose.yml.client-vue: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
+    "database.data.extractors.current.export.id": "Comma-separated (CSV)_id",
+    "disable.download.node.interpreter.editor.notification": "true",
+    "git-widget-placeholder": "master",
+    "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/media/Datos/Projects/WebstormProjects/TrialManagementSystem/tms-backend/docs/SQL_LLENAR_TODOS_LOS_DATOS.sql",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.android.studio.ml.bot.mainConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/&quot;: [
-      &quot;MySQL&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
+      "MySQL"
     ]
   }
-}</component>
+}]]></component>
   <component name="ReactDesignerToolWindowState">
     <option name="myId2Visible">
       <map>
@@ -181,16 +189,16 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Docker.docker-compose.yml.client-vue: Compose Deployment" />
         <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
         <item itemvalue="Database Script.alter_ensayo_laboratorio.sql" />
-        <item itemvalue="Docker.docker-compose.yml.client-vue: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.24374.125" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.25134.101" />
       </set>
     </attachedChunks>
   </component>
@@ -248,6 +256,8 @@
       <workItem from="1776959185844" duration="126000" />
       <workItem from="1780356840632" duration="130000" />
       <workItem from="1780943895338" duration="2659000" />
+      <workItem from="1782226126169" duration="227000" />
+      <workItem from="1782226375778" duration="3809000" />
     </task>
     <task id="LOCAL-00001" summary="resueltos algunos errores grales">
       <option name="closed" value="true" />

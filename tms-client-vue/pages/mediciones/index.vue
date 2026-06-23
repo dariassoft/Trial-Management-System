@@ -68,8 +68,15 @@
           <div class="p-4">
             <div class="flex justify-between items-start">
               <div class="flex-1">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center flex-wrap gap-2">
                   🌱 {{ ensayo.nombreEnsayo }}
+                  <span
+                    v-if="cachedTrialIds.includes(ensayo.id)"
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                    title="Este ensayo está descargado y disponible en modo offline"
+                  >
+                    ⚡ Offline listo
+                  </span>
                 </h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {{ ensayo.codigoLabor || 'Sin código' }}
@@ -133,6 +140,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
+import { useOfflineStore } from '~/stores/offline'
+import { useNotifications } from '~/composables/useNotifications'
 
 definePageMeta({
   middleware: 'auth',
@@ -141,10 +150,13 @@ definePageMeta({
 
 const router = useRouter()
 const api = useApi()
+const offlineStore = useOfflineStore()
+const { showNotification } = useNotifications()
 
 const busqueda = ref('')
 const loading = ref(false)
 const ensayos = ref<any[]>([])
+const cachedTrialIds = ref<number[]>([])
 const showQRScanner = ref(false)
 
 const ensayosFiltrados = computed(() => {
@@ -182,22 +194,21 @@ function formatDate(date?: string | null) {
 }
 
 function irAMedicion(ensayoId: number) {
-  try {
-    console.log('🎯 Navegando a mediciones del ensayo:', ensayoId)
-    router.push(`/mediciones/${ensayoId}`).catch((err: any) => {
-      console.error('❌ Error navegando:', err)
-      // Si falla, intentar recargar después de un delay
-      if (err.message && err.message.includes('Failed to fetch')) {
-        console.warn('⚠️ Reintentando en 1 segundo...')
-        setTimeout(() => {
-          router.push(`/mediciones/${ensayoId}`)
-        }, 1000)
+  console.log('🎯 Navegando a mediciones del ensayo:', ensayoId)
+  router.push(`/mediciones/${ensayoId}`).catch((err: any) => {
+    console.error('❌ Error navegando:', err)
+    const msg: string = err?.message || String(err)
+    if (msg.includes('Failed to fetch dynamically imported module')) {
+      if (navigator.onLine) {
+        // Módulo desactualizado por HMR; usar href para forzar recarga completa
+        window.location.href = `/mediciones/${ensayoId}`
+      } else {
+        showNotification('Sin conexión: la página no está disponible offline. Visítala online primero.', 'error', 5000)
       }
-    })
-  } catch (err) {
-    console.error('❌ Error en irAMedicion:', err)
-    alert('Error al navegar: ' + (err instanceof Error ? err.message : 'Error desconocido'))
-  }
+    } else {
+      showNotification('Error al navegar: ' + msg, 'error')
+    }
+  })
 }
 
 // === Funciones QR ===
@@ -260,41 +271,59 @@ async function handleQRScanned(data: any) {
     }
 
     if (ensayoId && momentoId) {
-      // Navegar directamente al momento de medición
       router.push(`/mediciones/${ensayoId}/momento/${momentoId}`)
-      alert(`✅ Parcela encontrada. Navegando a mediciones...`)
+      showNotification('✅ Parcela encontrada. Navegando a mediciones...', 'success')
     } else if (ensayoId) {
-      // Navegar al ensayo para seleccionar momento
       router.push(`/mediciones/${ensayoId}`)
-      alert(`✅ Ensayo encontrado. Selecciona el momento de evaluación.`)
+      showNotification('✅ Ensayo encontrado. Selecciona el momento de evaluación.', 'success')
     } else {
-      alert('❌ No se pudo identificar la parcela. Verifica el código QR.')
+      showNotification('❌ No se pudo identificar la parcela. Verifica el código QR.', 'error')
     }
   } catch (err: any) {
     console.error('Error procesando QR:', err)
-    alert('❌ Error al buscar la parcela: ' + (err.message || 'Error desconocido'))
+    showNotification('❌ Error al buscar la parcela: ' + (err.message || 'Error desconocido'), 'error')
   }
 }
 
 function handleQRError(message: string) {
   console.error('Error QR:', message)
-  alert('Error de escaneo: ' + message)
+  showNotification('Error de escaneo: ' + message, 'error')
 }
 
 onMounted(async () => {
   loading.value = true
   try {
     console.log('📋 Cargando ensayos para mediciones...')
-    const response = await api.get('/ensayos', { params: { limit: 100 } })
-    console.log('📋 Respuesta API:', response)
+    
+    // Cargar IDs de ensayos cacheados
+    try {
+      const cached = await offlineStore.getAllCachedTrials()
+      cachedTrialIds.value = cached.map(c => c.ensayo?.id).filter(Boolean)
+    } catch (e) {
+      console.warn('No se pudieron obtener los ensayos de la caché local:', e)
+    }
 
-    // Manejar respuesta: puede ser un array directo o un objeto con data
-    if (Array.isArray(response)) {
-      ensayos.value = response
-    } else if (response?.data && Array.isArray(response.data)) {
-      ensayos.value = response.data
+    if (offlineStore.isOnline) {
+      try {
+        const response = await api.get('/ensayos', { params: { limit: 100 } })
+        console.log('📋 Respuesta API:', response)
+
+        if (Array.isArray(response)) {
+          ensayos.value = response
+        } else if (response?.data && Array.isArray(response.data)) {
+          ensayos.value = response.data
+        } else {
+          ensayos.value = []
+        }
+      } catch (err) {
+        console.warn('⚠️ Falló la carga online. Cargando desde caché offline...', err)
+        const cached = await offlineStore.getAllCachedTrials()
+        ensayos.value = cached.map(c => c.ensayo)
+      }
     } else {
-      ensayos.value = []
+      console.log('📴 Sin conexión. Cargando desde caché offline...')
+      const cached = await offlineStore.getAllCachedTrials()
+      ensayos.value = cached.map(c => c.ensayo)
     }
 
     console.log('📋 Ensayos cargados:', ensayos.value.length)

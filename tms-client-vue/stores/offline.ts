@@ -26,9 +26,10 @@ export interface PendingMedia {
 }
 
 const DB_NAME = 'tms_offline_db'
-const DB_VERSION = 1
+const DB_VERSION = 2
 const STORE_MEDICIONES = 'pending_mediciones'
 const STORE_MEDIA = 'pending_media'
+const STORE_CACHED_TRIALS = 'cached_trials'
 
 export const useOfflineStore = defineStore('offline', () => {
   // Estado - proteger navigator para SSR
@@ -95,6 +96,11 @@ export const useOfflineStore = defineStore('offline', () => {
           mediaStore.createIndex('timestamp', 'timestamp', { unique: false })
           mediaStore.createIndex('type', 'type', { unique: false })
         }
+
+        // Store para ensayos descargados (caché offline)
+        if (!database.objectStoreNames.contains(STORE_CACHED_TRIALS)) {
+          database.createObjectStore(STORE_CACHED_TRIALS, { keyPath: 'id' })
+        }
       }
     })
   }
@@ -111,12 +117,13 @@ export const useOfflineStore = defineStore('offline', () => {
   // Guardar medición localmente
   async function saveMedicionLocal(data: Omit<PendingMedicion, 'id' | 'timestamp' | 'synced'>): Promise<string> {
     const database = await initDB()
+    const cleanData = JSON.parse(JSON.stringify(data))
 
     const medicion: PendingMedicion = {
       id: generateUUID(),
       timestamp: Date.now(),
       synced: false,
-      ...data,
+      ...cleanData,
     }
 
     return new Promise((resolve, reject) => {
@@ -173,12 +180,12 @@ export const useOfflineStore = defineStore('offline', () => {
     return new Promise((resolve, reject) => {
       const transaction = database.transaction([STORE_MEDICIONES], 'readonly')
       const store = transaction.objectStore(STORE_MEDICIONES)
-      const index = store.index('synced')
-      // Usar getAll con false (boolean value para el índice)
-      const request = (index.getAll as any)(false)
+      const request = store.getAll()
 
       request.onsuccess = () => {
-        resolve(request.result || [])
+        const result = request.result || []
+        const unsynced = result.filter((item: any) => !item.synced)
+        resolve(unsynced)
       }
 
       request.onerror = () => {
@@ -195,12 +202,12 @@ export const useOfflineStore = defineStore('offline', () => {
     return new Promise((resolve, reject) => {
       const transaction = database.transaction([STORE_MEDIA], 'readonly')
       const store = transaction.objectStore(STORE_MEDIA)
-      const index = store.index('synced')
-      // Usar getAll con false (boolean value para el índice)
-      const request = (index.getAll as any)(false)
+      const request = store.getAll()
 
       request.onsuccess = () => {
-        resolve(request.result || [])
+        const result = request.result || []
+        const unsynced = result.filter((item: any) => !item.synced)
+        resolve(unsynced)
       }
 
       request.onerror = () => {
@@ -392,13 +399,12 @@ export const useOfflineStore = defineStore('offline', () => {
       await new Promise<void>((resolve) => {
         const transaction = database.transaction([storeName], 'readwrite')
         const store = transaction.objectStore(storeName)
-        const index = store.index('synced')
-        const request = index.openCursor(IDBKeyRange.only(true))
+        const request = store.openCursor()
 
         request.onsuccess = (event) => {
           const cursor = (event.target as IDBRequest).result
           if (cursor) {
-            if (cursor.value.timestamp < cutoffTime) {
+            if (cursor.value.synced && cursor.value.timestamp < cutoffTime) {
               cursor.delete()
               deleted++
             }
@@ -426,6 +432,127 @@ export const useOfflineStore = defineStore('offline', () => {
     window.addEventListener('offline', () => {
       isOnline.value = false
       console.log('📴 Sin conexión')
+    })
+  }
+
+  // Guardar datos de ensayo en caché, fusionando con datos existentes
+  async function cacheTrialData(ensayoId: number, data: any): Promise<void> {
+    const database = await initDB()
+
+    // Leer datos existentes para hacer merge (no sobreescribir claves ausentes)
+    let mergedData: any = JSON.parse(JSON.stringify(data))
+    try {
+      const existing = await getCachedTrialData(ensayoId)
+      if (existing) {
+        // Claves del dato nuevo tienen prioridad; claves existentes no presentes en el nuevo se conservan
+        mergedData = { ...existing, ...mergedData }
+
+        // datosCampo: combinar por id para no perder mediciones de otros momentos
+        if (existing.datosCampo?.length && data.datosCampo?.length) {
+          const combined: any[] = [...existing.datosCampo]
+          for (const dc of data.datosCampo) {
+            const idx = combined.findIndex((e: any) => e.id === dc.id)
+            if (idx >= 0) combined[idx] = dc
+            else combined.push(dc)
+          }
+          mergedData.datosCampo = combined
+        }
+      }
+    } catch {
+      // Si no hay datos previos o falla la lectura, usar sólo los datos nuevos
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = database.transaction([STORE_CACHED_TRIALS], 'readwrite')
+      const store = transaction.objectStore(STORE_CACHED_TRIALS)
+      const request = store.put({ id: ensayoId, timestamp: Date.now(), data: mergedData })
+
+      request.onsuccess = () => {
+        console.log('💾 Ensayo cacheado offline (merge):', ensayoId)
+        resolve()
+      }
+
+      request.onerror = () => {
+        console.error('Error guardando ensayo en caché:', request.error)
+        reject(request.error)
+      }
+    })
+  }
+
+  // Obtener datos de ensayo desde la caché
+  async function getCachedTrialData(ensayoId: number): Promise<any | null> {
+    const database = await initDB()
+    return new Promise((resolve, reject) => {
+      const transaction = database.transaction([STORE_CACHED_TRIALS], 'readonly')
+      const store = transaction.objectStore(STORE_CACHED_TRIALS)
+      const request = store.get(ensayoId)
+
+      request.onsuccess = () => {
+        resolve(request.result ? request.result.data : null)
+      }
+
+      request.onerror = () => {
+        console.error('Error obteniendo ensayo de caché:', request.error)
+        reject(request.error)
+      }
+    })
+  }
+
+  // Verificar si un ensayo está cacheado
+  async function isTrialCached(ensayoId: number): Promise<boolean> {
+    const database = await initDB()
+    return new Promise((resolve, reject) => {
+      const transaction = database.transaction([STORE_CACHED_TRIALS], 'readonly')
+      const store = transaction.objectStore(STORE_CACHED_TRIALS)
+      const request = store.getKey(ensayoId)
+
+      request.onsuccess = () => {
+        resolve(request.result !== undefined)
+      }
+
+      request.onerror = () => {
+        reject(request.error)
+      }
+    })
+  }
+
+  // Eliminar ensayo de la caché
+  async function deleteCachedTrial(ensayoId: number): Promise<void> {
+    const database = await initDB()
+    return new Promise((resolve, reject) => {
+      const transaction = database.transaction([STORE_CACHED_TRIALS], 'readwrite')
+      const store = transaction.objectStore(STORE_CACHED_TRIALS)
+      const request = store.delete(ensayoId)
+
+      request.onsuccess = () => {
+        console.log('🗑️ Ensayo eliminado de caché:', ensayoId)
+        resolve()
+      }
+
+      request.onerror = () => {
+        console.error('Error eliminando ensayo de caché:', request.error)
+        reject(request.error)
+      }
+    })
+  }
+
+  // Obtener todos los ensayos en caché
+  async function getAllCachedTrials(): Promise<any[]> {
+    const database = await initDB()
+    return new Promise((resolve, reject) => {
+      const transaction = database.transaction([STORE_CACHED_TRIALS], 'readonly')
+      const store = transaction.objectStore(STORE_CACHED_TRIALS)
+      const request = store.getAll()
+
+      request.onsuccess = () => {
+        const results = request.result || []
+        resolve(results.map(r => r.data))
+      }
+
+      request.onerror = () => {
+        console.error('Error obteniendo todos los ensayos de caché:', request.error)
+        reject(request.error)
+      }
     })
   }
 
@@ -460,8 +587,15 @@ export const useOfflineStore = defineStore('offline', () => {
     saveMediaLocal,
     getPendingMediciones,
     getPendingMedia,
+    deleteItem,
     syncAll,
     countPending,
     cleanupOldData,
+    cacheTrialData,
+    getCachedTrialData,
+    isTrialCached,
+    deleteCachedTrial,
+    getAllCachedTrials,
+    STORE_CACHED_TRIALS,
   }
 })

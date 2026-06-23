@@ -222,6 +222,7 @@ import { ref, computed, onMounted, reactive, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
 import { useDatosCampoStore } from '~/stores/datos-campo'
+import { useNotifications } from '~/composables/useNotifications'
 import MatrizVisual from '~/components/parcelas/MatrizVisual.vue'
 
 definePageMeta({
@@ -233,6 +234,8 @@ const route = useRoute()
 const router = useRouter()
 const api = useApi()
 const datosCampoStore = useDatosCampoStore()
+const offlineStore = useOfflineStore()
+const { showNotification } = useNotifications()
 
 const ensayoId = computed(() => Number(route.params.id))
 const momentoId = computed(() => Number(route.params.momentoId))
@@ -338,7 +341,7 @@ function handleMediaCaptured(files: any[]) {
 }
 
 function handleMediaError(message: string) {
-  alert('Error de captura: ' + message)
+  showNotification('Error de captura: ' + message, 'error')
 }
 
 // Eliminar foto existente
@@ -349,7 +352,7 @@ async function handleDeleteExistingPhoto(photoId: number) {
     console.log('🗑️ Foto eliminada:', photoId)
   } catch (err: any) {
     console.error('Error eliminando foto:', err)
-    alert('Error al eliminar: ' + (err.message || 'Error desconocido'))
+    showNotification('Error al eliminar foto: ' + (err.message || 'Error desconocido'), 'error')
   }
 }
 
@@ -448,6 +451,46 @@ async function recargarDatosParcelaActual() {
   }
 }
 
+async function guardarOffline(mediciones: { variable_id: number; valor: string }[]) {
+  // 1. Guardar medición en pending_mediciones
+  const pendingList = await offlineStore.getPendingMediciones()
+  const existente = pendingList.find(
+    (p: any) => p.parcelaId === parcelaActual.value.id && p.momentoId === momentoId.value
+  )
+  if (existente) {
+    await offlineStore.deleteItem('pending_mediciones', existente.id)
+  }
+  
+  await offlineStore.saveMedicionLocal({
+    parcelaId: parcelaActual.value.id,
+    momentoId: momentoId.value,
+    ensayoId: ensayoId.value,
+    observaciones: formObservaciones.value || undefined,
+    mediciones: mediciones.map(m => ({
+      variableId: m.variable_id,
+      valor: m.valor
+    }))
+  })
+
+  // 2. Guardar archivos multimedia en pending_media
+  for (const media of capturedMedia.value) {
+    if (!media.pendingSync) {
+      await offlineStore.saveMediaLocal({
+        parcelaId: parcelaActual.value.id,
+        momentoId: momentoId.value,
+        ensayoId: ensayoId.value,
+        type: media.type,
+        blob: media.blob,
+        filename: media.filename
+      })
+      media.pendingSync = true
+    }
+  }
+
+  await offlineStore.countPending()
+  console.log('💾 Medición y fotos guardadas localmente offline')
+}
+
 async function guardarYSiguiente() {
   guardando.value = true
   try {
@@ -459,47 +502,56 @@ async function guardarYSiguiente() {
         valor: String(valor),
       }))
 
-    // Guardar datos de campo
-    const datosCampo = await datosCampoStore.guardarMedicion({
-      parcela_id_fk: parcelaActual.value.id,
-      momento_id_fk: momentoId.value,
-      observaciones: formObservaciones.value || undefined,
-      mediciones,
-    })
+    if (offlineStore.isOnline) {
+      try {
+        // Guardar datos de campo online
+        const datosCampo = await datosCampoStore.guardarMedicion({
+          parcela_id_fk: parcelaActual.value.id,
+          momento_id_fk: momentoId.value,
+          observaciones: formObservaciones.value || undefined,
+          mediciones,
+        })
 
-    // Subir fotos/videos si hay
-    if (capturedMedia.value.length > 0 && datosCampo?.id) {
-      console.log('📸 Subiendo', capturedMedia.value.length, 'archivos...')
-      for (const media of capturedMedia.value) {
-        try {
-          await datosCampoStore.uploadFoto(datosCampo.id, media.blob, media.filename)
-          console.log('✅ Archivo subido:', media.filename)
-        } catch (uploadErr: any) {
-          console.error('❌ Error subiendo archivo:', media.filename, uploadErr)
-          // Continuamos con los demás archivos aunque falle uno
+        // Subir fotos/videos si hay
+        if (capturedMedia.value.length > 0 && datosCampo?.id) {
+          console.log('📸 Subiendo', capturedMedia.value.length, 'archivos...')
+          for (const media of capturedMedia.value) {
+            try {
+              await datosCampoStore.uploadFoto(datosCampo.id, media.blob, media.filename)
+              console.log('✅ Archivo subido:', media.filename)
+            } catch (uploadErr: any) {
+              console.error('❌ Error subiendo archivo:', media.filename, uploadErr)
+            }
+          }
+
+          // Limpiar archivos capturados después de subir
+          capturedMedia.value = []
+          if (mediaCaptureRef.value) {
+            mediaCaptureRef.value.clearFiles?.()
+          }
+
+          // Recargar datos para obtener las fotos actualizadas
+          await recargarDatosParcelaActual()
         }
+      } catch (err) {
+        console.warn('⚠️ Falló el guardado online, guardando offline...', err)
+        await guardarOffline(mediciones)
       }
-
-      // Limpiar archivos capturados después de subir
-      capturedMedia.value = []
-      if (mediaCaptureRef.value) {
-        mediaCaptureRef.value.clearFiles?.()
-      }
-
-      // Recargar datos para obtener las fotos actualizadas
-      await recargarDatosParcelaActual()
+    } else {
+      console.log('📴 Guardando en modo offline...')
+      await guardarOffline(mediciones)
     }
 
     if (esUltimaParcela.value) {
-      alert('✅ Todas las parcelas han sido medidas')
-      router.back()
+      showNotification('✅ Todas las parcelas han sido medidas', 'success', 2000)
+      setTimeout(() => router.back(), 1500)
     } else {
       parcelaActualIndex.value++
       cargarDatosParcela()
     }
   } catch (err: any) {
     console.error('Error guardando:', err)
-    alert('Error al guardar: ' + (err.message || 'Error desconocido'))
+    showNotification('Error al guardar: ' + (err.message || 'Error desconocido'), 'error')
   } finally {
     guardando.value = false
   }
@@ -520,7 +572,7 @@ function cargarDatosParcela() {
     mediaCaptureRef.value.clearFiles?.()
   }
 
-  // Buscar si ya hay medición existente
+  // Buscar si ya hay medición existente (datos de servidor o caché)
   const existente = datosCampoStore.findByParcelaMomento(
     parcelaActual.value?.id,
     momentoId.value
@@ -539,6 +591,22 @@ function cargarDatosParcela() {
       console.log('📷 Fotos existentes cargadas:', existente.fotos.length)
     }
   }
+
+  // Cargar mediciones pendientes de IndexedDB si existen (offline)
+  offlineStore.getPendingMediciones().then((pendingList) => {
+    const pending = pendingList.find(
+      (p: any) => p.parcelaId === parcelaActual.value?.id && p.momentoId === momentoId.value
+    )
+    if (pending) {
+      console.log('⏳ Cargando medición pendiente local (offline):', pending)
+      formObservaciones.value = pending.observaciones || ''
+      pending.mediciones?.forEach((m: any) => {
+        formMediciones[m.variableId] = m.valor
+      })
+    }
+  }).catch((err) => {
+    console.error('Error al cargar mediciones offline pendientes:', err)
+  })
 
   // Autofocus the first variable input when a plot is loaded
   nextTick(() => {
@@ -571,47 +639,97 @@ function enfoqueSiguiente(currentIndex: number) {
 
 
 
+// Busca el momento en la lista de aplicaciones cacheadas cuando no está guardado directamente
+function buscarMomentoEnCache(cached: any, targetMomentoId: number): any {
+  if (!cached?.aplicaciones) return null
+  for (const app of cached.aplicaciones) {
+    const found = app.momentos?.find((m: any) => m.id === targetMomentoId)
+    if (found) return found
+  }
+  return null
+}
+
 onMounted(async () => {
   loading.value = true
   try {
-    // Cargar momento con aplicación y ensayo
-    const momentoRes = await api.get(`/momentos/${momentoId.value}`)
-    momento.value = momentoRes?.data ?? momentoRes
-    console.log('📋 Momento cargado:', momento.value)
+    let momentoData: any
+    let ensayoData: any
+    let variablesData: any[] = []
+    let parcelasData: any[] = []
+    let datosCampoData: any[] = []
 
-    // Cargar ensayo para obtener el tipoEnsayoId
-    const ensayoRes = await api.get(`/ensayos/${ensayoId.value}`)
-    const ensayo = ensayoRes?.data ?? ensayoRes
-    console.log('📋 Ensayo cargado:', ensayo)
-    const tipoEnsayoId = ensayo?.tipoEnsayo?.id || ensayo?.tipoEnsayoId
-    console.log('📋 TipoEnsayo ID:', tipoEnsayoId)
+    if (offlineStore.isOnline) {
+      try {
+        console.log('🌐 Cargando datos online para momento:', momentoId.value)
+        const momentoRes = (await api.get(`/momentos/${momentoId.value}`)) as any
+        momentoData = momentoRes?.data ?? momentoRes
 
-    // Cargar variables del tipo de ensayo
-    if (tipoEnsayoId) {
-      const variablesRes = await api.get('/protocolo-variables', {
-        params: { tipoEnsayoId }
-      })
-      const variablesData = variablesRes?.data ?? variablesRes
-      variables.value = Array.isArray(variablesData) ? variablesData : []
-      console.log('📋 Variables cargadas:', variables.value.length)
+        const ensayoRes = (await api.get(`/ensayos/${ensayoId.value}`)) as any
+        ensayoData = ensayoRes?.data ?? ensayoRes
+        const tipoEnsayoId = ensayoData?.tipoEnsayo?.id || ensayoData?.tipoEnsayoId
+
+        if (tipoEnsayoId) {
+          const variablesRes = (await api.get('/protocolo-variables', {
+            params: { tipoEnsayoId }
+          })) as any
+          const vData = variablesRes?.data ?? variablesRes
+          variablesData = Array.isArray(vData) ? vData : []
+        }
+
+        const parcelasRes = (await api.get('/parcelas', {
+          params: { ensayoId: ensayoId.value, limit: 200 }
+        })) as any
+        const pData = parcelasRes?.data ?? parcelasRes
+        parcelasData = Array.isArray(pData) ? pData : (pData?.data || [])
+
+        // Cargar mediciones del store
+        const dcData = await datosCampoStore.fetchByMomento(momentoId.value)
+        datosCampoData = dcData || []
+
+        // Guardar/Actualizar en caché offline
+        await offlineStore.cacheTrialData(ensayoId.value, {
+          ensayo: ensayoData,
+          momento: momentoData,
+          variables: variablesData,
+          parcelas: parcelasData,
+          datosCampo: datosCampoData
+        })
+        console.log('💾 Caché offline del ensayo actualizada')
+      } catch (err) {
+        console.warn('⚠️ Falló la carga online. Intentando cargar desde caché offline...', err)
+        const cached = await offlineStore.getCachedTrialData(ensayoId.value)
+        if (!cached) {
+          throw new Error('No hay conexión a internet y este ensayo no ha sido descargado para uso offline.')
+        }
+        ensayoData = cached.ensayo
+        momentoData = cached.momento ?? buscarMomentoEnCache(cached, momentoId.value)
+        variablesData = cached.variables || []
+        parcelasData = cached.parcelas || []
+        datosCampoData = cached.datosCampo || []
+      }
     } else {
-      // Variables por defecto si no hay tipo de ensayo
-      console.log('⚠️ No hay tipoEnsayoId, usando variables por defecto')
-      variables.value = [
-        { id: 1, nombre_variable: '% Control General', unidad_medida: '%' },
-        { id: 2, nombre_variable: 'Fitotoxicidad', unidad_medida: 'ESCALA 1-9' },
-      ]
+      console.log('📴 Cargando desde caché offline...')
+      const cached = await offlineStore.getCachedTrialData(ensayoId.value)
+      if (!cached) {
+        throw new Error('Sin conexión y ensayo no disponible offline. Descarga el ensayo antes de salir al campo.')
+      }
+      ensayoData = cached.ensayo
+      momentoData = cached.momento ?? buscarMomentoEnCache(cached, momentoId.value)
+      variablesData = cached.variables || []
+      parcelasData = cached.parcelas || []
+      datosCampoData = cached.datosCampo || []
+      if (!momentoData) {
+        throw new Error('Este momento de evaluación no está disponible offline. Conéctate a internet y descarga el ensayo nuevamente.')
+      }
     }
 
-    // Cargar parcelas del ensayo
-    const parcelasRes = await api.get('/parcelas', {
-      params: { ensayoId: ensayoId.value, limit: 200 }
-    })
-    const parcelasData = parcelasRes?.data ?? parcelasRes
-    parcelas.value = Array.isArray(parcelasData)
-      ? parcelasData
-      : (parcelasData?.data || [])
-    console.log('📋 Parcelas cargadas:', parcelas.value.length)
+    // Guardar en referencias reactivas
+    momento.value = momentoData
+    variables.value = variablesData.length ? variablesData : [
+      { id: 1, nombre_variable: '% Control General', unidad_medida: '%' },
+      { id: 2, nombre_variable: 'Fitotoxicidad', unidad_medida: 'ESCALA 1-9' },
+    ]
+    parcelas.value = parcelasData
 
     // Ordenar parcelas por bloque y posición
     parcelas.value.sort((a: any, b: any) => {
@@ -622,13 +740,16 @@ onMounted(async () => {
       return (a.posYGrid || 0) - (b.posYGrid || 0)
     })
 
-    // Cargar mediciones existentes
-    await datosCampoStore.fetchByMomento(momentoId.value)
+    // Inyectar mediciones en el store
+    if (!offlineStore.isOnline || !datosCampoStore.items.length) {
+      datosCampoStore.items = datosCampoData
+    }
 
     // Cargar datos de la primera parcela
     cargarDatosParcela()
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Error cargando datos:', err)
+    showNotification(err.message || 'Error cargando datos del ensayo', 'error', 5000)
   } finally {
     loading.value = false
   }

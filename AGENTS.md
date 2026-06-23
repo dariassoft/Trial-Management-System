@@ -243,11 +243,33 @@ const { get, post, patch, put, delete: del } = useApi()
 4. Initializes `offlineStore` for offline-first field data capture
 
 ### 3.5 Offline Support (`stores/offline.ts`)
-- **IndexedDB** (`tms_offline_db`) with two object stores: `pending_mediciones`, `pending_media`
+- **IndexedDB** (`tms_offline_db`, version 2) with three object stores:
+  - `pending_mediciones` — field measurements queued for sync
+  - `pending_media` — photos/videos queued for sync
+  - `cached_trials` — full trial snapshot for offline measurement (key = `ensayoId`)
 - Queues field measurements and photos/videos when offline
 - `syncAll(api)` — syncs pending data when connection is restored
 - Auto-detects online/offline via `navigator.onLine` events
 - Cleanup of synced data older than 7 days
+- `cacheTrialData(ensayoId, data)` — saves trial snapshot; **merges** with existing cached data (does not overwrite). `datosCampo` arrays are merged by `id`.
+- `getCachedTrialData(ensayoId)` — returns `{ ensayo, variables, parcelas, aplicaciones, datosCampo, momento? }`
+- `getAllCachedTrials()` — returns all cached trial snapshots (used by `mediciones/index.vue` to show offline-ready badge)
+
+**Offline cache data contract** (what must be present in a cached trial for offline measurement):
+```
+{
+  ensayo:       { id, nombreEnsayo, tipoEnsayo: { id }, ... }
+  variables:    ProtocoloVariable[]      // evaluation variables for this trial type
+  parcelas:     Parcela[]                // all parcelas with bloque, tratamiento, posXGrid, posYGrid
+  aplicaciones: Aplicacion[]             // each with nested momentos: MomentoEvaluacion[]
+  datosCampo:   DatosCampo[]            // existing measurements across all momentos
+}
+```
+The `momento` key (single moment) is optional and only present after visiting that moment page online. The page `[momentoId].vue` always recovers the moment from `aplicaciones` as a fallback via `buscarMomentoEnCache()`.
+
+**Dev vs Production offline testing:**
+- Dev mode (Vite): DevTools "Offline" blocks ALL requests including `localhost:3001`, so lazy-loaded page modules fail to load. **Test offline correctly with `npm run build && npm run preview`** — in a production build all JS chunks are bundled and don't need network to navigate.
+- Production mode: pages are pre-bundled; IndexedDB provides data; offline navigation works after the first online session loads the app shell.
 
 ### 3.6 Pages (File-Based Routing)
 

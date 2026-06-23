@@ -3,7 +3,9 @@ import { useAuthStore } from '~/stores/auth'
 import { useTheme } from '~/composables/useTheme'
 import { useNotificacionesStore } from '~/stores/notificaciones'
 import { useMenuStore } from '~/stores/menu'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useOfflineStore } from '~/stores/offline'
 import SideMenu from '~/components/navigation/SideMenu.vue'
 import TheToast from '~/components/common/TheToast.vue'
 import OfflineIndicator from '~/components/common/OfflineIndicator.vue'
@@ -13,8 +15,19 @@ const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()
 const notificacionesStore = useNotificacionesStore()
 const menuStore = useMenuStore()
+const offlineStore = useOfflineStore()
+const route = useRoute()
 const showUserMenu = ref(false)
 let pollInterval: ReturnType<typeof setInterval> | null = null
+
+const isRouteAllowedOffline = computed(() => {
+  const path = route.path
+  return path.startsWith('/mediciones')
+})
+
+const showOfflineNotice = computed(() => {
+  return !offlineStore.isOnline && !isRouteAllowedOffline.value
+})
 
 onMounted(() => {
   useTheme().initializeTheme()
@@ -101,7 +114,42 @@ onUnmounted(() => {
       <main class="flex-1 relative overflow-y-auto focus:outline-none" tabindex="0">
         <div class="py-6">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            <slot />
+            <div v-if="showOfflineNotice" class="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+              <div class="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 text-center transform transition-all duration-300 hover:scale-[1.02]">
+                <div class="flex flex-col items-center">
+                  <!-- Icono de antena desconectada con animación de pulso lento -->
+                  <div class="h-20 w-20 bg-amber-50 dark:bg-amber-900/30 rounded-full flex items-center justify-center text-amber-500 mb-6 animate-pulse">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-3.536 5 5 0 011.414-3.536m0 0L11.314 11.3M3 3l18 18" />
+                    </svg>
+                  </div>
+                  
+                  <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
+                    Sección no disponible sin conexión
+                  </h2>
+                  <p class="mt-4 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                    Esta página requiere conexión activa a internet. En modo offline, puedes seguir registrando mediciones en campo para los ensayos descargados previamente.
+                  </p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
+                  <NuxtLink
+                    to="/mediciones"
+                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-150 shadow-md hover:shadow-indigo-500/20"
+                  >
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3 text-indigo-500 group-hover:text-indigo-400">
+                      <!-- Flecha hacia adelante -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </span>
+                    Ir a Mediciones Offline
+                  </NuxtLink>
+                </div>
+              </div>
+            </div>
+            
+            <slot v-else />
           </div>
         </div>
       </main>

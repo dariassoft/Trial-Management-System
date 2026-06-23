@@ -217,7 +217,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useSettingsStore } from '~/stores/settings'
 import { useOfflineStore } from '~/stores/offline'
 import { useNotifications } from '~/composables/useNotifications'
@@ -576,9 +576,25 @@ async function handleFileSelect(event: Event) {
 }
 
 // Eliminar archivo
-function removeFile(index: number) {
+async function removeFile(index: number) {
   const file = capturedFiles.value[index]
   URL.revokeObjectURL(file.preview)
+
+  // Si estaba guardado en IndexedDB, eliminarlo de allí también
+  if (file.pendingSync) {
+    try {
+      const list = await offlineStore.getPendingMedia()
+      const found = list.find((m: any) => m.filename === file.filename)
+      if (found) {
+        await offlineStore.deleteItem('pending_media', found.id)
+        await offlineStore.countPending()
+        console.log('🗑️ Media pendiente eliminado de IndexedDB:', file.filename)
+      }
+    } catch (err) {
+      console.error('Error al eliminar media de IndexedDB:', err)
+    }
+  }
+
   capturedFiles.value.splice(index, 1)
   emit('captured', capturedFiles.value)
 }
@@ -611,6 +627,48 @@ onUnmounted(() => {
   capturedFiles.value.forEach(file => {
     URL.revokeObjectURL(file.preview)
   })
+})
+
+// Cargar media pendiente desde IndexedDB al montar
+async function loadPendingMedia() {
+  try {
+    const list = await offlineStore.getPendingMedia()
+    const matching = list.filter(
+      (m: any) => m.parcelaId === props.parcelaId && m.momentoId === props.momentoId
+    )
+    matching.forEach((m: any) => {
+      // Evitar duplicados
+      if (capturedFiles.value.some(f => f.filename === m.filename)) return
+      
+      const preview = URL.createObjectURL(m.blob)
+      capturedFiles.value.push({
+        type: m.type,
+        blob: m.blob,
+        preview,
+        filename: m.filename,
+        pendingSync: true
+      })
+    })
+    emit('captured', capturedFiles.value)
+  } catch (err) {
+    console.error('Error cargando media pendiente:', err)
+  }
+}
+
+onMounted(() => {
+  loadPendingMedia()
+})
+
+// Watch para recargar si cambian los props (cuando el usuario cambia de parcela)
+watch(() => [props.parcelaId, props.momentoId], () => {
+  // Revocar URLs de preview viejos
+  capturedFiles.value.forEach(file => {
+    if (file.pendingSync) {
+      URL.revokeObjectURL(file.preview)
+    }
+  })
+  capturedFiles.value = []
+  loadPendingMedia()
 })
 
 // Exponer métodos

@@ -10,13 +10,38 @@
           >
             ← Volver
           </button>
-          <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">
-              {{ ensayo?.nombreEnsayo || 'Cargando...' }}
-            </h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ ensayo?.codigoLabor || '' }}
-            </p>
+          <div class="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+                {{ ensayo?.nombreEnsayo || 'Cargando...' }}
+              </h1>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ ensayo?.codigoLabor || '' }}
+              </p>
+            </div>
+
+            <!-- Botón de Descarga Offline -->
+            <div v-if="ensayo" class="flex items-center gap-2">
+              <button
+                @click="toggleOfflineCache"
+                :disabled="cachingTrial"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border shadow-sm"
+                :class="isCached
+                  ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-800'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600'"
+              >
+                <span v-if="cachingTrial" class="animate-spin text-xs">⟳</span>
+                <span>{{ isCached ? '💾 Disponible Offline (Actualizar)' : '📥 Descargar Offline' }}</span>
+              </button>
+              <button
+                v-if="isCached"
+                @click="removeOfflineCache"
+                class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition border border-red-200 dark:border-red-800 shadow-sm"
+                title="Eliminar de caché offline"
+              >
+                🗑️
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -378,7 +403,9 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useEnsayosStore } from '~/stores/ensayos'
 import { useAplicacionesStore } from '~/stores/aplicaciones'
+import { useOfflineStore } from '~/stores/offline'
 import { useApi } from '~/composables/useApi'
+import { useNotifications } from '~/composables/useNotifications'
 
 definePageMeta({
   middleware: 'auth',
@@ -389,7 +416,12 @@ const route = useRoute()
 const router = useRouter()
 const ensayosStore = useEnsayosStore()
 const aplicacionesStore = useAplicacionesStore()
+const offlineStore = useOfflineStore()
 const api = useApi()
+const { showNotification } = useNotifications()
+
+const isCached = ref(false)
+const cachingTrial = ref(false)
 
 const ensayoId = computed(() => Number(route.params.id))
 const loading = ref(false)
@@ -567,7 +599,7 @@ async function guardarAplicacion() {
     }
   } catch (err) {
     console.error('Error guardando aplicación:', err)
-    alert('Error al guardar la aplicación')
+    showNotification('Error al guardar la aplicación', 'error')
   } finally {
     guardando.value = false
   }
@@ -608,29 +640,179 @@ async function guardarCosecha() {
       }
     }
 
-    alert('✅ Cosecha guardada correctamente para todas las parcelas')
+    showNotification('✅ Cosecha guardada correctamente para todas las parcelas', 'success')
   } catch (err: any) {
     console.error('Error guardando cosecha:', err)
-    alert('Error al guardar: ' + (err.message || 'Error desconocido'))
+    showNotification('Error al guardar cosecha: ' + (err.message || 'Error desconocido'), 'error')
   } finally {
     guardandoCosecha.value = false
+  }
+}
+
+async function checkCacheStatus() {
+  isCached.value = await offlineStore.isTrialCached(ensayoId.value)
+}
+
+async function cargarDesdeCache() {
+  const cached = await offlineStore.getCachedTrialData(ensayoId.value)
+  if (!cached) {
+    throw new Error('Sin conexión a internet y ensayo no disponible offline.')
+  }
+  ensayo.value = cached.ensayo
+  aplicacionesStore.items = cached.aplicaciones || []
+  
+  // Calcular progreso local basado en mediciones offline + online
+  const pendingMediciones = await offlineStore.getPendingMediciones()
+  
+  for (const aplicacion of (aplicacionesStore.items || [])) {
+    if (aplicacion.momentos) {
+      for (const momento of aplicacion.momentos) {
+        const total = cached.parcelas?.length || 0
+        
+        // Contar parcelas medidas online en caché
+        const onlineMedidas = (cached.datosCampo || []).filter(
+          (dc: any) => dc.momento?.id === momento.id && dc.mediciones?.length > 0
+        ).map((dc: any) => dc.parcela?.id)
+        
+        // Contar parcelas medidas offline pendientes
+        const offlineMedidas = pendingMediciones.filter(
+          (pm: any) => pm.momentoId === momento.id && pm.mediciones?.length > 0
+        ).map((pm: any) => pm.parcelaId)
+        
+        const uniqueMeasured = new Set([...onlineMedidas, ...offlineMedidas])
+        const medidasCount = uniqueMeasured.size
+        
+        const porcentaje = total > 0 ? Math.round((medidasCount / total) * 100) : 0
+        const estado = porcentaje >= 100 ? 'completado' : (porcentaje > 0 ? 'en_progreso' : 'pendiente')
+        
+        momentoProgreso.value[momento.id] = {
+          totalParcelas: total,
+          parcelasMedidas: medidasCount,
+          porcentaje,
+          estado
+        }
+      }
+    }
+  }
+}
+
+async function toggleOfflineCache() {
+  cachingTrial.value = true
+  try {
+    console.log('📥 Iniciando descarga de datos para uso offline de ensayo:', ensayoId.value)
+    
+    // 1. Obtener datos del ensayo
+    const ensayoRes = (await api.get(`/ensayos/${ensayoId.value}`)) as any
+    const ensayoData = ensayoRes?.data ?? ensayoRes
+    const tipoEnsayoId = ensayoData?.tipoEnsayo?.id || ensayoData?.tipoEnsayoId
+    
+    // 2. Obtener variables
+    let variablesData: any[] = []
+    if (tipoEnsayoId) {
+      const variablesRes = (await api.get('/protocolo-variables', {
+        params: { tipoEnsayoId }
+      })) as any
+      const vData = variablesRes?.data ?? variablesRes
+      variablesData = Array.isArray(vData) ? vData : []
+    }
+    
+    // 3. Obtener parcelas
+    const parcelasRes = (await api.get('/parcelas', {
+      params: { ensayoId: ensayoId.value, limit: 200 }
+    })) as any
+    const pData = parcelasRes?.data ?? parcelasRes
+    const parcelasData = Array.isArray(pData) ? pData : (pData?.data || [])
+    
+    // 4. Obtener aplicaciones y momentos
+    await aplicacionesStore.fetchByEnsayo(ensayoId.value)
+    const aplicacionesData = aplicacionesStore.items || []
+    
+    // 5. Obtener mediciones para cada momento
+    const datosCampoData: any[] = []
+    for (const aplicacion of aplicacionesData) {
+      if (aplicacion.momentos) {
+        for (const momento of aplicacion.momentos) {
+          try {
+            const dcRes = (await api.get('/datos-campo', { params: { momentoId: momento.id, limit: 200 } })) as any
+            let dcItems: any[] = []
+            if (dcRes?.data && Array.isArray(dcRes.data)) {
+              dcItems = dcRes.data
+            } else if (Array.isArray(dcRes)) {
+              dcItems = dcRes
+            } else {
+              dcItems = dcRes?.data?.data || dcRes?.data || []
+            }
+            datosCampoData.push(...dcItems)
+          } catch (e) {
+            console.error(`Error descargando mediciones para momento ${momento.id}:`, e)
+          }
+        }
+      }
+    }
+    
+    // Guardar en IndexedDB
+    await offlineStore.cacheTrialData(ensayoId.value, {
+      ensayo: ensayoData,
+      variables: variablesData,
+      parcelas: parcelasData,
+      datosCampo: datosCampoData,
+      aplicaciones: aplicacionesData
+    })
+    
+    await checkCacheStatus()
+    showNotification('✅ Ensayo descargado. Ya puedes trabajar offline en este ensayo.', 'success', 4000)
+  } catch (err: any) {
+    console.error('Error cacheando ensayo:', err)
+    showNotification('Error al descargar ensayo para uso offline: ' + (err.message || 'Error de red'), 'error')
+  } finally {
+    cachingTrial.value = false
+  }
+}
+
+async function removeOfflineCache() {
+  try {
+    await offlineStore.deleteCachedTrial(ensayoId.value)
+    await checkCacheStatus()
+    showNotification('🗑️ Caché offline eliminada de este dispositivo.', 'success')
+  } catch (err: any) {
+    console.error('Error al eliminar caché:', err)
+    showNotification('Error al eliminar caché offline: ' + err.message, 'error')
   }
 }
 
 onMounted(async () => {
   loading.value = true
   try {
-    // Cargar ensayo
-    const res = await api.get(`/ensayos/${ensayoId.value}`)
-    ensayo.value = res?.data ?? res
+    await checkCacheStatus()
 
-    // Cargar aplicaciones
-    await aplicacionesStore.fetchByEnsayo(ensayoId.value)
+    if (offlineStore.isOnline) {
+      try {
+        // Cargar ensayo
+        const res = (await api.get(`/ensayos/${ensayoId.value}`)) as any
+        ensayo.value = res?.data ?? res
 
-    // Cargar progreso de cada momento
-    await cargarProgresoMomentos()
-  } catch (err) {
+        // Cargar aplicaciones
+        await aplicacionesStore.fetchByEnsayo(ensayoId.value)
+
+        // Cargar progreso de cada momento
+        await cargarProgresoMomentos()
+
+        // Si ya está cacheado, actualizar caché automáticamente en segundo plano
+        if (isCached.value) {
+          console.log('🔄 Actualizando caché offline en segundo plano...')
+          toggleOfflineCache().catch(e => console.warn('Error actualizando caché en background:', e))
+        }
+      } catch (err) {
+        console.warn('⚠️ Falló la carga online. Cargando desde caché offline...', err)
+        await cargarDesdeCache()
+      }
+    } else {
+      console.log('📴 Cargando desde caché offline...')
+      await cargarDesdeCache()
+    }
+  } catch (err: any) {
     console.error('Error cargando datos:', err)
+    showNotification('Error cargando ensayo: ' + (err.message || 'Error desconocido'), 'error', 5000)
   } finally {
     loading.value = false
   }
