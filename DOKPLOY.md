@@ -49,18 +49,23 @@ must remain consistent with their corresponding `DB_*` values.
 ## Database initialization
 
 The production image does not create the application's base tables. The
-incremental TypeORM migrations expect those tables to exist already; for that
-reason `docker-compose.prod.yml` mounts
-`2026-09-30.nest_db.dump.sql` into MySQL's initialization directory.
+incremental TypeORM migrations expect those tables to exist already.
+`docker-compose.prod.yml` includes a `mysql-init` one-shot service that imports
+`2026-09-30.nest_db.dump.sql` before `app` starts when the database has no
+tables. It also validates that `Laboratorio` exists before allowing the
+backend to start.
 
-MySQL executes that file only when `mysql-data` is created for the first time.
-If Dokploy already created the volume and the logs contain `Table "Laboratorio"
-does not exist`, initialize the existing deployment before restarting `app`:
+The MySQL image's `/docker-entrypoint-initdb.d/` mount handles a new volume,
+while `mysql-init` also covers the existing empty volume that Dokploy may have
+created before the dump was added. If the volume contains some tables but the
+logs contain `Table "Laboratorio" does not exist`, the initializer stops without
+overwriting data:
 
 1. Back up any data that must be preserved.
-2. Remove/recreate the MySQL volume from Dokploy, or import the dump manually
-   into the `nest_db` database.
-3. Redeploy the Compose application.
+2. Import the dump manually after backing up, or remove/recreate the volume
+   from Dokploy if it contains no data that must be preserved.
+3. Redeploy the Compose application and confirm that `mysql-init` finishes
+   successfully before checking the `app` logs.
 
 Do not remove a volume containing data that must be preserved. The dump already
 contains the `Laboratorio` table and the corresponding migration records, so a

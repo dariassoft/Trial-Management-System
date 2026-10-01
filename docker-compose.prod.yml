@@ -20,6 +20,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      mysql-init:
+        condition: service_completed_successfully
     volumes:
       - uploads-data:/app/uploads
     restart: unless-stopped
@@ -67,6 +69,36 @@ services:
       # Carga el esquema y los datos iniciales solo cuando el volumen es nuevo.
       - ./2026-09-30.nest_db.dump.sql:/docker-entrypoint-initdb.d/01-nest_db.dump.sql:ro
     restart: unless-stopped
+    networks:
+      - backend-network
+
+  mysql-init:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Define MYSQL_ROOT_PASSWORD in Dokploy}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?Define MYSQL_DATABASE in Dokploy}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./2026-09-30.nest_db.dump.sql:/seed/nest_db.dump.sql:ro
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        TABLE_COUNT=$$(mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" -Nse "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$${MYSQL_DATABASE}'")
+        if [ "$${TABLE_COUNT}" = "0" ]; then
+          echo "Importando el dump inicial en $${MYSQL_DATABASE}..."
+          mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" "$${MYSQL_DATABASE}" < /seed/nest_db.dump.sql
+        elif ! mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" -Nse "SELECT 1 FROM information_schema.tables WHERE table_schema = '$${MYSQL_DATABASE}' AND table_name = 'Laboratorio'" | grep -q 1; then
+          echo "ERROR: $${MYSQL_DATABASE} contiene tablas, pero falta Laboratorio. No se importa el dump para evitar borrar datos existentes."
+          exit 1
+        else
+          echo "Esquema existente detectado; no se importa el dump."
+        fi
+
+        mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" -Nse "SELECT 1 FROM information_schema.tables WHERE table_schema = '$${MYSQL_DATABASE}' AND table_name = 'Laboratorio'" | grep -q 1
+    restart: "no"
     networks:
       - backend-network
 
