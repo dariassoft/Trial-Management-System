@@ -4,15 +4,16 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     environment:
-      DOCKERIZED: "true"
-      NODE_ENV: production
-      DB_HOST: mysql
-      DB_PORT: "3306"
+      DOCKERIZED: ${DOCKERIZED:?Define DOCKERIZED in Dokploy}
+      NODE_ENV: ${NODE_ENV:?Define NODE_ENV in Dokploy}
+      DB_TYPE: ${DB_TYPE:?Define DB_TYPE in Dokploy}
+      DB_HOST: ${DB_HOST:?Define DB_HOST in Dokploy}
+      DB_PORT: ${DB_PORT:?Define DB_PORT in Dokploy}
       DB_USER: ${DB_USER:?Define DB_USER in Dokploy}
       DB_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD in Dokploy}
       DB_NAME: ${DB_NAME:?Define DB_NAME in Dokploy}
       JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET in Dokploy}
-      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME:-1d}
+      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME:?Define JWT_EXPIRATION_TIME in Dokploy}
       FRONTEND_URLS: ${FRONTEND_URLS:?Define FRONTEND_URLS in Dokploy}
     expose:
       - "3000"
@@ -32,10 +33,10 @@ services:
       args:
         NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:?Define NUXT_PUBLIC_API_BASE in Dokploy}
     environment:
-      NODE_ENV: production
-      HOST: 0.0.0.0
-      PORT: "3000"
-      NITRO_PORT: "3000"
+      NODE_ENV: ${NODE_ENV:?Define NODE_ENV in Dokploy}
+      HOST: ${HOST:?Define HOST in Dokploy}
+      PORT: ${PORT:?Define PORT in Dokploy}
+      NITRO_PORT: ${NITRO_PORT:?Define NITRO_PORT in Dokploy}
       NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:?Define NUXT_PUBLIC_API_BASE in Dokploy}
     expose:
       - "3000"
@@ -50,9 +51,9 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Define MYSQL_ROOT_PASSWORD in Dokploy}
-      MYSQL_DATABASE: ${DB_NAME:?Define DB_NAME in Dokploy}
-      MYSQL_USER: ${DB_USER:?Define DB_USER in Dokploy}
-      MYSQL_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD in Dokploy}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?Define MYSQL_DATABASE in Dokploy}
+      MYSQL_USER: ${MYSQL_USER:?Define MYSQL_USER in Dokploy}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Define MYSQL_PASSWORD in Dokploy}
     expose:
       - "3306"
     healthcheck:

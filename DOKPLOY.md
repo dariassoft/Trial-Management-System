@@ -22,18 +22,29 @@ writes them to the `.env` file used to interpolate `docker-compose.prod.yml`.
 
 | Variable | Used by | Required value |
 |---|---|---|
+| `DB_TYPE` | `app` | `mysql` |
 | `DB_USER` | `app`, `mysql` | Production MySQL user |
 | `DB_PASSWORD` | `app`, `mysql` | Production MySQL password |
 | `DB_NAME` | `app`, `mysql` | Database name, for example `nest_db` |
 | `MYSQL_ROOT_PASSWORD` | `mysql` | MySQL root password |
+| `MYSQL_DATABASE` | `mysql` | Same database name as `DB_NAME` |
+| `MYSQL_USER` | `mysql` | Same user name as `DB_USER` |
+| `MYSQL_PASSWORD` | `mysql` | Same password as `DB_PASSWORD` |
 | `JWT_SECRET` | `app` | Long random signing secret |
-| `JWT_EXPIRATION_TIME` | `app` | Optional; defaults to `1d` |
+| `JWT_EXPIRATION_TIME` | `app` | Expiration in seconds |
 | `FRONTEND_URLS` | `app` | Frontend origin, for example `https://agronomic-tms.dariassoft.com.ar` |
 | `NUXT_PUBLIC_API_BASE` | frontend build | Public API URL ending in `/api/v1` |
+| `DB_HOST` | `app` | `mysql` |
+| `DB_PORT` | `app` | `3306` |
+| `NODE_ENV` | `app`, frontend | `production` |
+| `DOCKERIZED` | `app` | `true` |
+| `HOST` | frontend | `0.0.0.0` |
+| `PORT` | frontend | `3000` |
+| `NITRO_PORT` | frontend | `3000` |
 
-`DB_HOST`, `DB_PORT`, `NODE_ENV`, `DOCKERIZED`, `HOST`, `PORT`, and
-`NITRO_PORT` are defined directly in `docker-compose.prod.yml` or the
-production Dockerfile and do not need to be added in Dokploy.
+All variables above are present with concrete values in `.env.prod.example`.
+Copy those values into Dokploy's Environment section. The `MYSQL_*` values
+must remain consistent with their corresponding `DB_*` values.
 
 ## Domains and internal ports
 
@@ -45,5 +56,6 @@ Configure Dokploy's domains/reverse proxy as follows:
 The API URL used in `NUXT_PUBLIC_API_BASE` must point to the public API domain,
 not to the internal Compose service name `app`.
 
-Never commit a real `.env` or production secret. `.env.prod.example` is only a
-versioned list of the required variable names and safe placeholders.
+`.env.prod.example` contains a complete set of values that can be imported into
+Dokploy. If the repository is public or has already been shared, rotate the
+database passwords and `JWT_SECRET` before using them in production.
