@@ -48,35 +48,38 @@ must remain consistent with their corresponding `DB_*` values.
 
 ## Database initialization
 
-The production image does not create the application's base tables. The
-incremental TypeORM migrations expect those tables to exist already.
-`docker-compose.prod.yml` mounts `2026-09-30.nest_db.dump.sql` into MySQL's
-`/docker-entrypoint-initdb.d/` directory, so MySQL imports it automatically when
-`mysql-data` is initialized for the first time. The Compose application contains
-exactly three services: `app`, `client-vue`, and `mysql`.
+The production backend waits for MySQL before starting Nest. Its startup script
+imports `2026-09-30.nest_db.dump.sql` whenever the `Laboratorio` table is absent,
+including an already-existing Dokploy volume. If the table exists, the dump is
+not imported again. The Compose application contains exactly three services:
+`app`, `client-vue`, and `mysql`.
 
-If Dokploy already has a volume and the base table `Laboratorio` is missing,
-the dump must be imported manually before restarting the backend:
+If the logs show an import error, inspect the `app` container logs. The dump
+contains `DROP TABLE` statements, so an import replaces the current database:
 
 1. Back up any data that must be preserved.
-2. Import the dump into `nest_db` using the MySQL container, or remove and
-   recreate the volume from Dokploy if it contains no data that must be
-   preserved.
+2. Restore the database using the startup script or import the dump manually.
 3. Redeploy the Compose application and confirm that `app` starts without
    migration errors.
 
-The restoration uses the dump's `DROP TABLE` statements and therefore replaces
-the current database contents. Do not redeploy this repair without a backup if
-the persistent volume contains data that must be preserved. The dump contains
-the `Laboratorio` table and the corresponding migration records, so a restored
-database will not attempt to add that table's columns again.
+Do not perform this repair without a backup if the persistent volume contains
+data that must be preserved. The dump contains the `Laboratorio` table and the
+corresponding migration records, so a restored database will not attempt to add
+that table's columns again.
 
 ## Domains and internal ports
 
 Configure Dokploy's domains/reverse proxy as follows:
 
-- Frontend: host `tms2.dariassoft.com.ar`, service `client-vue`, container port `3000`.
-- API: service `app`, container port `3000`.
+- Frontend: host `tms2.dariassoft.com.ar`, service `client-vue`, protocol `http`,
+  internal path `/`, external path `/`, container port `3000`.
+- API: host `api.tms2.dariassoft.com.ar`, service `app`, protocol `http`,
+  internal path `/`, external path `/`, container port `3000`.
+
+Do not configure the frontend domain to target `app`, `mysql`, port `80`, or the
+Docker host. The frontend container is healthy on port `3000`; if the API
+domain returns a Nest/Express response but the frontend domain returns `502`,
+the frontend domain entry in Dokploy is pointing to the wrong service or port.
 
 The API URL used in `NUXT_PUBLIC_API_BASE` must point to the public API domain,
 not to the internal Compose service name `app`.

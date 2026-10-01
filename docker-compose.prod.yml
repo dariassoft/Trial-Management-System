@@ -12,6 +12,7 @@ services:
       DB_USER: ${DB_USER:?Define DB_USER in Dokploy}
       DB_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD in Dokploy}
       DB_NAME: ${DB_NAME:?Define DB_NAME in Dokploy}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Define MYSQL_ROOT_PASSWORD in Dokploy}
       JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET in Dokploy}
       JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME:?Define JWT_EXPIRATION_TIME in Dokploy}
       FRONTEND_URLS: ${FRONTEND_URLS:?Define FRONTEND_URLS in Dokploy}
@@ -22,6 +23,12 @@ services:
         condition: service_healthy
     volumes:
       - uploads-data:/app/uploads
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/api/v1', response => process.exit(response.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
     restart: unless-stopped
     networks:
       - backend-network
@@ -40,6 +47,12 @@ services:
       NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:?Define NUXT_PUBLIC_API_BASE in Dokploy}
     expose:
       - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
     depends_on:
       app:
         condition: service_started

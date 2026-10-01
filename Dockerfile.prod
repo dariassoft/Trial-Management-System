@@ -19,10 +19,14 @@ ENV NODE_ENV=production \
 COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/dist ./dist
-RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
+COPY --chown=node:node 2026-09-30.nest_db.dump.sql ./2026-09-30.nest_db.dump.sql
+COPY --chown=node:node start-prod.sh ./start-prod.sh
+COPY --chown=node:node start-prod.cjs ./start-prod.cjs
+RUN chmod +x /app/start-prod.sh && \
+    mkdir -p /app/uploads && chown -R node:node /app/uploads
 
 USER node
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "start-prod.cjs"]
