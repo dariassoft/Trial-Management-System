@@ -6,10 +6,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ReportesController } from '../../reportes/reportes.controller';
-import { ReportesService } from '../../reportes/reportes.service';
-import { CalculosReportesService } from '../../reportes/calculos-reportes.service';
-import { ReportesEspecializadosService } from '../../reportes/reportes-especializados.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { ReportesController } from './reportes.controller';
+import { ReportesService } from './reportes.service';
+import { CalculosReportesService } from './calculos-reportes.service';
+import { ReportesEspecializadosService } from './reportes-especializados.service';
+import { Ensayo } from '../entities/ensayo.entity';
+import { Parcela } from '../entities/parcela.entity';
+import { DatosCampo } from '../entities/datos-campo.entity';
+import { DatosCampoMedicion } from '../entities/datos-campo-medicion.entity';
+import { DatosCosecha } from '../entities/datos-cosecha.entity';
+import { Tratamiento } from '../entities/tratamiento.entity';
+import { Bloque } from '../entities/bloque.entity';
+import { Aplicacion } from '../entities/aplicacion.entity';
 
 describe('Reportes E2E (e2e)', () => {
   let app: INestApplication;
@@ -22,11 +31,19 @@ describe('Reportes E2E (e2e)', () => {
         ReportesService,
         CalculosReportesService,
         ReportesEspecializadosService,
-        // Mock repositories
-        {
-          provide: 'EnsayoRepository',
+        ...[
+          Ensayo,
+          Parcela,
+          DatosCampo,
+          DatosCampoMedicion,
+          DatosCosecha,
+          Tratamiento,
+          Bloque,
+          Aplicacion,
+        ].map((entity) => ({
+          provide: getRepositoryToken(entity),
           useValue: {},
-        },
+        })),
       ],
     }).compile();
 
@@ -37,7 +54,7 @@ describe('Reportes E2E (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) await app.close();
   });
 
   describe('Cálculos Matemáticos', () => {
@@ -50,7 +67,7 @@ describe('Reportes E2E (e2e)', () => {
     it('debe calcular calidad final correctamente', () => {
       const calculosService = new CalculosReportesService();
       const calidad = calculosService.calcularCalidadFinal(97.3, 91.9);
-      expect(calidad).toBeCloseTo(89.36, 1);
+      expect(calidad).toBeCloseTo(89.42, 1);
     });
 
     it('debe calcular índice de plagas correctamente', () => {

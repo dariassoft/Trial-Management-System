@@ -124,29 +124,63 @@ export class ExcelReportGenerator {
     }
 
     // ===== HOJA 3: EVALUACIONES DETALLE =====
+    // Usa el formato Opción B exclusivo para Excel (headerEvaluacionesExcel /
+    // evaluacionesDetalleExcel): una fila por (Trat, Bloque, Variable), columnas = momentos.
+    // El PDF sigue usando headerEvaluaciones / evaluacionesDetalle sin cambios.
     const ws3 = wb.addWorksheet('Evaluaciones Detalle');
-    if (datos.headerEvaluaciones && datos.headerEvaluaciones.length > 0) {
-      // Usar índices únicos para las claves de columna para evitar colisiones con nombres duplicados como "Variable"
-      ws3.columns = datos.headerEvaluaciones.map((h: any, i: number) => ({
-        header: h,
-        key: `col_${i}`,
-        width: 20,
-      }));
-      
+    const hdrEval: any[] = datos.headerEvaluacionesExcel ?? datos.headerEvaluaciones ?? [];
+    const rowsEval: any[][] = datos.evaluacionesDetalleExcel ?? datos.evaluacionesDetalle ?? [];
+    const isNewFormat: boolean = !!datos.headerEvaluacionesExcel;
+    // En el nuevo formato las primeras 4 columnas son fijas: Trat, Bloque, Variable, Unidad
+    const FIXED_COLS = isNewFormat ? 4 : 2;
+
+    if (hdrEval.length > 0) {
+      ws3.columns = hdrEval.map((h: any, i: number) => {
+        let width = 16;
+        if (i === 0) width = 10;        // Trat
+        if (i === 1) width = 12;        // Bloque
+        if (i === 2) width = 30;        // Variable (nombre puede ser largo)
+        if (i === 3 && isNewFormat) width = 12;  // Unidad
+        return { header: h, key: `col_${i}`, width };
+      });
+
       const headerRow3 = ws3.getRow(1);
       headerRow3.font = headerFont;
       headerRow3.fill = headerFill;
-      headerRow3.alignment = { horizontal: 'center' };
+      headerRow3.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      headerRow3.height = 32;
 
-      if (datos.evaluacionesDetalle && datos.evaluacionesDetalle.length > 0) {
-        // Agregar filas directamente como arrays, ya que datos.evaluacionesDetalle es un array de arrays
-        ws3.addRows(datos.evaluacionesDetalle);
-        
+      // Congelar columnas de identificación + fila de encabezado para facilitar scroll horizontal
+      ws3.views = [{ state: 'frozen', xSplit: FIXED_COLS, ySplit: 1, showGridLines: true }];
+
+      if (rowsEval.length > 0) {
+        ws3.addRows(rowsEval);
+
+        // Colores alternos por grupo de tratamiento (columna 1) para lectura más fácil
+        const altFill: ExcelJS.Fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFE8EEF8' }, // azul muy suave
+        };
+        let lastTrat = '';
+        let toggle = false;
+
         ws3.eachRow((row, rowNumber) => {
-          if (rowNumber > 1) {
-            row.eachCell((cell) => {
-              cell.border = borderStyle as ExcelJS.Borders;
-            });
+          if (rowNumber === 1) return;
+
+          row.eachCell((cell) => {
+            cell.border = borderStyle as ExcelJS.Borders;
+            cell.alignment = { vertical: 'middle' };
+          });
+
+          // Cambiar grupo de color cuando cambia el Tratamiento
+          const trat = String(row.getCell(1).value ?? '');
+          if (trat !== lastTrat) {
+            lastTrat = trat;
+            toggle = !toggle;
+          }
+          if (toggle) {
+            row.eachCell((cell) => { cell.fill = altFill; });
           }
         });
       }
@@ -184,9 +218,12 @@ export class ExcelReportGenerator {
           row.eachCell((cell) => {
             cell.border = borderStyle as ExcelJS.Borders;
           });
+          row.getCell(5).protection = { locked: false };
+          row.getCell(6).protection = { locked: false };
         }
       });
     }
+    await ws4.protect('', { selectLockedCells: false, selectUnlockedCells: true });
 
     // ===== HOJA 5: DATOS COSECHA =====
     const ws5 = wb.addWorksheet('Datos Cosecha');
@@ -230,9 +267,13 @@ export class ExcelReportGenerator {
           row.eachCell((cell) => {
             cell.border = borderStyle as ExcelJS.Borders;
           });
+          for (let column = 4; column <= 11; column++) {
+            row.getCell(column).protection = { locked: false };
+          }
         }
       });
     }
+    await ws5.protect('', { selectLockedCells: false, selectUnlockedCells: true });
 
     // ===== HOJA 6: ESTADÍSTICAS =====
     const ws6 = wb.addWorksheet('Estadísticas');

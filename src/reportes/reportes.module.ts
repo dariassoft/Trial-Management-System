@@ -13,9 +13,15 @@ import { DatosCosecha } from '../entities/datos-cosecha.entity';
 import { Tratamiento } from '../entities/tratamiento.entity';
 import { Bloque } from '../entities/bloque.entity';
 import { Aplicacion } from '../entities/aplicacion.entity';
+import { ProtocoloVariable } from '../entities/protocolo-variable.entity';
+import { MomentoEvaluacion } from '../entities/momento-evaluacion.entity';
+import { ImportacionEnsayoLog } from '../entities/importacion-ensayo-log.entity';
+import { ImportacionReportesService } from './importacion-reportes.service';
+import { NotificacionesModule } from '../notificaciones/notificaciones.module';
 
 @Module({
   imports: [
+    NotificacionesModule,
     TypeOrmModule.forFeature([
       Ensayo,
       Parcela,
@@ -25,6 +31,9 @@ import { Aplicacion } from '../entities/aplicacion.entity';
       Tratamiento,
       Bloque,
       Aplicacion,
+      ProtocoloVariable,
+      MomentoEvaluacion,
+      ImportacionEnsayoLog,
     ]),
   ],
   controllers: [ReportesController],
@@ -33,8 +42,9 @@ import { Aplicacion } from '../entities/aplicacion.entity';
     CalculosReportesService,
     ReportesEspecializadosService,
     SvgChartsService,
+    ImportacionReportesService,
   ],
-  exports: [ReportesService, CalculosReportesService, ReportesEspecializadosService, SvgChartsService],
+  exports: [ReportesService, CalculosReportesService, ReportesEspecializadosService, SvgChartsService, ImportacionReportesService],
 })
 export class ReportesModule {}
 

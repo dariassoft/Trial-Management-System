@@ -52,7 +52,7 @@ const svg_charts_service_1 = require("./svg-charts.service");
 class ExcelReportGenerator {
     static generarReporteEnsayo(datos) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
             const wb = new ExcelJS.Workbook();
             // Estilos comunes
             const headerFill = {
@@ -156,26 +156,61 @@ class ExcelReportGenerator {
                 });
             }
             // ===== HOJA 3: EVALUACIONES DETALLE =====
+            // Usa el formato Opción B exclusivo para Excel (headerEvaluacionesExcel /
+            // evaluacionesDetalleExcel): una fila por (Trat, Bloque, Variable), columnas = momentos.
+            // El PDF sigue usando headerEvaluaciones / evaluacionesDetalle sin cambios.
             const ws3 = wb.addWorksheet('Evaluaciones Detalle');
-            if (datos.headerEvaluaciones && datos.headerEvaluaciones.length > 0) {
-                // Usar índices únicos para las claves de columna para evitar colisiones con nombres duplicados como "Variable"
-                ws3.columns = datos.headerEvaluaciones.map((h, i) => ({
-                    header: h,
-                    key: `col_${i}`,
-                    width: 20,
-                }));
+            const hdrEval = (_u = (_t = datos.headerEvaluacionesExcel) !== null && _t !== void 0 ? _t : datos.headerEvaluaciones) !== null && _u !== void 0 ? _u : [];
+            const rowsEval = (_w = (_v = datos.evaluacionesDetalleExcel) !== null && _v !== void 0 ? _v : datos.evaluacionesDetalle) !== null && _w !== void 0 ? _w : [];
+            const isNewFormat = !!datos.headerEvaluacionesExcel;
+            // En el nuevo formato las primeras 4 columnas son fijas: Trat, Bloque, Variable, Unidad
+            const FIXED_COLS = isNewFormat ? 4 : 2;
+            if (hdrEval.length > 0) {
+                ws3.columns = hdrEval.map((h, i) => {
+                    let width = 16;
+                    if (i === 0)
+                        width = 10; // Trat
+                    if (i === 1)
+                        width = 12; // Bloque
+                    if (i === 2)
+                        width = 30; // Variable (nombre puede ser largo)
+                    if (i === 3 && isNewFormat)
+                        width = 12; // Unidad
+                    return { header: h, key: `col_${i}`, width };
+                });
                 const headerRow3 = ws3.getRow(1);
                 headerRow3.font = headerFont;
                 headerRow3.fill = headerFill;
-                headerRow3.alignment = { horizontal: 'center' };
-                if (datos.evaluacionesDetalle && datos.evaluacionesDetalle.length > 0) {
-                    // Agregar filas directamente como arrays, ya que datos.evaluacionesDetalle es un array de arrays
-                    ws3.addRows(datos.evaluacionesDetalle);
+                headerRow3.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                headerRow3.height = 32;
+                // Congelar columnas de identificación + fila de encabezado para facilitar scroll horizontal
+                ws3.views = [{ state: 'frozen', xSplit: FIXED_COLS, ySplit: 1, showGridLines: true }];
+                if (rowsEval.length > 0) {
+                    ws3.addRows(rowsEval);
+                    // Colores alternos por grupo de tratamiento (columna 1) para lectura más fácil
+                    const altFill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFE8EEF8' }, // azul muy suave
+                    };
+                    let lastTrat = '';
+                    let toggle = false;
                     ws3.eachRow((row, rowNumber) => {
-                        if (rowNumber > 1) {
-                            row.eachCell((cell) => {
-                                cell.border = borderStyle;
-                            });
+                        var _a;
+                        if (rowNumber === 1)
+                            return;
+                        row.eachCell((cell) => {
+                            cell.border = borderStyle;
+                            cell.alignment = { vertical: 'middle' };
+                        });
+                        // Cambiar grupo de color cuando cambia el Tratamiento
+                        const trat = String((_a = row.getCell(1).value) !== null && _a !== void 0 ? _a : '');
+                        if (trat !== lastTrat) {
+                            lastTrat = trat;
+                            toggle = !toggle;
+                        }
+                        if (toggle) {
+                            row.eachCell((cell) => { cell.fill = altFill; });
                         }
                     });
                 }
@@ -209,9 +244,12 @@ class ExcelReportGenerator {
                         row.eachCell((cell) => {
                             cell.border = borderStyle;
                         });
+                        row.getCell(5).protection = { locked: false };
+                        row.getCell(6).protection = { locked: false };
                     }
                 });
             }
+            yield ws4.protect('', { selectLockedCells: false, selectUnlockedCells: true });
             // ===== HOJA 5: DATOS COSECHA =====
             const ws5 = wb.addWorksheet('Datos Cosecha');
             ws5.columns = [
@@ -254,9 +292,13 @@ class ExcelReportGenerator {
                         row.eachCell((cell) => {
                             cell.border = borderStyle;
                         });
+                        for (let column = 4; column <= 11; column++) {
+                            row.getCell(column).protection = { locked: false };
+                        }
                     }
                 });
             }
+            yield ws5.protect('', { selectLockedCells: false, selectUnlockedCells: true });
             // ===== HOJA 6: ESTADÍSTICAS =====
             const ws6 = wb.addWorksheet('Estadísticas');
             ws6.columns = [

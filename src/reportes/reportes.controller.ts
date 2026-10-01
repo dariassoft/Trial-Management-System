@@ -4,7 +4,14 @@ import {
   Param,
   ParseIntPipe,
   Res,
+  Body,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+  Optional,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiBearerAuth,
@@ -13,12 +20,19 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ReportesService } from './reportes.service';
+import { ImportacionReportesService } from './importacion-reportes.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../entities/rol.entity';
 
 @ApiTags('reportes')
 @ApiBearerAuth()
 @Controller('reportes')
 export class ReportesController {
-  constructor(private readonly reportesService: ReportesService) {}
+  constructor(
+    private readonly reportesService: ReportesService,
+    @Optional()
+    private readonly importacionService: ImportacionReportesService,
+  ) {}
 
   @Get('ensayo/:ensayoId/pdf')
   @ApiOperation({ summary: 'Generar reporte PDF completo de un ensayo' })
@@ -54,6 +68,15 @@ export class ReportesController {
         .status(500)
         .json({ error: 'Error al generar PDF', details: errorMessage });
     }
+  }
+
+  @Post('importar')
+  @Roles(Role.TECNICO, Role.ADMIN, Role.SUPERADMIN)
+  @UseInterceptors(FileInterceptor('archivo'))
+  @ApiOperation({ summary: 'Importar mediciones desde un Excel generado por el sistema' })
+  async importarExcel(@UploadedFile() archivo: Express.Multer.File, @Body('ensayoId') ensayoId?: string) {
+    if (!archivo?.buffer) throw new BadRequestException('Debe adjuntar un archivo Excel');
+    return this.importacionService.importar(archivo.buffer, ensayoId ? Number(ensayoId) : undefined);
   }
 
   @Get('ensayo/:ensayoId/xls')

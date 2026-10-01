@@ -23,11 +23,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportesController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
 const reportes_service_1 = require("./reportes.service");
+const importacion_reportes_service_1 = require("./importacion-reportes.service");
+const roles_decorator_1 = require("../auth/decorators/roles.decorator");
+const rol_entity_1 = require("../entities/rol.entity");
 let ReportesController = class ReportesController {
-    constructor(reportesService) {
+    constructor(reportesService, importacionService) {
         this.reportesService = reportesService;
+        this.importacionService = importacionService;
     }
     generarReportePdf(ensayoId, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -51,6 +56,13 @@ let ReportesController = class ReportesController {
                     .status(500)
                     .json({ error: 'Error al generar PDF', details: errorMessage });
             }
+        });
+    }
+    importarExcel(archivo, ensayoId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!(archivo === null || archivo === void 0 ? void 0 : archivo.buffer))
+                throw new common_1.BadRequestException('Debe adjuntar un archivo Excel');
+            return this.importacionService.importar(archivo.buffer, ensayoId ? Number(ensayoId) : undefined);
         });
     }
     generarReporteXls(ensayoId, res) {
@@ -90,6 +102,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ReportesController.prototype, "generarReportePdf", null);
 __decorate([
+    (0, common_1.Post)('importar'),
+    (0, roles_decorator_1.Roles)(rol_entity_1.Role.TECNICO, rol_entity_1.Role.ADMIN, rol_entity_1.Role.SUPERADMIN),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('archivo')),
+    (0, swagger_1.ApiOperation)({ summary: 'Importar mediciones desde un Excel generado por el sistema' }),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)('ensayoId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], ReportesController.prototype, "importarExcel", null);
+__decorate([
     (0, common_1.Get)('ensayo/:ensayoId/xls'),
     (0, swagger_1.ApiOperation)({ summary: 'Generar reporte Excel COMPLETO de un ensayo (igual que PDF)' }),
     (0, swagger_1.ApiParam)({ name: 'ensayoId', type: Number }),
@@ -103,5 +126,7 @@ exports.ReportesController = ReportesController = __decorate([
     (0, swagger_1.ApiTags)('reportes'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('reportes'),
-    __metadata("design:paramtypes", [reportes_service_1.ReportesService])
+    __param(1, (0, common_1.Optional)()),
+    __metadata("design:paramtypes", [reportes_service_1.ReportesService,
+        importacion_reportes_service_1.ImportacionReportesService])
 ], ReportesController);

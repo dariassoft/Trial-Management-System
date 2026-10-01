@@ -100,6 +100,12 @@
                 >
                   🗑️ Eliminar
                 </button>
+                <button
+                  @click="openImportDialog(ensayo.id)"
+                  class="inline-flex items-center gap-1 rounded bg-green-100 dark:bg-green-900 px-3 py-1 text-xs font-medium text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800 ml-2"
+                >
+                  📥 Importar
+                </button>
               </td>
             </tr>
           </tbody>
@@ -126,6 +132,23 @@
       @confirm="confirmDelete"
       @cancel="closeDeleteDialog"
     />
+
+    <input ref="importFileInput" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" @change="handleImportFile" />
+    <div v-if="showImportDialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div class="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Importar reporte Excel</h2>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Seleccione el archivo generado para el ensayo #{{ importEnsayoId }}. Se validarán todas las hojas y columnas antes de guardar.</p>
+        <div v-if="importError" class="mt-4 rounded bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-200">{{ importError }}</div>
+        <div v-if="importResult" class="mt-4 rounded bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-200">
+          <p class="font-semibold">Importación completada</p>
+          <p v-for="(count, sheet) in importResult.cambios" :key="sheet">{{ sheet }}: {{ count }} fila(s)</p>
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+          <button @click="closeImportDialog" class="rounded border px-4 py-2 text-sm">Cerrar</button>
+          <button v-if="!importResult" @click="chooseImportFile" class="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700" :disabled="importing">{{ importing ? 'Importando...' : 'Seleccionar Excel' }}</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -151,6 +174,12 @@ const deleteEnsayoId = ref<string | null>(null)
 const deleteEnsayoName = ref('')
 const sortField = ref<string>('nombreEnsayo')
 const sortOrder = ref<'asc' | 'desc'>('asc')
+const importFileInput = ref<HTMLInputElement | null>(null)
+const showImportDialog = ref(false)
+const importEnsayoId = ref<number | null>(null)
+const importing = ref(false)
+const importError = ref('')
+const importResult = ref<{ cambios: Record<string, number> } | null>(null)
 
 const formatDate = (date: string | Date): string => {
   if (!date) return '-'
@@ -243,6 +272,39 @@ const confirmDelete = async () => {
     await loadEnsayos()
   } catch (error: any) {
     errorMessage.value = error.data?.message || 'Error al eliminar ensayo'
+  }
+}
+
+const openImportDialog = (id: number) => {
+  importEnsayoId.value = id
+  importError.value = ''
+  importResult.value = null
+  showImportDialog.value = true
+}
+
+const closeImportDialog = () => {
+  if (!importing.value) showImportDialog.value = false
+}
+
+const chooseImportFile = () => importFileInput.value?.click()
+
+const handleImportFile = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file || !importEnsayoId.value) return
+  importing.value = true
+  importError.value = ''
+  try {
+    const body = new FormData()
+    body.append('archivo', file)
+    body.append('ensayoId', String(importEnsayoId.value))
+    importResult.value = await api.post('/reportes/importar', body)
+  } catch (error: any) {
+    importResult.value = null
+    importError.value = error.data?.message || error.data?.error || 'El archivo no es compatible o no pudo importarse'
+  } finally {
+    importing.value = false
+    input.value = ''
   }
 }
 

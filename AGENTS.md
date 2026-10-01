@@ -460,6 +460,13 @@ npm run typecheck              # TypeScript check
 
 ## 8. Key Gotchas
 
+### Importación de reportes Excel
+
+- `POST /api/v1/reportes/importar` recibe el archivo XLSX en el campo multipart `archivo` y requiere rol `TECNICO`, `ADMIN` o `SUPERADMIN`.
+- El archivo debe ser exactamente un Excel generado por `GET /api/v1/reportes/ensayo/:ensayoId/xls`: conserva las siete hojas y encabezados originales; `Resumen!B3` identifica el ensayo.
+- Solo se importan `Datos Campo` (columnas E/F) y `Datos Cosecha` (D:K). Las filas se resuelven por parcela, momento y variable; se rechaza todo el libro antes de confirmar si hay incompatibilidades.
+- La importación es transaccional, recalcula `kg_ha_corregido` cuando existen peso/superficie/humedad de grano, registra cada operación en `importaciones_ensayo_log` y crea notificaciones para el usuario importador y el responsable del ensayo.
+
 1. **Don't confuse projects**: Backend is `tms-backend/`, Frontend is `tms-backend/tms-client-vue/`. They have separate `package.json`, `Dockerfile`, `node_modules`, and `tsconfig.json`.
 2. **DOCKERIZED env var**: When `true`, `ConfigModule` skips `.env` file and uses container env vars.
 3. **API prefix**: All backend routes are under `/api/v1`. Frontend constructs URLs relative to `apiBase` runtime config.

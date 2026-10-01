@@ -228,6 +228,7 @@ let CalculosReportesService = class CalculosReportesService {
      * Valida coherencia de datos de cosecha
      */
     validarCoherenciaDatos(datos) {
+        var _a, _b, _c, _d;
         const advertencias = [];
         const errores = [];
         // 1. Validar que pesoGranos ≈ gramaje × granos/m²
@@ -249,9 +250,9 @@ let CalculosReportesService = class CalculosReportesService {
             }
         }
         // 3. Validar que defectos no superen 100%
-        const totalDefectos = (datos.granosDañados || 0) +
-            (datos.granosVerdes || 0) +
-            (datos.granosVanos || 0);
+        const totalDefectos = ((_b = (_a = datos.granosDañados) !== null && _a !== void 0 ? _a : datos.granosDanados) !== null && _b !== void 0 ? _b : 0) +
+            ((_c = datos.granosVerdes) !== null && _c !== void 0 ? _c : 0) +
+            ((_d = datos.granosVanos) !== null && _d !== void 0 ? _d : 0);
         if (totalDefectos > 100) {
             errores.push(`Suma de defectos supera 100% (${totalDefectos.toFixed(1)}%)`);
         }

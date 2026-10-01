@@ -223,7 +223,8 @@ export class ReportesService {
       const datosTrilla = await manager.query(`
         SELECT 
           p.nombre_parcela, t.numero_trat, b.nombre_bloque,
-          dc.humedad_pct, dc.kg_ha_corregido, dc.gie, dc.gramaje_por_grano,
+          dc.humedad_pct, dc.kg_ha_corregido, dc.peso_grano_cosechado,
+          dc.humedad_grano_cosechado, dc.superficie_cosechada_m2, dc.gie, dc.gramaje_por_grano,
           dc.granos_porurf, dc.peso_granos_porurf, dc.granos_danados,
           dc.granos_verdes, dc.granos_vanos, dc.hojas_porurf,
           dc.larvas_porurf, dc.insectos_beneficios_porurf,
@@ -237,10 +238,10 @@ export class ReportesService {
   
       // 4. DATOS CAMPO CON VARIABLES - COMPLETO CON MOMENTO INFO
       const datosCampoRaw = await manager.query(`
-        SELECT 
+        SELECT
           dc.dato_campo_id, p.nombre_parcela, t.numero_trat, b.nombre_bloque,
           me.nombre_momento, me.dias_despues_aplicacion, me.fecha_evaluacion,
-          pv.nombre_variable, dcm.valor
+          pv.nombre_variable, pv.unidad_medida, dcm.valor
         FROM Datos_Campo dc
         INNER JOIN Parcela p ON dc.parcela_id_fk = p.parcela_id
         INNER JOIN Tratamiento t ON p.tratamiento_id_fk = t.tratamiento_id
@@ -306,6 +307,9 @@ export class ReportesService {
         bloque: dt.nombre_bloque,
         humedad: dt.humedad_pct !== null ? `${dt.humedad_pct}%` : '',
         kgHa: dt.kg_ha_corregido !== null ? `${Math.round(dt.kg_ha_corregido)}` : '',
+        pesoGranoCosechado: dt.peso_grano_cosechado !== null ? `${dt.peso_grano_cosechado}` : '',
+        humedadGranoCosechado: dt.humedad_grano_cosechado !== null ? `${dt.humedad_grano_cosechado}%` : '',
+        superficieCosechadaM2: dt.superficie_cosechada_m2 !== null ? `${dt.superficie_cosechada_m2}` : '',
         gie: dt.gie !== null ? `${parseFloat(dt.gie).toFixed(1)}%` : '',
         gramaje: dt.gramaje_por_grano !== null ? `${dt.gramaje_por_grano}` : '',
         granosUrf: dt.granos_porurf !== null ? `${Math.round(dt.granos_porurf)}` : '',
@@ -479,6 +483,57 @@ export class ReportesService {
         evaluacionesDetalle.push(filaMediciones);
       }
   
+      // =====================================================================
+      // FORMATO EXCEL (Opción B): una fila por (Trat, Bloque, Variable)
+      // Las columnas son los momentos ordenados por DDS.
+      // No modifica headerEvaluaciones ni evaluacionesDetalle usados por el PDF.
+      // =====================================================================
+
+      // Lookup de valores: "trat|bloque|momento|variable" → número o string
+      const valorLookup = new Map<string, number | string>();
+      for (const dc of datosCampoRaw as any[]) {
+        if (!dc.nombre_variable) continue;
+        const k = `${String(dc.numero_trat)}|${dc.nombre_bloque}|${dc.nombre_momento}|${dc.nombre_variable}`;
+        if (!valorLookup.has(k) && dc.valor !== null && dc.valor !== undefined) {
+          const num = parseFloat(String(dc.valor));
+          valorLookup.set(k, isNaN(num) ? String(dc.valor) : num);
+        }
+      }
+
+      // Variables únicas con su unidad, en orden de aparición (recorriendo momentos por DDS)
+      const variablesConUnidad = new Map<string, string>(); // nombre → unidad_medida
+      for (const [, momentoData] of momentosOrdenados) {
+        for (const v of momentoData.variables) {
+          if (!variablesConUnidad.has(v)) {
+            const dcConUnidad = (datosCampoRaw as any[]).find((dc: any) => dc.nombre_variable === v);
+            variablesConUnidad.set(v, dcConUnidad?.unidad_medida || '');
+          }
+        }
+      }
+
+      // Header Excel: Trat | Bloque | Variable | Unidad | {N DDS (DD/MM)} ...
+      const headerEvaluacionesExcel: string[] = ['Trat', 'Bloque', 'Variable', 'Unidad'];
+      for (const [, momento] of momentosOrdenados) {
+        const dds = momento.dds;
+        const fecha = momento.fecha
+          ? new Date(momento.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })
+          : '';
+        headerEvaluacionesExcel.push(fecha ? `${dds} DDS (${fecha})` : `${dds} DDS`);
+      }
+
+      // Filas Excel: una por (Trat, Bloque, Variable)
+      const evaluacionesDetalleExcel: any[] = [];
+      for (const [, tratData] of tratamientosUnicos.entries()) {
+        for (const [variable, unidad] of variablesConUnidad.entries()) {
+          const fila: any[] = [tratData.tratamiento, tratData.bloque, variable, unidad];
+          for (const [nombreMomento] of momentosOrdenados) {
+            const k = `${tratData.tratamiento}|${tratData.bloque}|${nombreMomento}|${variable}`;
+            fila.push(valorLookup.get(k) ?? '');
+          }
+          evaluacionesDetalleExcel.push(fila);
+        }
+      }
+
       // Obtener protocolo y diseño desde BD
       const protocolo = {
         descripcion: ensayo.protocolo_descripcion || 'Sin protocolo definido',
@@ -497,8 +552,10 @@ export class ReportesService {
         fotos: fotosProcessed,
         estadisticas,
         evaluacionesFechas,
-        evaluacionesDetalle,
-        headerEvaluaciones,
+        evaluacionesDetalle,        // usado por el PDF (formato original)
+        headerEvaluaciones,         // usado por el PDF (formato original)
+        evaluacionesDetalleExcel,   // exclusivo Excel: una fila por (Trat, Bloque, Variable)
+        headerEvaluacionesExcel,    // exclusivo Excel: columnas = momentos por DDS
         protocolo,
         diseno,
       };

@@ -22,12 +22,18 @@ const datos_cosecha_entity_1 = require("../entities/datos-cosecha.entity");
 const tratamiento_entity_1 = require("../entities/tratamiento.entity");
 const bloque_entity_1 = require("../entities/bloque.entity");
 const aplicacion_entity_1 = require("../entities/aplicacion.entity");
+const protocolo_variable_entity_1 = require("../entities/protocolo-variable.entity");
+const momento_evaluacion_entity_1 = require("../entities/momento-evaluacion.entity");
+const importacion_ensayo_log_entity_1 = require("../entities/importacion-ensayo-log.entity");
+const importacion_reportes_service_1 = require("./importacion-reportes.service");
+const notificaciones_module_1 = require("../notificaciones/notificaciones.module");
 let ReportesModule = class ReportesModule {
 };
 exports.ReportesModule = ReportesModule;
 exports.ReportesModule = ReportesModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            notificaciones_module_1.NotificacionesModule,
             typeorm_1.TypeOrmModule.forFeature([
                 ensayo_entity_1.Ensayo,
                 parcela_entity_1.Parcela,
@@ -37,6 +43,9 @@ exports.ReportesModule = ReportesModule = __decorate([
                 tratamiento_entity_1.Tratamiento,
                 bloque_entity_1.Bloque,
                 aplicacion_entity_1.Aplicacion,
+                protocolo_variable_entity_1.ProtocoloVariable,
+                momento_evaluacion_entity_1.MomentoEvaluacion,
+                importacion_ensayo_log_entity_1.ImportacionEnsayoLog,
             ]),
         ],
         controllers: [reportes_controller_1.ReportesController],
@@ -45,7 +54,8 @@ exports.ReportesModule = ReportesModule = __decorate([
             calculos_reportes_service_1.CalculosReportesService,
             reportes_especializados_service_1.ReportesEspecializadosService,
             svg_charts_service_1.SvgChartsService,
+            importacion_reportes_service_1.ImportacionReportesService,
         ],
-        exports: [reportes_service_1.ReportesService, calculos_reportes_service_1.CalculosReportesService, reportes_especializados_service_1.ReportesEspecializadosService, svg_charts_service_1.SvgChartsService],
+        exports: [reportes_service_1.ReportesService, calculos_reportes_service_1.CalculosReportesService, reportes_especializados_service_1.ReportesEspecializadosService, svg_charts_service_1.SvgChartsService, importacion_reportes_service_1.ImportacionReportesService],
     })
 ], ReportesModule);

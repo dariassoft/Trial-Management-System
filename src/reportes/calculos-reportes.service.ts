@@ -313,9 +313,9 @@ export class CalculosReportesService {
 
     // 3. Validar que defectos no superen 100%
     const totalDefectos =
-      (datos.granosDañados || 0) +
-      (datos.granosVerdes || 0) +
-      (datos.granosVanos || 0);
+      (datos.granosDañados ?? datos.granosDanados ?? 0) +
+      (datos.granosVerdes ?? 0) +
+      (datos.granosVanos ?? 0);
     if (totalDefectos > 100) {
       errores.push(
         `Suma de defectos supera 100% (${totalDefectos.toFixed(1)}%)`,
