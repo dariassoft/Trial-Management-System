@@ -12,15 +12,28 @@ async function bootstrap() {
   // --- Configuración de CORS ---
   // En desarrollo: permite todos los orígenes
   // En producción: configurar FRONTEND_URLS en .env
+  const configuredOrigins = process.env.FRONTEND_URLS?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean) || [];
+  const localOrigins = [
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+  ];
+  const productionOrigins = [
+    'https://agronomic-tms.dariassoft.com.ar',
+    'https://www.agronomic-tms.dariassoft.com.ar',
+  ];
+  const allowedOrigins = [
+    ...new Set([...configuredOrigins, ...localOrigins, ...productionOrigins]),
+  ];
   const corsOptions = {
     origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
       const isDev = process.env.NODE_ENV !== 'production';
-      const allowedOrigins = process.env.FRONTEND_URLS?.split(',') || [];
 
       // En desarrollo, permitir todos
       if (isDev) {
         callback(null, true);
-      } else if (!origin || allowedOrigins.some(allowed => origin.includes(allowed.trim()))) {
+      } else if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         console.warn(`CORS blocked origin: ${origin}`);

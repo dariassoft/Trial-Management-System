@@ -17,6 +17,13 @@ if (fs.existsSync(envPath)) {
   }
 }
 
+// Permitir que el entorno de ejecución/build sobrescriba el valor del archivo.
+// Esto evita que una configuración heredada del contenedor o del shell local
+// termine usando la URL de producción durante el desarrollo.
+if (process.env.NUXT_PUBLIC_API_BASE) {
+  apiBase = process.env.NUXT_PUBLIC_API_BASE.trim()
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-11-27',
   // Solo el servidor de desarrollo debe funcionar como SPA. Si el build de

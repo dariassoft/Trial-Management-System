@@ -18,20 +18,31 @@ const jwt_auth_guard_1 = require("./auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("./auth/guards/roles.guard");
 function bootstrap() {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
         // --- Configuración de CORS ---
         // En desarrollo: permite todos los orígenes
         // En producción: configurar FRONTEND_URLS en .env
+        const configuredOrigins = ((_a = process.env.FRONTEND_URLS) === null || _a === void 0 ? void 0 : _a.split(',').map((origin) => origin.trim()).filter(Boolean)) || [];
+        const localOrigins = [
+            'http://localhost:3001',
+            'http://127.0.0.1:3001',
+        ];
+        const productionOrigins = [
+            'https://agronomic-tms.dariassoft.com.ar',
+            'https://www.agronomic-tms.dariassoft.com.ar',
+        ];
+        const allowedOrigins = [
+            ...new Set([...configuredOrigins, ...localOrigins, ...productionOrigins]),
+        ];
         const corsOptions = {
             origin: (origin, callback) => {
-                var _a;
                 const isDev = process.env.NODE_ENV !== 'production';
-                const allowedOrigins = ((_a = process.env.FRONTEND_URLS) === null || _a === void 0 ? void 0 : _a.split(',')) || [];
                 // En desarrollo, permitir todos
                 if (isDev) {
                     callback(null, true);
                 }
-                else if (!origin || allowedOrigins.some(allowed => origin.includes(allowed.trim()))) {
+                else if (!origin || allowedOrigins.includes(origin)) {
                     callback(null, true);
                 }
                 else {

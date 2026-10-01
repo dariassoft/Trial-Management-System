@@ -62,7 +62,7 @@ services:
     #      - /app/.output  # Excluir .output del mount host
     environment:
       - HOST=0.0.0.0
-      - NUXT_PUBLIC_API_BASE_URL=http://app:3000
+      - NUXT_PUBLIC_API_BASE=http://localhost:3000/api/v1
       - NODE_ENV=development
     depends_on:
       - app
