@@ -1,0 +1,33 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+ARG NUXT_PUBLIC_API_BASE
+ENV NODE_ENV=production \
+    NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production \
+    HOST=0.0.0.0 \
+    PORT=3000 \
+    NITRO_PORT=3000
+
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nuxt -u 1001 -G nodejs
+
+COPY --from=builder --chown=nuxt:nodejs /app/.output ./.output
+
+USER nuxt
+
+EXPOSE 3000
+
+CMD ["node", ".output/server/index.mjs"]
