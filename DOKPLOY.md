@@ -32,7 +32,7 @@ writes them to the `.env` file used to interpolate `docker-compose.prod.yml`.
 | `MYSQL_PASSWORD` | `mysql` | Same password as `DB_PASSWORD` |
 | `JWT_SECRET` | `app` | Long random signing secret |
 | `JWT_EXPIRATION_TIME` | `app` | Expiration in seconds |
-| `FRONTEND_URLS` | `app` | Frontend origin, for example `https://agronomic-tms.dariassoft.com.ar` |
+| `FRONTEND_URLS` | `app` | Frontend origin, for example `https://tms2.dariassoft.com.ar` |
 | `NUXT_PUBLIC_API_BASE` | frontend build | Public API URL ending in `/api/v1` |
 | `DB_HOST` | `app` | `mysql` |
 | `DB_PORT` | `app` | `3306` |
@@ -46,11 +46,31 @@ All variables above are present with concrete values in `.env.prod.example`.
 Copy those values into Dokploy's Environment section. The `MYSQL_*` values
 must remain consistent with their corresponding `DB_*` values.
 
+## Database initialization
+
+The production image does not create the application's base tables. The
+incremental TypeORM migrations expect those tables to exist already; for that
+reason `docker-compose.prod.yml` mounts
+`2026-09-30.nest_db.dump.sql` into MySQL's initialization directory.
+
+MySQL executes that file only when `mysql-data` is created for the first time.
+If Dokploy already created the volume and the logs contain `Table "Laboratorio"
+does not exist`, initialize the existing deployment before restarting `app`:
+
+1. Back up any data that must be preserved.
+2. Remove/recreate the MySQL volume from Dokploy, or import the dump manually
+   into the `nest_db` database.
+3. Redeploy the Compose application.
+
+Do not remove a volume containing data that must be preserved. The dump already
+contains the `Laboratorio` table and the corresponding migration records, so a
+fresh initialization will not attempt to add that table's columns again.
+
 ## Domains and internal ports
 
 Configure Dokploy's domains/reverse proxy as follows:
 
-- Frontend: service `client-vue`, container port `3000`.
+- Frontend: host `tms2.dariassoft.com.ar`, service `client-vue`, container port `3000`.
 - API: service `app`, container port `3000`.
 
 The API URL used in `NUXT_PUBLIC_API_BASE` must point to the public API domain,

@@ -64,6 +64,8 @@ services:
       start_period: 30s
     volumes:
       - mysql-data:/var/lib/mysql
+      # Carga el esquema y los datos iniciales solo cuando el volumen es nuevo.
+      - ./2026-09-30.nest_db.dump.sql:/docker-entrypoint-initdb.d/01-nest_db.dump.sql:ro
     restart: unless-stopped
     networks:
       - backend-network
