@@ -7,7 +7,7 @@ ENV NODE_ENV=production \
     NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
 
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --include=dev
 
 COPY . .
 RUN npm run build
