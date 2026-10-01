@@ -19,8 +19,9 @@ if (fs.existsSync(envPath)) {
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-11-27',
-  // En producción se debe servir el artefacto Nitro; en desarrollo se mantiene SPA.
-  ssr: process.env.NODE_ENV === 'production',
+  // Solo el servidor de desarrollo debe funcionar como SPA. Si el build de
+  // producción no recibe NODE_ENV, debe seguir generando un artefacto Nitro.
+  ssr: process.env.NODE_ENV !== 'development',
   devtools: { enabled: process.env.NODE_ENV === 'development' },
 
   // Módulos
