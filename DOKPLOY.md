@@ -58,18 +58,19 @@ backend to start.
 The MySQL image's `/docker-entrypoint-initdb.d/` mount handles a new volume,
 while `mysql-init` also covers the existing empty volume that Dokploy may have
 created before the dump was added. If the volume contains some tables but the
-logs contain `Table "Laboratorio" does not exist`, the initializer stops without
-overwriting data:
+base table `Laboratorio` is missing, `mysql-init` restores the versioned dump so
+the backend can start:
 
 1. Back up any data that must be preserved.
-2. Import the dump manually after backing up, or remove/recreate the volume
-   from Dokploy if it contains no data that must be preserved.
-3. Redeploy the Compose application and confirm that `mysql-init` finishes
-   successfully before checking the `app` logs.
+2. Redeploy the Compose application.
+3. Confirm that `mysql-init` finishes successfully before checking the `app`
+   logs.
 
-Do not remove a volume containing data that must be preserved. The dump already
-contains the `Laboratorio` table and the corresponding migration records, so a
-fresh initialization will not attempt to add that table's columns again.
+The restoration uses the dump's `DROP TABLE` statements and therefore replaces
+the current database contents. Do not redeploy this repair without a backup if
+the persistent volume contains data that must be preserved. The dump contains
+the `Laboratorio` table and the corresponding migration records, so a restored
+database will not attempt to add that table's columns again.
 
 ## Domains and internal ports
 

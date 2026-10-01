@@ -87,14 +87,15 @@ services:
       - -ec
       - |
         TABLE_COUNT=$$(mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" -Nse "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$${MYSQL_DATABASE}'")
+        HAS_BASE_TABLE=$$(mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" -Nse "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$${MYSQL_DATABASE}' AND table_name = 'Laboratorio'")
         if [ "$${TABLE_COUNT}" = "0" ]; then
           echo "Importando el dump inicial en $${MYSQL_DATABASE}..."
           mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" "$${MYSQL_DATABASE}" < /seed/nest_db.dump.sql
-        elif ! mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" -Nse "SELECT 1 FROM information_schema.tables WHERE table_schema = '$${MYSQL_DATABASE}' AND table_name = 'Laboratorio'" | grep -q 1; then
-          echo "ERROR: $${MYSQL_DATABASE} contiene tablas, pero falta Laboratorio. No se importa el dump para evitar borrar datos existentes."
-          exit 1
+        elif [ "$${HAS_BASE_TABLE}" != "1" ]; then
+          echo "El esquema existente está incompleto (falta Laboratorio). Restaurando el dump versionado..."
+          mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" "$${MYSQL_DATABASE}" < /seed/nest_db.dump.sql
         else
-          echo "Esquema existente detectado; no se importa el dump."
+          echo "Esquema existente completo detectado; no se importa el dump."
         fi
 
         mysql -h mysql -u root -p"$${MYSQL_ROOT_PASSWORD}" -Nse "SELECT 1 FROM information_schema.tables WHERE table_schema = '$${MYSQL_DATABASE}' AND table_name = 'Laboratorio'" | grep -q 1
