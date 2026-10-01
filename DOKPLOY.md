@@ -50,21 +50,20 @@ must remain consistent with their corresponding `DB_*` values.
 
 The production image does not create the application's base tables. The
 incremental TypeORM migrations expect those tables to exist already.
-`docker-compose.prod.yml` includes a `mysql-init` one-shot service that imports
-`2026-09-30.nest_db.dump.sql` before `app` starts when the database has no
-tables. It also validates that `Laboratorio` exists before allowing the
-backend to start.
+`docker-compose.prod.yml` mounts `2026-09-30.nest_db.dump.sql` into MySQL's
+`/docker-entrypoint-initdb.d/` directory, so MySQL imports it automatically when
+`mysql-data` is initialized for the first time. The Compose application contains
+exactly three services: `app`, `client-vue`, and `mysql`.
 
-The MySQL image's `/docker-entrypoint-initdb.d/` mount handles a new volume,
-while `mysql-init` also covers the existing empty volume that Dokploy may have
-created before the dump was added. If the volume contains some tables but the
-base table `Laboratorio` is missing, `mysql-init` restores the versioned dump so
-the backend can start:
+If Dokploy already has a volume and the base table `Laboratorio` is missing,
+the dump must be imported manually before restarting the backend:
 
 1. Back up any data that must be preserved.
-2. Redeploy the Compose application.
-3. Confirm that `mysql-init` finishes successfully before checking the `app`
-   logs.
+2. Import the dump into `nest_db` using the MySQL container, or remove and
+   recreate the volume from Dokploy if it contains no data that must be
+   preserved.
+3. Redeploy the Compose application and confirm that `app` starts without
+   migration errors.
 
 The restoration uses the dump's `DROP TABLE` statements and therefore replaces
 the current database contents. Do not redeploy this repair without a backup if
